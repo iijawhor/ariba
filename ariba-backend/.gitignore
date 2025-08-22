@@ -1,0 +1,32 @@
+# Node.js dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build / cache
+dist/
+build/
+.cache/
+.next/
+out/
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+
+# IDE/editor configs
+.vscode/
+.idea/
+*.iml
