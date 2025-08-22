@@ -15,7 +15,6 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use((err, req, res, next) => {
   console.error(err); // Log the actual error
-
   res.status(err.statusCode || 500).json({
     success: false,
     message: err.message || "Internal Server Error"
