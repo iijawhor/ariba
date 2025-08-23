@@ -29,9 +29,9 @@ const userSchema = new Schema({
     trim: true
   },
   email: {
-    type: Number,
+    type: String,
     required: true,
-    match: [/^\S+@\S+\.\S+$/, "Please use a valid email address"],
+    match: [/^\S+\S+\S+$/, "Please use a valid email address"],
     email: {
       required: true,
       unique: true,
@@ -73,7 +73,6 @@ const userSchema = new Schema({
   religion: { type: String, default: "Not willing to share" },
   address: {
     type: String,
-    required: true,
     minlength: 3,
     maxlength: 100
   },
