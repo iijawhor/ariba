@@ -16,3 +16,32 @@ export const signupUser = async (req, res) => {
     });
   }
 };
+export const signinUser = async (req, res) => {
+  try {
+    const user = await UserService.signin(req.body);
+    if (!user) {
+      return res
+        .status(401)
+        .json({ message: "login failed. Please check your credentials." });
+    }
+
+    const { accessToken, refreshToken } = await UserService.signin(req.body);
+    const options = { httpOnly: true, secure: true };
+
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json({
+        message: "User logged in successfully",
+        ...user
+      });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Internal server error"
+    });
+  }
+};

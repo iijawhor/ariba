@@ -1,5 +1,28 @@
 import * as UserRepositories from "../repositories/user.repositories.js";
 import ApiError from "../utils/ApiError.js";
+import bcrypt from "bcrypt";
+
+const generateAccessAndRefreshToken = async (userId) => {
+  try {
+    const user = await UserRepositories.findUserById(userId);
+
+    if (!user) {
+      throw new ApiError("User not found! in token", 404);
+    }
+
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
+    user.refreshToken = refreshToken;
+    user.save({ validateBeforeSave: false });
+    return { accessToken, refreshToken };
+  } catch (error) {
+    throw new ApiError(
+      "Something went wrong while generating access and refresh token",
+      500
+    );
+  }
+};
+
 export const signup = async (userData) => {
   const {
     email,
@@ -19,6 +42,7 @@ export const signup = async (userData) => {
   }
   //   check the user with email already exist or not
   const existingUser = await UserRepositories.findUserByEmail(email);
+  console.log("............", existingUser);
 
   if (existingUser) {
     throw new ApiError("User with this email already exist", 409);
@@ -33,4 +57,26 @@ export const signup = async (userData) => {
     userRole
   });
   return newUser;
+};
+
+export const signin = async (userData) => {
+  const { email, password } = userData;
+  const user = await UserRepositories.findUserByEmail(email);
+  if (!user) {
+    throw new ApiError("User not found!", 404);
+  }
+
+  const passwordIsMatch = await bcrypt.compare(password, user.password);
+  if (!passwordIsMatch) {
+    throw new ApiError("Invalid credentials.", 401);
+  }
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+    user._id
+  );
+  const loggedInUser = await UserRepositories.findUserById(user._id).select(
+    "-password -refreshToken"
+  );
+  console.log("loggedInUser..", loggedInUser);
+
+  return { user: loggedInUser, refreshToken, accessToken };
 };

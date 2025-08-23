@@ -25,5 +25,8 @@ app.use((err, req, res, next) => {
 });
 
 import userRouter from "./routes/user.routes.js";
+import organizationRouter from "./routes/organization.routes.js";
 app.use("/api/v1/user/", userRouter);
+app.use("/api/v1/organization/", organizationRouter);
+
 export { app };
