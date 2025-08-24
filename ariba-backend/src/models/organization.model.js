@@ -1,4 +1,6 @@
-import { Schema } from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
+
+import validator from "validator";
 import { v4 as uuidv4 } from "uuid";
 const organizaionShcema = new Schema(
   {
@@ -16,7 +18,8 @@ const organizaionShcema = new Schema(
       type: String, // e.g. "greenfield.highschool.com"
       unique: true
     },
-    contactNumber: {
+    addres: { type: String },
+    phoneNumber: {
       type: String,
       validate: {
         validator: (value) => /^\d{10}$/.test(value),
@@ -24,26 +27,32 @@ const organizaionShcema = new Schema(
       }
     },
     email: {
-      type: Number,
-      required: true,
-      match: [/^\S+@\S+\.\S+$/, "Please use a valid email address"],
-      email: {
-        required: true,
-        unique: true,
-        lowercase: true,
-        trim: true,
-        validate: [validator.isEmail, "Invalid Email Address"]
+      type: String,
+      required: [true, "Email is required!"],
+      unique: true,
+      lowercase: true,
+      trim: true,
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("Invalid Email Address" + value);
+        }
       }
     },
-    superAdmin: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User" // link to the school admin user
-    },
-    subscriptionPlan: {
+
+    status: {
       type: String,
-      enum: ["free", "basic", "premium"],
-      default: "free"
-    }
+      enum: ["active", "inactive", "suspended"],
+      default: "active"
+    },
+    subscriptionStartDate: { type: Date },
+    subscriptionEndDate: { type: Date },
+    subscriptionPlan: [
+      {
+        type: String,
+        enum: ["free", "basic", "premium"],
+        default: "free"
+      }
+    ]
   },
   { timestamps: true }
 );
