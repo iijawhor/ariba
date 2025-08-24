@@ -53,7 +53,7 @@ const userSchema = new Schema({
       message: "Phone number must be 10 digits"
     }
   },
-  organizaion: {
+  organization: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Organization"
   },

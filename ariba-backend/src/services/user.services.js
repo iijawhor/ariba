@@ -1,4 +1,5 @@
 import * as UserRepositories from "../repositories/user.repositories.js";
+import * as OrganizationRepositories from "../repositories/organization.repositories.js";
 import ApiError from "../utils/ApiError.js";
 import bcrypt from "bcrypt";
 
@@ -79,4 +80,34 @@ export const signin = async (userData) => {
   console.log("loggedInUser..", loggedInUser);
 
   return { user: loggedInUser, refreshToken, accessToken };
+};
+
+export const createUser = async (userData) => {
+  const { firstName, lastName, email, password, userRole } = userData;
+  if (
+    [firstName, lastName, email, password, userRole].some((fields) => !fields)
+  ) {
+    throw new ApiError("All fileds are required", 400);
+  }
+  // check existing user
+  const existingUser = await UserRepositories.findUserByEmail(email);
+  if (existingUser) {
+    throw new ApiError("User with this email is already exist", 400);
+  }
+  const orgnizationEmail = "kasbagolahighmadrasha@gmail.com";
+  const organization = await OrganizationRepositories.findOrganizationByEmail(
+    orgnizationEmail
+  );
+  if (!organization) {
+    throw new ApiError("Organization not found!", 400);
+  }
+  const newUser = await UserRepositories.createUser({
+    firstName,
+    lastName,
+    email,
+    password,
+    userRole,
+    organization: organization._id
+  });
+  return newUser;
 };
