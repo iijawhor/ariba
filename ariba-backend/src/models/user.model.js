@@ -30,12 +30,17 @@ const userSchema = new Schema({
   },
   email: {
     type: String,
-    required: true,
+    required: [true, "Email is required!"],
     unique: true,
     lowercase: true,
     trim: true,
-    validate: [validator.isEmail, "Invalid Email Address"]
+    validate(value) {
+      if (!validator.isEmail(value)) {
+        throw new Error("Invalid Email Address" + value);
+      }
+    }
   },
+
   password: {
     type: String,
     required: true,
@@ -74,7 +79,8 @@ const userSchema = new Schema({
   },
   userRole: {
     type: String,
-    enum: ["superAdmin", "admin", "teacher", "student"]
+    enum: ["superAdmin", "admin", "teacher", "student"],
+    required: true
   },
   status: {
     type: String,
