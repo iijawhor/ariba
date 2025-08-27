@@ -64,3 +64,25 @@ export const createUser = async (req, res) => {
     });
   }
 };
+
+export const searchUser = async (req, res) => {
+  try {
+    const result = await UserService.searchUser(req.query);
+    if (!result || result.length === 0) {
+      return res.status(404).json({ message: "No users found!" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Found ${result.length} matching users.`,
+      data: result
+    });
+  } catch (error) {
+    console.log("Error in search...", error);
+
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Internal server error"
+    });
+  }
+};

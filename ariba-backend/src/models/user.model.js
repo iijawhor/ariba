@@ -19,14 +19,16 @@ const userSchema = new Schema({
     required: true,
     maxlength: [1, "First Name must be atleast 1 character"],
     maxlength: [20, "First Name cannot exceed 20 characrtars"],
-    trim: true
+    trim: true,
+    index: true
   },
   lastName: {
     type: String,
     required: true,
     maxlength: [1, "Last Name must be atleast 1 character"],
     maxlength: [20, "Last Name cannot exceed 20 characrtars"],
-    trim: true
+    trim: true,
+    index: true
   },
   email: {
     type: String,
@@ -34,6 +36,7 @@ const userSchema = new Schema({
     unique: true,
     lowercase: true,
     trim: true,
+    index: true,
     validate(value) {
       if (!validator.isEmail(value)) {
         throw new Error("Invalid Email Address" + value);
@@ -48,6 +51,7 @@ const userSchema = new Schema({
   },
   phoneNumber: {
     type: String,
+    index: true,
     validate: {
       validator: (value) => /^\d{10}$/.test(value),
       message: "Phone number must be 10 digits"
@@ -80,7 +84,8 @@ const userSchema = new Schema({
   userRole: {
     type: String,
     enum: ["superAdmin", "admin", "teacher", "student"],
-    required: true
+    required: true,
+    index: true
   },
   status: {
     type: String,

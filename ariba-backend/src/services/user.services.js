@@ -2,7 +2,6 @@ import * as UserRepositories from "../repositories/user.repositories.js";
 import * as OrganizationRepositories from "../repositories/organization.repositories.js";
 import ApiError from "../utils/ApiError.js";
 import bcrypt from "bcrypt";
-
 const generateAccessAndRefreshToken = async (userId) => {
   try {
     const user = await UserRepositories.findUserById(userId);
@@ -39,7 +38,8 @@ export const signup = async (userData) => {
       (fields) => !fields
     )
   ) {
-    return res.status(400).json({ message: "All fields are required!" });
+    // return res.status(400).json({ message: "All fields are required!" });
+    throw new ApiError("All fileds are required!", 400);
   }
   //   check the user with email already exist or not
   const existingUser = await UserRepositories.findUserByEmail(email);
@@ -110,4 +110,12 @@ export const createUser = async (userData) => {
     organization: organization._id
   });
   return newUser;
+};
+export const searchUser = async (searchFields) => {
+  const { query } = searchFields;
+  if (!query) {
+    throw new ApiError("Please enter query to search!", 400);
+  }
+  const searchResults = await UserRepositories.searchUsers(searchFields);
+  return searchResults;
 };

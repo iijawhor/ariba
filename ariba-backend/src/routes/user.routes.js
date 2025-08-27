@@ -1,5 +1,6 @@
 import {
   createUser,
+  searchUser,
   signinUser,
   signupUser
 } from "../controllers/user.controller.js";
@@ -14,4 +15,5 @@ router
   .route("/create-user")
   .post(verifyJWT, sanitizeRequests, validateRole(["superAdmin"]), createUser);
 router.route("/signin").post(sanitizeRequests, signinUser);
+router.route("/search").get(verifyJWT, sanitizeRequests, searchUser);
 export default router;
