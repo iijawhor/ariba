@@ -12,11 +12,5 @@ export const searchUsers = (queryData) => {
   const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const safeQuery = escapeRegex(query);
 
-  return searchQuery(
-    User,
-    safeQuery,
-    ["firstName", "lastName", "email", "phoneNumber"],
-    limit,
-    page
-  );
+  return searchQuery(User, safeQuery, limit, page);
 };

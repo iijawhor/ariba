@@ -1,10 +1,4 @@
-export const searchQuery = async (
-  model,
-  query,
-  searchFields,
-  limit = 15,
-  page = 1
-) => {
+export const searchQuery = async (model, query, limit = 15, page = 1) => {
   if (!query || query.length < 3) {
     return [];
   }
