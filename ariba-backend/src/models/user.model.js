@@ -133,5 +133,12 @@ userSchema.methods.generateRefreshToken = function () {
     }
   );
 };
+userSchema.index({
+  firstName: "text",
+  lastName: "text",
+  email: "text",
+  phoneNumber: "text",
+  userRole: "text"
+});
 
 export const User = model("User", userSchema);

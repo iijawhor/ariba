@@ -199,3 +199,80 @@ Authorization: Bearer <JWT_TOKEN>
 
 - Add filters (e.g., `role`, `status`)
 - Implement caching (Redis) for repeated queries
+
+# 🔍 Search Functionality Update
+
+This update adds **text search** support in the `User` model and updates the `searchQuery` function to handle search results efficiently.
+
+---
+
+## 📌 Model Update (`User` Schema)
+
+We added a **MongoDB text index** on key fields in the `User` schema to allow efficient searching across multiple attributes.
+
+```js
+// Add text index on relevant fields
+userSchema.index({
+  firstName: "text",
+  lastName: "text",
+  email: "text",
+  phoneNumber: "text",
+  userRole: "text"
+});
+
+// Export model
+export const User = model("User", userSchema);
+```
+
+### ✅ Benefits:
+
+- Allows full-text search across multiple fields (`firstName`, `lastName`, `email`, `phoneNumber`, `userRole`).
+- More efficient than using multiple `$or` conditions.
+- Supports **relevance-based scoring** using MongoDB’s `$meta: "textScore"`.
+
+---
+
+## 📌 `searchQuery` Function Update
+
+We introduced `$meta: "textScore"` to **sort search results by relevance**.
+
+```js
+export const searchQuery = async (query) => {
+  const results = await User.find(
+    { $text: { $search: query } }, // Text search query
+    { score: { $meta: "textScore" } } // Include text score
+  ).sort({ score: { $meta: "textScore" } }); // Sort by relevance
+
+  // Optionally, strip `score` before returning
+  return results.map((user) => {
+    const obj = user.toObject();
+    delete obj.score; // remove internal score if not needed in API response
+    return obj;
+  });
+};
+```
+
+---
+
+### ✅ Benefits:
+
+- **Relevance-based sorting** → best matches appear first.
+- Cleaner API responses (optional: `score` removed before returning).
+- Easy to toggle `score` visibility depending on frontend needs.
+
+---
+
+## 📌 When to Keep `score` in Response?
+
+- Keep `score` if your frontend needs to **display or debug match relevance**.
+- Remove `score` if you only need clean user data sorted by relevance.
+
+---
+
+## 🚀 Example Usage
+
+```js
+const users = await searchQuery("teacher");
+console.log(users);
+// Returns users sorted by relevance
+```

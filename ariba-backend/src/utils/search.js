@@ -9,17 +9,19 @@ export const searchQuery = async (
     return [];
   }
 
-  const searchConditions = searchFields.map((field) => ({
-    [field]: { $regex: query, $options: "i" }
-  }));
-
   const skip = (page - 1) * limit;
 
+  // Use MongoDB text search (requires text index on model fields)
   const searchResults = await model
-    .find({ $or: searchConditions })
+    .find(
+      { $text: { $search: query } }, // text search instead of regex
+      { score: { $meta: "textScore" } } // get relevance score
+    )
+    .sort({ score: { $meta: "textScore" } }) // sort by relevance
     .select("firstName lastName email phoneNumber userRole")
     .skip(skip)
     .limit(limit)
     .lean();
+
   return searchResults;
 };
