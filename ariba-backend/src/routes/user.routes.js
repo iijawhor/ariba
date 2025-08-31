@@ -2,7 +2,9 @@ import {
   createUser,
   searchUser,
   signinUser,
-  signupUser
+  signupUser,
+  logoutUser,
+  refreshAccessToken
 } from "../controllers/user.controller.js";
 import { sanitizeRequests } from "../middlewares/sanitizeData.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -15,5 +17,7 @@ router
   .route("/create-user")
   .post(verifyJWT, sanitizeRequests, validateRole(["superAdmin"]), createUser);
 router.route("/signin").post(sanitizeRequests, signinUser);
-router.route("/search").get(verifyJWT, sanitizeRequests, searchUser);
+router.route("/logout").post(verifyJWT, logoutUser);
+router.route("/refresh-token").post(refreshAccessToken);
+router.route("/search").get(sanitizeRequests, searchUser);
 export default router;
