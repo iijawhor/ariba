@@ -13,88 +13,92 @@ const timelineSchema = new Schema({
   }
 });
 
-const userSchema = new Schema({
-  firstName: {
-    type: String,
-    required: true,
-    maxlength: [1, "First Name must be atleast 1 character"],
-    maxlength: [20, "First Name cannot exceed 20 characrtars"],
-    trim: true,
-    index: true
-  },
-  lastName: {
-    type: String,
-    required: true,
-    maxlength: [1, "Last Name must be atleast 1 character"],
-    maxlength: [20, "Last Name cannot exceed 20 characrtars"],
-    trim: true,
-    index: true
-  },
-  email: {
-    type: String,
-    required: [true, "Email is required!"],
-    unique: true,
-    lowercase: true,
-    trim: true,
-    index: true,
-    validate(value) {
-      if (!validator.isEmail(value)) {
-        throw new Error("Invalid Email Address" + value);
+const userSchema = new Schema(
+  {
+    firstName: {
+      type: String,
+      required: true,
+      minlength: [1, "First Name must be at least 1 character"],
+      maxlength: [20, "First Name cannot exceed 20 characters"],
+      trim: true,
+      index: true
+    },
+    lastName: {
+      type: String,
+      required: true,
+      minlength: [1, "Last Name must be at least 1 character"],
+      maxlength: [20, "Last Name cannot exceed 20 characters"],
+      trim: true,
+      index: true
+    },
+    email: {
+      type: String,
+      required: [true, "Email is required!"],
+      unique: true,
+      lowercase: true,
+      trim: true,
+      index: true,
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("Invalid Email Address" + value);
+        }
       }
-    }
-  },
+    },
 
-  password: {
-    type: String,
-    required: true,
-    validate: [validator.isStrongPassword, "Enter a strong password"]
+    password: {
+      type: String,
+      required: true,
+      validate: [validator.isStrongPassword, "Enter a strong password"]
+    },
+    phoneNumber: {
+      type: String,
+      index: true,
+      validate: {
+        validator: (value) => /^\d{10}$/.test(value),
+        message: "Phone number must be 10 digits"
+      }
+    },
+    organization: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Organization"
+    },
+    dateOfBirth: {
+      type: Date,
+      get: (val) => val?.toISOString().split("T")[0]
+    },
+    dateOfjoining: {
+      type: Date,
+      default: Date.now,
+      get: (val) => val?.toISOString().split("T")[0]
+    },
+    bloodGroup: {
+      type: String
+    },
+    age: { type: Number },
+    gender: { type: String, enum: ["male", "female", "others"] },
+    religion: { type: String, default: "Not willing to share" },
+    address: {
+      type: String,
+      minlength: 3,
+      maxlength: 100
+    },
+    userRole: {
+      type: String,
+      enum: ["superAdmin", "admin", "teacher", "student"],
+      required: true,
+      index: true
+    },
+    status: {
+      type: String,
+      enum: ["active", "inactive"]
+    },
+    department: { type: String, enum: ["science", "arts", "commerce"] },
+    avatar: { type: String, default: "" },
+    timeline: [timelineSchema],
+    refreshToken: { type: String }
   },
-  phoneNumber: {
-    type: String,
-    index: true,
-    validate: {
-      validator: (value) => /^\d{10}$/.test(value),
-      message: "Phone number must be 10 digits"
-    }
-  },
-  organization: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Organization"
-  },
-  dateOfBirth: {
-    type: Date,
-    get: (val) => (val ? val.toLocaleString().split("T")[0] : null)
-  },
-  dateOfjoining: {
-    type: Date,
-    default: Date.now(),
-    get: (val) => (val ? val.toLocaleString().split("T")[0] : null)
-  },
-  bloodGroup: {
-    type: String
-  },
-  age: { type: Number },
-  gender: { type: String, enum: ["male", "female", "others"] },
-  religion: { type: String, default: "Not willing to share" },
-  address: {
-    type: String,
-    minlength: 3,
-    maxlength: 100
-  },
-  userRole: {
-    type: String,
-    enum: ["superAdmin", "admin", "teacher", "student"],
-    required: true,
-    index: true
-  },
-  status: {
-    type: String,
-    enum: ["active", "inactive"]
-  },
-  department: { type: String, enum: ["science", "arts", "commerce"] },
-  avatar: { type: String, default: "" },
-  timeline: [timelineSchema]
-});
+  { timestamps: true }
+);
 userSchema.set("toJSON", { getters: true });
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
@@ -104,7 +108,7 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-userSchema.methods.isPasswordCorrect = async function () {
+userSchema.methods.isPasswordCorrect = async function (password) {
   return await compare(password, this.password);
 };
 
@@ -115,7 +119,7 @@ userSchema.methods.generateAccessToken = function () {
       email: this.email,
       firstName: this.firstName,
       lastName: this.lastName,
-      organizaion: this.organizaion
+      organization: this.organization
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
