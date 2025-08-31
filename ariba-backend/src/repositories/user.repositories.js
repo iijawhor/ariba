@@ -3,10 +3,14 @@ import { searchQuery } from "../utils/search.js";
 export const signup = (data) => User.create(data);
 export const createUser = (data) => User.create(data);
 export const findUserByEmail = (email) => User.findOne({ email });
-
 export const findUserById = (userId) => {
   return User.findById(userId);
 };
+
+export const findUserByIdWithoutSensitive = async (id) => {
+  return await User.findById(id).select("-refreshToken -password");
+};
+
 export const searchUsers = (queryData) => {
   const { query, limit, page } = queryData;
   const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
