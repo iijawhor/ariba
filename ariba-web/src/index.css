@@ -1,2 +1,6 @@
 @import "tailwindcss";
 @plugin "daisyui";
+#root {
+  background-color: #e7eafe; /* your desired color */
+  min-height: 100vh;
+}
