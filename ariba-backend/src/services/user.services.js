@@ -2,7 +2,8 @@ import * as UserRepositories from "../repositories/user.repositories.js";
 import * as OrganizationRepositories from "../repositories/organization.repositories.js";
 import ApiError from "../utils/ApiError.js";
 import bcrypt from "bcrypt";
-const generateAccessAndRefreshToken = async (userId) => {
+import { User } from "../models/user.model.js";
+export const generateAccessAndRefreshToken = async (userId) => {
   try {
     const user = await UserRepositories.findUserById(userId);
 
@@ -22,44 +23,6 @@ const generateAccessAndRefreshToken = async (userId) => {
     );
   }
 };
-
-export const signup = async (userData) => {
-  const {
-    email,
-    firstName,
-    lastName,
-    phoneNumber,
-    password,
-    userRole = "superAdmin"
-  } = userData;
-
-  if (
-    [email, firstName, lastName, phoneNumber, password, userRole].some(
-      (fields) => !fields
-    )
-  ) {
-    // return res.status(400).json({ message: "All fields are required!" });
-    throw new ApiError("All fileds are required!", 400);
-  }
-  //   check the user with email already exist or not
-  const existingUser = await UserRepositories.findUserByEmail(email);
-  console.log("............", existingUser);
-
-  if (existingUser) {
-    throw new ApiError("User with this email already exist", 409);
-  }
-
-  const newUser = await UserRepositories.signup({
-    email,
-    firstName,
-    lastName,
-    phoneNumber,
-    password,
-    userRole
-  });
-  return newUser;
-};
-
 export const signin = async (userData) => {
   const { email, password } = userData;
   const user = await UserRepositories.findUserByEmail(email);
@@ -77,9 +40,40 @@ export const signin = async (userData) => {
   const loggedInUser = await UserRepositories.findUserById(user._id).select(
     "-password -refreshToken"
   );
-  console.log("loggedInUser..", loggedInUser);
-
   return { user: loggedInUser, refreshToken, accessToken };
+};
+export const signup = async (userData) => {
+  const {
+    email,
+    firstName,
+    lastName,
+    phoneNumber,
+    password,
+    userRole = "superAdmin"
+  } = userData;
+
+  if (
+    [email, firstName, lastName, phoneNumber, password, userRole].some(
+      (fields) => !fields
+    )
+  ) {
+    throw new ApiError("All fileds are required!", 400);
+  }
+  //   check the user with email already exist or not
+  const existingUser = await UserRepositories.findUserByEmail(email);
+  if (existingUser) {
+    throw new ApiError("User with this email already exist", 409);
+  }
+
+  const newUser = await UserRepositories.signup({
+    email,
+    firstName,
+    lastName,
+    phoneNumber,
+    password,
+    userRole
+  });
+  return newUser;
 };
 
 export const createUser = async (userData) => {
@@ -111,6 +105,15 @@ export const createUser = async (userData) => {
   });
   return newUser;
 };
+export const logoutUser = async (userId) => {
+  // remove refreshToken
+  const user = await updateUserRefreshToken(userId, undefined);
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  return true;
+};
 export const searchUser = async (searchFields) => {
   const { query } = searchFields;
   if (!query) {
@@ -118,4 +121,52 @@ export const searchUser = async (searchFields) => {
   }
   const searchResults = await UserRepositories.searchUsers(searchFields);
   return searchResults;
+};
+export const refreshAccessToken = async (req, res) => {
+  try {
+    const incomingRefreshToken =
+      req.cookies.refreshToken || req.body.refreshToken;
+
+    if (!incomingRefreshToken) {
+      throw new ApiError("Unauthorized request", 401);
+    }
+
+    const decodedToken = jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
+    const user = await User.findById(decodedToken?._id);
+    if (!user) {
+      throw new ApiError("Invalid refresh token", 401);
+    }
+
+    if (incomingRefreshToken !== user?.refreshToken) {
+      throw new ApiError("Refresh token is expired or used", 401);
+    }
+
+    const options = {
+      httpOnly: true,
+      secure: false
+    };
+
+    const { newRefreshToken, accessToken } =
+      await generateAccessAndRefreshToken(user._id);
+
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", newRefreshToken, options)
+      .json({
+        success: true,
+        message: "Access token refreshed",
+        accessToken,
+        refreshToken: newRefreshToken
+      });
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Failed to refresh access token"
+    });
+  }
 };
