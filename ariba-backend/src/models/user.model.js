@@ -92,6 +92,7 @@ const userSchema = new Schema(
       type: String,
       enum: ["active", "inactive"]
     },
+    education: [{ type: String }],
     department: { type: String, enum: ["science", "arts", "commerce"] },
     avatar: { type: String, default: "" },
     timeline: [timelineSchema],
