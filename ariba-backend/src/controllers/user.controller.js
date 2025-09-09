@@ -36,7 +36,8 @@ export const signinUser = async (req, res) => {
     // Fix: Set secure to false for localhost development
     const options = {
       httpOnly: true,
-      secure: false
+      secure: false, // OK since you're on HTTP locally
+      sameSite: "none" // Accepts cookies in most cross-origin cases on localhost
     };
 
     return res
@@ -45,7 +46,9 @@ export const signinUser = async (req, res) => {
       .cookie("refreshToken", refreshToken, options)
       .json({
         message: "User logged in successfully",
-        user
+        user,
+        accessToken, // include here
+        refreshToken // include here
       });
   } catch (error) {
     return res.status(error.statusCode || 500).json({
@@ -70,6 +73,8 @@ export const logoutUser = async (req, res, next) => {
   }
 };
 export const createUser = async (req, res) => {
+  console.log("Controlerr create....", req.body);
+
   try {
     const newUser = await UserService.createUser(req.body);
     if (!newUser) {
@@ -101,8 +106,6 @@ export const searchUser = async (req, res) => {
       data: result
     });
   } catch (error) {
-    console.log("Error in search...", error);
-
     return res.status(error.statusCode || 500).json({
       success: false,
       message: error.message || "Internal server error"
@@ -121,6 +124,8 @@ export const refreshAccessToken = async (req, res) => {
   try {
     const incomingRefreshToken =
       req.cookies?.refreshToken || req.body.refreshToken;
+    console.log("incomingRefreshToken..........", incomingRefreshToken);
+
     if (!incomingRefreshToken) {
       return res.status(401).json({
         success: false,
@@ -170,5 +175,90 @@ export const refreshAccessToken = async (req, res) => {
       success: false,
       message: error?.message || "Invalid refresh token"
     });
+  }
+};
+export const getUserDetailsById = async (req, res) => {
+  const userId = req.params;
+  console.log(userId, "User id in asdf");
+
+  try {
+    const user = await UserService.getUserDetailsById(userId);
+    return res.status(200).json({
+      message: "User fetched successfully",
+      success: true,
+      data: user
+    });
+  } catch (error) {
+    console.log("ERRRRRRRRRRR.........", error);
+
+    res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Internal Server Error"
+    });
+  }
+};
+export const getUsersByOrganization = async (req, res) => {
+  const { organization, userRole } = req.query;
+
+  try {
+    const users = await UserService.getOrganizationUsers({
+      organizationId: organization,
+      userRole
+    });
+    if (!users) {
+      throw new ApiError("Users not found!", 400);
+    }
+
+    return res.status(200).json({
+      message: "User fetched successfully",
+      success: true,
+      users: users
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Internal Server Error"
+    });
+  }
+};
+export const addTimeline = async (req, res) => {
+  const { title, event, eventDate } = req.body; // timeline object from frontend
+  const { id } = req.params;
+
+  try {
+    const timeline = await UserService.addTimeline(id, title, event, eventDate); // use a different variable name
+    return res.status(200).json({
+      message: "Timeline added successfully",
+      success: true,
+      timeline: timeline.toJSON().timeline
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Internal Server Error"
+    });
+  }
+};
+export const updateUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const updatedUser = await UserService.updateUser(id, req.body);
+    if (!updatedUser) {
+      throw new ApiError("User is not updated!", 400);
+    }
+    return res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      data: updatedUser
+    });
+  } catch (error) {
+    return res
+      .status(error.statusCode || 500)
+      .json({
+        success: false,
+        message: error.message || "Iternal Server Error"
+      });
   }
 };

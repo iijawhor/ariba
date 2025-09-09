@@ -8,7 +8,7 @@ const timelineSchema = new Schema({
   event: { type: String, required: true },
   eventDate: {
     type: Date,
-    default: Date.now(),
+    default: Date.now,
     get: (val) => (val ? val.toLocaleString().split("T")[0] : null)
   }
 });
@@ -74,6 +74,7 @@ const userSchema = new Schema(
     bloodGroup: {
       type: String
     },
+    about: { type: String, minlength: 3, maxlength: 200 },
     age: { type: Number },
     gender: { type: String, enum: ["male", "female", "others"] },
     religion: { type: String, default: "Not willing to share" },
