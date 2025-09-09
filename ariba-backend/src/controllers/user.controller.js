@@ -59,7 +59,7 @@ export const signinUser = async (req, res) => {
 };
 export const logoutUser = async (req, res, next) => {
   try {
-    await UserService.logoutUser(req.User._id);
+    await UserService.logoutUser(req.user._id);
 
     const options = { httpOnly: true, secure: true };
 
@@ -73,8 +73,6 @@ export const logoutUser = async (req, res, next) => {
   }
 };
 export const createUser = async (req, res) => {
-  console.log("Controlerr create....", req.body);
-
   try {
     const newUser = await UserService.createUser(req.body);
     if (!newUser) {
@@ -84,8 +82,6 @@ export const createUser = async (req, res) => {
       .status(200)
       .json({ message: "User is created successfully", user: newUser });
   } catch (error) {
-    console.log(error);
-
     return res.status(error.statusCode || 500).json({
       success: false,
       message: error.message || "Internal server error"
@@ -124,8 +120,6 @@ export const refreshAccessToken = async (req, res) => {
   try {
     const incomingRefreshToken =
       req.cookies?.refreshToken || req.body.refreshToken;
-    console.log("incomingRefreshToken..........", incomingRefreshToken);
-
     if (!incomingRefreshToken) {
       return res.status(401).json({
         success: false,
@@ -179,8 +173,6 @@ export const refreshAccessToken = async (req, res) => {
 };
 export const getUserDetailsById = async (req, res) => {
   const userId = req.params;
-  console.log(userId, "User id in asdf");
-
   try {
     const user = await UserService.getUserDetailsById(userId);
     return res.status(200).json({
@@ -189,8 +181,6 @@ export const getUserDetailsById = async (req, res) => {
       data: user
     });
   } catch (error) {
-    console.log("ERRRRRRRRRRR.........", error);
-
     res.status(error.statusCode || 500).json({
       success: false,
       message: error.message || "Internal Server Error"
@@ -233,8 +223,6 @@ export const addTimeline = async (req, res) => {
       timeline: timeline.toJSON().timeline
     });
   } catch (error) {
-    console.log(error);
-
     return res.status(error.statusCode || 500).json({
       success: false,
       message: error.message || "Internal Server Error"
@@ -254,11 +242,9 @@ export const updateUser = async (req, res) => {
       data: updatedUser
     });
   } catch (error) {
-    return res
-      .status(error.statusCode || 500)
-      .json({
-        success: false,
-        message: error.message || "Iternal Server Error"
-      });
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Internal Server Error"
+    });
   }
 };
