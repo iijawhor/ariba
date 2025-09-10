@@ -38,7 +38,7 @@ const Navbar = ({ activeMenu }) => {
 
           <span className=" tracking-wide uppercase hidden md:inline text-xs text-[#313234]">
             {user?.organization ? (
-              ""
+              user.organization
             ) : (
               <span>Kasbagola f. o. b model high madrasha</span>
             )}
@@ -105,10 +105,12 @@ const Navbar = ({ activeMenu }) => {
         <div className="dropdown dropdown-end">
           <div className="w-fit flex items-center gap-1 font-semibold text-gray-900">
             <div className="items-end text-end hidden md:inline">
-              <h5 className="text-xs font-[sans-serif] text-[#313234]">
+              <h5 className="text-xs font-[sans-serif] uppercase  text-[#313234]">
                 {user?.firstName + " " + user?.lastName}
               </h5>
-              <p className="text-xs text-[#313234]">{user?.userRole}</p>
+              <p className="text-xs capitalize tracking-wide text-[#313234]">
+                {user?.userRole}
+              </p>
             </div>
             <div
               tabIndex={0}
