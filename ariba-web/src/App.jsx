@@ -2,26 +2,15 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { Navbar, Sidebar } from "./allFiles";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import axios from "axios";
 function App() {
-  // const getCurrentUser = async () => {
+  const loggedInUser = useSelector((state) => state.user.loggedInUser);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!loggedInUser?.accessToken) {
+      navigate("/signin");
+    }
+  }, []);
 
-  //   try {
-
-  //     const res = await axios.post(
-  //       "http://localhost:7000/api/v1/user/refresh-token",
-  //       {},
-  //       { withCredentials: true }
-  //     );
-
-  //     const accessToken = res.data.accessToken;
-  //     console.log("Access token refreshed:", accessToken);
-  //     return accessToken;
-  //   } catch (error) {
-  //     console.log("❌ Request failed:", error.response?.data || error.message);
-  //     throw error;
-  //   }
-  // };
   const sidebar = [
     {
       name: "dashboard",
@@ -200,15 +189,15 @@ function App() {
   const [activeMenu, setActiveMenu] = useState("dashboard");
   return (
     <div className="bg-[#E7EAFE] min-h-screen">
-      <div className="min-h-screen p-1 md:p-5 flex gap-2 md:gap-5 text-black">
+      <div className="min-h-screen p-1 md:p-5 flex md:gap-5 gap-1 md:gap-3 text-black">
         <div className=" flex-1">
           <Sidebar sidebar={sidebar} setActiveMenu={setActiveMenu} />
         </div>
-        <div className="borde border-black flex-6 flex flex-col gap-1">
+        <div className="borde border-black flex-6 flex flex-col gap-3">
           <div className="">
             <Navbar activeMenu={activeMenu} />
           </div>
-          <div className="">
+          <div className="flex-1 overflow-hidden">
             <Outlet />
           </div>
         </div>
