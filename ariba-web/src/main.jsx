@@ -5,7 +5,7 @@ import { Provider } from "react-redux";
 import { createBrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
-import { Dashboard, LoginPage } from "./allFiles.jsx";
+import { Dashboard, LoginPage, StudentPage, TeacherPage } from "./allFiles.jsx";
 import { store } from "./store/store.js";
 const router = createBrowserRouter([
   {
@@ -22,11 +22,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/teachers",
-        element: "This page will contain teacher data"
+        element: <TeacherPage />
       },
       {
         path: "/students",
-        element: "This page will contain  students data"
+        element: <StudentPage />
       },
       {
         path: "/attendance",
