@@ -13,6 +13,20 @@ import CreateUser from "./components/CreateUser.jsx";
 import TeacherDetails from "./components/Teacher/teacherDetails.jsx";
 import TeacherPage from "./pages/TeacherPage.jsx";
 import TeacherList from "./components/Teacher/TeacherList.jsx";
+import AttendancePage from "./pages/AttendancePage.jsx";
+import FilterDates from "./components/Attendance/FilterDates.jsx";
+import UserFilter from "./components/Attendance/UserFilter.jsx";
+import Regularization from "./components/Attendance/Regularization.jsx";
+import Attendance from "./components/Attendance/Attendance.jsx";
+import Card from "./components/card/Card.jsx";
+import MySpace from "./pages/MySpace.jsx";
+import Actions from "./components/MySpace/Actions.jsx";
+import { LiveClock } from "./components/helpers/LiveClock.jsx";
+import Timings from "./components/MySpace/Timings.jsx";
+import AttendanceStats from "./components/MySpace/AttendanceStats.jsx";
+import AttendanceList from "./components/MySpace/AttendanceList.jsx";
+import { getISTDate, getISTTime } from "./utils/formatIST.js";
+import { calculateGrossHours } from "./utils/calculateGrossHours.jsx";
 export {
   Dashboard,
   Sidebar,
@@ -28,5 +42,20 @@ export {
   CreateUser,
   TeacherPage,
   TeacherDetails,
-  TeacherList
+  TeacherList,
+  AttendancePage,
+  FilterDates,
+  UserFilter,
+  Regularization,
+  Attendance,
+  Card,
+  MySpace,
+  Actions,
+  LiveClock,
+  AttendanceList,
+  AttendanceStats,
+  Timings,
+  getISTDate,
+  getISTTime,
+  calculateGrossHours
 };
