@@ -47,7 +47,7 @@ const Navbar = ({ activeMenu }) => {
       </div>
       <div className="flex gap-3  pl-1 items-center justify-center">
         <div className="flex flex-row items-center h-fit gap-2">
-          <label className="border bg-[#eef1ffff] border-[#eef1ffff] lg:w-70 p-0.5 rounded-sm outline-none flex items-center gap-1">
+          <label className="border bg-[#eef1ffff] border-[#2C80FF] p-1 lg:w-70 p-0.5 rounded-full outline-none flex items-center gap-1">
             <input
               type="search"
               value={searchQuery}
