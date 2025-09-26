@@ -74,9 +74,82 @@ export const gettAttendanceByUser = createAsyncThunk(
       const message =
         error.response?.data?.message || // backend-sent message
         error.message || // network or other error
-        "Failed to fetched successfully"; // fallback
+        "Failed to fetched attendance"; // fallback
 
       return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+// my space ends here ---
+// attendance page starts here  --
+export const getUsersByRole = createAsyncThunk(
+  "attendance/getUserByRoleUrl",
+  async ({ getUserByRoleUrl, userRole, accessToken }, thunkAPI) => {
+    try {
+      const response = await axios.get(`${getUserByRoleUrl}/${userRole}`, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      });
+      return response.data;
+    } catch (error) {
+      console.log("Error in getUserByRoleUrl Slice...", error);
+
+      const message =
+        error.response.data?.message ||
+        error?.message ||
+        `Failed to fetched ${userRole}`;
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+export const getAttendanceByUserRole = createAsyncThunk(
+  "attendance/getAttendanceByUserRole",
+  async (
+    { gettAttendanceByUserRoleUrl, userRole, fromDate, toDate, accessToken },
+    thunkAPI
+  ) => {
+    try {
+      const response = await axios.get(
+        `${gettAttendanceByUserRoleUrl}/${userRole}`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+          params: { fromDate, toDate }
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.log("Error in getAttendanceByUserRole Slice...", error);
+
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        `Failed to fetch attendance for ${userRole}`;
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const getPresentUsersByRole = createAsyncThunk(
+  "attendance/getPresentUsersByRole",
+  async (
+    { getPresentUsersByRoleUrl, fromDate, toDate, userRole, accessToken },
+    thunkAPI
+  ) => {
+    try {
+      const response = await axios.get(
+        `${getPresentUsersByRoleUrl}/${userRole}`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+          params: { fromDate, toDate }
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.log("Error in getPresentUsers Slice...", error);
+      const msg =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to fetch present users";
+      return thunkAPI.rejectWithValue(msg);
     }
   }
 );
@@ -87,7 +160,9 @@ const attendanceSlice = createSlice({
     attendanceRecord: null,
     loading: false,
     error: null,
-    attendanceByUser: null
+    attendanceByUser: null,
+    users: null,
+    presentUsers: null
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -129,6 +204,48 @@ const attendanceSlice = createSlice({
         state.attendanceByUser = action.payload;
       })
       .addCase(gettAttendanceByUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+    // get users by Role
+    builder
+      .addCase(getUsersByRole.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getUsersByRole.fulfilled, (state, action) => {
+        state.loading = false;
+        state.users = action.payload;
+      })
+      .addCase(getUsersByRole.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+    // get Attendance by userRole
+    builder
+      .addCase(getAttendanceByUserRole.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAttendanceByUserRole.fulfilled, (state, action) => {
+        state.loading = false;
+        state.attendanceRecord = action.payload;
+      })
+      .addCase(getAttendanceByUserRole.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+    // get present users by userRole
+    builder
+      .addCase(getPresentUsersByRole.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getPresentUsersByRole.fulfilled, (state, action) => {
+        state.loading = false;
+        state.presentUsers = action.payload;
+      })
+      .addCase(getPresentUsersByRole.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
