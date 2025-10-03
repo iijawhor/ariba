@@ -13,7 +13,8 @@ import {
   MySpace,
   Payment,
   StudentPage,
-  TeacherPage
+  TeacherPage,
+  SettingsPage
 } from "./allFiles.jsx";
 import { store } from "./store/store.js";
 const router = createBrowserRouter([
@@ -51,7 +52,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/settings",
-        element: "This page will contain  settings data"
+        element: <SettingsPage />
       },
       {
         path: "/profile",

@@ -34,7 +34,7 @@ import AssignSubjectModal from "./academic/AssignSubject.jsx";
 import AssignTeacherModal from "./academic/AssignTeacher.jsx";
 import ScheduleModal from "./academic/Schedule.jsx";
 import AcademicPage from "./pages/AcademicPage.jsx";
-
+import SettingsPage from "./pages/Settings.jsx";
 export {
   Dashboard,
   Sidebar,
@@ -72,5 +72,6 @@ export {
   SubjectModal,
   AssignSubjectModal,
   AssignTeacherModal,
-  ScheduleModal
+  ScheduleModal,
+  SettingsPage
 };
