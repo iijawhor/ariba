@@ -1,16 +1,64 @@
 import React from "react";
 
-const Card = ({ style, present, name, details }) => {
+const Card = ({
+  style,
+  present,
+  percentage,
+  title,
+  totalUsers,
+  totalUserStyle
+}) => {
   return (
-    <div className="card  w-full bg-white card-sm rounded-sm">
-      <div className={`${style} card-body`}>
-        <h2 className="card-title">Small Card</h2>
-        <p>
-          A card component has a figure, a body part, and inside body there are
-          title and actions parts
-        </p>
-        <p>{present ? present : null}</p>
+    <div className="w-full bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition p-4 md:p-5 flex flex-col justify-between">
+      {/* Title */}
+      {title && (
+        <h2 className="text-sm md:text-base font-semibold text-[#2C80FF] uppercase mb-3">
+          {title}
+        </h2>
+      )}
+
+      {/* Stats */}
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0">
+        {/* Left Info */}
+        <div className="flex flex-col gap-2">
+          {totalUsers && (
+            <p
+              className={`${
+                totalUserStyle || "text-sm"
+              } text-gray-600 font-medium`}
+            >
+              Total {title}:{" "}
+              <span className="text-blue-600 font-bold ml-1">{totalUsers}</span>
+            </p>
+          )}
+          {present && (
+            <p
+              className={`${
+                totalUserStyle || "text-sm"
+              } text-gray-600 font-medium`}
+            >
+              Was Present:{" "}
+              <span className="text-blue-600 font-bold ml-1">
+                {present || 0}
+              </span>
+            </p>
+          )}
+        </div>
+
+        {/* Right Circle / Percentage */}
+        {percentage !== undefined && (
+          <div className="relative w-20 h-20 md:w-24 md:h-24 flex items-center justify-center">
+            <div className="w-full h-full rounded-full border-4 border-blue-100 flex items-center justify-center">
+              <span className="text-blue-600 text-lg md:text-xl font-bold">
+                {percentage}%
+              </span>
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Optional extra content area */}
+      {style && <div className={`${style} mt-3`}></div>}
     </div>
   );
 };

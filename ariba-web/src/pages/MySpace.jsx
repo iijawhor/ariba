@@ -20,60 +20,61 @@ const MySpace = () => {
 
   const headings = ["date", "gross hours", "login", "logout", "log"];
   return (
-    <div className="h-full p- flex flex-col gap-1">
-      <div className="">
-        {/* <div className="card  w-full bg-white !p-1 card-sm rounded-sm">
-          <div className=" card-body"></div>
-        </div> */}
-      </div>
-      <div className="flex gap-5">
-        <div className="w-full">
-          <h1 className=" ml-2 font-[sans-serif] text-md tracking-wide text-gray-800">
+    <div className="flex flex-col rounded-lg gap-4 p-2 md:p-2 lg:p-2 h-full bg-gray-50 font-sans">
+      {/* Stats Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white rounded-lg shadow p-2">
+          <h2 className="text-gray-900 font-bold font-[sans-serif] text-lg mb-3">
             Attendance Stats
-          </h1>
-          <AttendanceStats />
+          </h2>
+          <AttendanceStats className="text-gray-700 text-sm" />
         </div>
 
-        <div className="w-full">
-          <h1 className=" ml-2 font-[sans-serif] text-md tracking-wide text-gray-800">
+        <div className="bg-white rounded-lg shadow p-2">
+          <h2 className="text-gray-900 font-bold font-[sans-serif] text-lg mb-3">
             Timings
-          </h1>
-          <Timings />
+          </h2>
+          <Timings className="text-gray-700 text-sm" />
         </div>
 
-        <div className="w-full">
-          <h1 className=" ml-2 font-[sans-serif] text-md tracking-wide text-gray-800">
+        <div className="bg-white rounded-lg shadow p-2">
+          <h2 className="text-gray-900 font-bold font-[sans-serif] text-lg mb-3">
             Actions
-          </h1>
-          <Actions />
+          </h2>
+          <Actions className="text-gray-700 text-sm" />
         </div>
       </div>
-      {/* attendnce lists */}
-      <div className="bg-white rounded-md w-full h-90 flex flex-col gap-1">
-        <div className="flex gap-3 p-1 items-center">
-          <h1 className=" font-[sans-serif] text-md tracking-wide text-gray-800">
-            Attendance
-          </h1>
-          <div className="h-fit  ">
-            <p className="font-[sans-serif] border border-gray-200 pl-1 pr-1 rounded-sm text-[#2C80FF] cursor-pointer  text-xs text-center h-fit">
-              September
-            </p>
-          </div>
+
+      {/* Attendance List Section */}
+      <div className="bg-white rounded-lg h-full shadow w-full flex flex-col overflow-hidden">
+        <div className="flex justify-between items-center p-1 border-b border-gray-200">
+          <h2 className="text-gray-900 font-bold text-lg">Attendance</h2>
+          <p className="bg-blue-100 text-blue-600 px-4 py-1 rounded text-sm cursor-pointer font-medium">
+            September
+          </p>
         </div>
-        <div className="overflow-auto h-full flex flex-col gap-2">
-          <div className="card  w-full bg-white !p-1 card-sm rounded-sm">
-            <div className="flex justify-between pl-10 pr-10">
-              {headings.map((heading) => (
-                <span className="text-xs text-gray-500 uppercase font-[sans-serif]">
+
+        <div className="overflow-x-auto h-full">
+          <div className="min-w-full flex flex-col gap-1">
+            {/* Headings */}
+            <div className="flex justify-between bg-gray-100 px-4 py-2 text-xs uppercase text-gray-600 font-medium tracking-wide">
+              {headings.map((heading, index) => (
+                <span key={index} className="whitespace-nowrap">
                   {heading}
                 </span>
               ))}
             </div>
-          </div>
-          <div className=" h-full flex-col gap-1">
-            {attendance?.attendance?.map((attendance) => (
-              <AttendanceList attendance={attendance} />
-            ))}
+
+            {/* Attendance Items */}
+            <div className="flex flex-col divide-y divide-gray-200">
+              {attendance?.attendance?.map((att, index) => (
+                <AttendanceList
+                  key={index}
+                  attendance={att}
+                  className="text-gray-700 text-sm"
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>

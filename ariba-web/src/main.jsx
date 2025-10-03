@@ -6,10 +6,12 @@ import { createBrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
 import {
+  AcademicPage,
   AttendancePage,
   Dashboard,
   LoginPage,
   MySpace,
+  Payment,
   StudentPage,
   TeacherPage
 } from "./allFiles.jsx";
@@ -41,11 +43,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/academic",
-        element: "This page will contain  academic data"
+        element: <AcademicPage />
       },
       {
         path: "/payment",
-        element: "This page will contain  payment data"
+        element: <Payment />
       },
       {
         path: "/settings",

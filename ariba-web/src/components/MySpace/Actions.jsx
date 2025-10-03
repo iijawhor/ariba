@@ -2,6 +2,7 @@ import { useState } from "react";
 import { LiveClock } from "../../allFiles";
 import { useDispatch, useSelector } from "react-redux";
 import { markClockIn, markClockOut } from "../../store/slices/atttendanceSlice";
+
 const Actions = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
@@ -16,9 +17,10 @@ const Actions = () => {
     "http://localhost:7000/api/v1/attendance/create-login";
   const attendanceUrlLogout =
     "http://localhost:7000/api/v1/attendance/create-logout";
+
   const handleLogin = () => {
-    if (isLoggedIn === false) {
-      setIsLoggedIn((prev) => !prev);
+    if (!isLoggedIn) {
+      setIsLoggedIn(true);
       dispatch(markClockIn({ attendanceUrlLogin, accessToken, userId }));
     } else {
       setShowLogoutPopup(true);
@@ -26,8 +28,8 @@ const Actions = () => {
   };
 
   const confirmLogout = () => {
-    setIsLoggedIn((prev) => !prev);
-    setShowLogoutPopup((prev) => !prev);
+    setIsLoggedIn(false);
+    setShowLogoutPopup(false);
     dispatch(
       markClockOut({ attendanceUrlLogout, accessToken, userId, attendanceId })
     );
@@ -38,45 +40,59 @@ const Actions = () => {
   };
 
   return (
-    <div className="card p-2 h-45 border border-gray-200 w-full bg-white card-sm rounded-md">
-      <div className=" flex h-full items-center justify-between">
-        <div className=" pl-3 pr-3 p-1 rounded-sm">
+    <div className="flex flex-col justify-between h-full w-full relative overflow-hidden">
+      {/* Clock and Button Section */}
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 flex-1 overflow-hidden">
+        {/* Live Clock */}
+        <div className="flex-1 min-w-0">
           <LiveClock />
         </div>
-        <div className=" flex flex-col gap-1 items-center">
-          <div className="border p-1 w-30 text-center border-blue-200 rounded-sm">
-            <button
-              onClick={handleLogin}
-              className="text-sm text-[#2C80FF] p-0 font-semibold cursor-pointer"
-            >
-              {isLoggedIn ? "Web Clock Out" : "Web Clock In"}
-            </button>
-            {showLogoutPopup ? (
-              <div className="bg-gray-100 shadow-md flex justify-between p-2 absolute w-40 rounded-sm right-2 top-18  h-10">
-                <button
-                  className="text-[#2C80FF] rounded-sm border border-blue-400 pr-1 pl-1 cursor-pointer font-[sans-serif] uppercase text-xs tracking-wide"
-                  onClick={cancelLogout}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="text-red-500 border pl-1 pr-1 rounded-sm border-red-400 cursor-pointer font-[sans-serif] uppercase text-xs tracking-wide"
-                  onClick={confirmLogout}
-                >
-                  logout
-                </button>
-              </div>
-            ) : null}
-          </div>
-          <p className="text-xs font-[sans-serif] flex gap-1">
-            <span className="capitalize text-gray-600">logged in at :</span>
-            <span className="lowercase font-semibold text-blue-400">
-              10:00 am
-            </span>
-          </p>
+
+        {/* Clock In/Out Button */}
+        <div className="flex flex-col items-center relative min-w-[120px]">
+          <button
+            onClick={handleLogin}
+            className="px-4 py-2 text-sm font-semibold text-white bg-[#2C80FF] rounded hover:bg-blue-600 transition w-full text-center"
+          >
+            {isLoggedIn ? "Web Clock Out" : "Web Clock In"}
+          </button>
+
+          {/* Logout Confirmation Popup */}
+          {showLogoutPopup && (
+            <div className="absolute top-full mt-2 right-0 bg-white border border-gray-300 shadow-lg rounded p-2 w-40 z-10 flex justify-between">
+              <button
+                className="px-2 py-1 border border-blue-400 text-blue-500 rounded text-xs font-semibold uppercase hover:bg-blue-50 transition"
+                onClick={cancelLogout}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-2 py-1 border border-red-400 text-red-500 rounded text-xs font-semibold uppercase hover:bg-red-50 transition"
+                onClick={confirmLogout}
+              >
+                Logout
+              </button>
+            </div>
+          )}
+
+          {/* Logged in time */}
+          {isLoggedIn && (
+            <p className="mt-2 text-xs text-gray-600 flex flex-col items-center truncate text-center">
+              <span className="capitalize">Logged in at:</span>
+              <span className="text-[#2C80FF] font-semibold lowercase">
+                10:00 am
+              </span>
+            </p>
+          )}
         </div>
       </div>
-      <p>{attendanceError?.code === 11000 ? "Already Logged In" : null}</p>
+
+      {/* Error Message */}
+      {attendanceError?.code === 11000 && (
+        <p className="mt-2 text-xs text-red-500 font-medium truncate">
+          Already Logged In
+        </p>
+      )}
     </div>
   );
 };

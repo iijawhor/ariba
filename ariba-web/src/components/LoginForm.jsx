@@ -37,78 +37,77 @@ export const LoginForm = () => {
   };
 
   return (
-    <form className="flex flex-col gap-3 items-center">
+    <form className="flex flex-col gap-4 items-center w-full">
+      {/* Email Input */}
       <div className="flex gap-3 flex-col items-center w-full">
-        <div className="flex flex-col gap-1 text-center">
-          <div className="">.</div>
-          <h1 className="font-semibold font-[sans-serif] tracking-wider">
-            Admin
-          </h1>
-          <p className="text-sm font-[sans-serif] tracking-wide ">
-            Enter your crendentials to access the platform
-          </p>
-        </div>
-        <label className="border bg-[#eef1ffff] border-[#2C80FF] lg:w-70 p-1 rounded-full outline-none flex items-center gap-1">
+        <label className="border border-blue-400 bg-white/20 backdrop-blur-sm w-full rounded-full flex items-center px-4 py-2 gap-3 focus-within:ring-2 focus-within:ring-blue-400 transition">
+          {/* Email Icon */}
           <svg
-            className="h-[1.2em] opacity-50"
+            className="h-5 w-5 text-blue-600 opacity-80"
             xmlns="http://www.w3.org/2000/svg"
+            fill="none"
             viewBox="0 0 24 24"
+            stroke="currentColor"
           >
-            <g
-              strokeLinejoin="round"
+            <path
               strokeLinecap="round"
-              strokeWidth="2.5"
-              fill="none"
-              stroke="currentColor"
-            >
-              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </g>
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M16 12H8m8 0l-4-4m0 8l4-4m-4 4v-8"
+            />
           </svg>
           <input
             type="text"
             name="email"
             value={loginCredentials.email}
-            onChange={(e) => handleChange(e)}
+            onChange={handleChange}
             required
             placeholder="User ID or Email"
-            className="outline-none  w-full text-gray-800 text-xs p-1 font-[sans-serif] tracking-wide"
+            className="outline-none w-full text-blue-900 bg-transparent placeholder-blue-400 text-sm"
           />
         </label>
       </div>
-      <div className="">
-        {" "}
-        <label className="border bg-[#eef1ffff] border-[#2C80FF] lg:w-70 p-1  rounded-full outline-none flex items-center gap-1">
+
+      {/* Password Input */}
+      <div className="flex gap-3 flex-col items-center w-full">
+        <label className="border border-blue-400 bg-white/20 backdrop-blur-sm w-full rounded-full flex items-center px-4 py-2 gap-3 focus-within:ring-2 focus-within:ring-blue-400 transition">
+          {/* Lock Icon */}
           <svg
-            className="h-[1em] opacity-50"
+            className="h-5 w-5 text-blue-600 opacity-80"
             xmlns="http://www.w3.org/2000/svg"
+            fill="none"
             viewBox="0 0 24 24"
+            stroke="currentColor"
           >
-            <g
-              strokeLinejoin="round"
+            <path
               strokeLinecap="round"
-              strokeWidth="2.5"
-              fill="none"
-              stroke="currentColor"
-            >
-              <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path>
-              <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
-            </g>
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 11c1.104 0 2-.896 2-2V7a2 2 0 1 0-4 0v2c0 1.104.896 2 2 2z"
+            />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 11h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2z"
+            />
           </svg>
           <input
             type="password"
             name="password"
             value={loginCredentials.password}
-            onChange={(e) => handleChange(e)}
+            onChange={handleChange}
             required
             placeholder="Password"
-            className="outline-none  w-full text-gray-800 text-xs p-1 font-[sans-serif] tracking-wide"
+            className="outline-none w-full text-blue-900 bg-transparent placeholder-blue-400 text-sm"
           />
         </label>
       </div>
+
+      {/* Login Button */}
       <button
         onClick={handleLogin}
-        className="bg-[#2C80FF] text-[#e7eafe] font-[sans-serif] tracking-wide cursor-pointer  w-30 p-1 rounded-full"
+        className="w-full py-2 mt-2 rounded-full bg-gradient-to-r from-blue-600 to-blue-400 text-white font-semibold hover:from-blue-700 hover:to-blue-500 transition"
       >
         Login
       </button>

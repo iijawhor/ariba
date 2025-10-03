@@ -1,28 +1,42 @@
 import { calculateGrossHours, getISTDate, getISTTime } from "../../allFiles";
-const AttendanceList = (attendance) => {
-  const loggedInDate = getISTDate(attendance.attendance.loggedInAt);
-  const loggedInTime = getISTTime(attendance.attendance.loggedInAt);
-  const loggedOutTime = getISTTime(attendance.attendance.loggedOutAt);
+
+const AttendanceList = ({ attendance }) => {
+  const loggedInDate = getISTDate(attendance.loggedInAt);
+  const loggedInTime = getISTTime(attendance.loggedInAt);
+  const loggedOutTime = getISTTime(attendance.loggedOutAt);
   const grossHours = calculateGrossHours(loggedInTime, loggedOutTime);
+
   return (
-    <div className="bg-gray-100 text-center flex items-center p-2  flex justify-between pl-2 pr-10">
-      <p className="text-sm font-[sans-serif] text-gray-600 tracking-wide">
+    <div className="flex flex-col md:flex-row items-center justify-between bg-white rounded-md shadow-sm p-3 mb-2 hover:bg-blue-50 transition overflow-hidden">
+      {/* Date */}
+      <p className="text-sm md:w-1/5 font-[sans-serif] text-gray-800 truncate">
         {loggedInDate}
       </p>
-      <p className="text-sm font-[sans-serif] text-gray-600 tracking-wide">
+
+      {/* Gross Hours */}
+      <p className="text-sm md:w-1/5 font-[sans-serif] text-gray-700 font-medium text-center">
         {grossHours}
       </p>
-      <p className="text-sm font-[sans-serif] text-gray-600 tracking-wide">
+
+      {/* Login Time */}
+      <p className="text-sm md:w-1/5 font-[sans-serif] text-gray-700 text-center truncate">
         {loggedInTime}
       </p>
-      <p className="text-sm font-[sans-serif] text-gray-600 tracking-wide">
+
+      {/* Logout Time */}
+      <p className="text-sm md:w-1/5 font-[sans-serif] text-gray-700 text-center truncate">
         {loggedOutTime}
-      </p>{" "}
-      <button aria-label="More actions" className="cursor-pointer">
+      </p>
+
+      {/* Action Button */}
+      <button
+        aria-label="More actions"
+        className="md:w-1/5 flex justify-center items-center p-1 hover:bg-gray-200 rounded transition mt-2 md:mt-0"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
+          width="20"
+          height="20"
           fill="currentColor"
           viewBox="0 0 24 24"
         >

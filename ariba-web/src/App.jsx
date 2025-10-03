@@ -188,19 +188,25 @@ function App() {
   ];
   const [activeMenu, setActiveMenu] = useState("dashboard");
   return (
-    <div className="bg-[#E7EAFE] min-h-screen">
-      <div className="min-h-screen p-1 md:p-5 flex md:gap-5 gap-1 md:gap-3 text-black">
-        <div className=" flex-1">
-          <Sidebar sidebar={sidebar} setActiveMenu={setActiveMenu} />
-        </div>
-        <div className="borde border-black flex-6 flex flex-col gap-3">
-          <div className="">
-            <Navbar activeMenu={activeMenu} />
-          </div>
-          <div className="flex-1 overflow-hidden">
+    <div className="bg-[#E7EAFE] p-5 pr-2 min-h-screen flex">
+      {/* Sidebar (Fixed) */}
+      <aside className="hidden md:flex flex-col p-5 w-56 fixed left-0 top-0 h-full z-20">
+        <Sidebar sidebar={sidebar} setActiveMenu={setActiveMenu} />
+      </aside>
+
+      {/* Main Content Area */}
+      <div className="flex-1 md:ml-56 flex gap-1 flex-col min-h-screen">
+        {/* Navbar */}
+        <header className="sticky top-0 rounded-full z-10 bg-[#F9FAFF] shadow-sm">
+          <Navbar activeMenu={activeMenu} />
+        </header>
+
+        {/* Dashboard / Pages */}
+        <main className="flex-1 rounded-lg overflow-hidden flex flex-col">
+          <div className="flex-1 overflow-y-auto ">
             <Outlet />
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );
