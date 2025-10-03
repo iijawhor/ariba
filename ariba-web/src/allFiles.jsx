@@ -27,6 +27,14 @@ import AttendanceStats from "./components/MySpace/AttendanceStats.jsx";
 import AttendanceList from "./components/MySpace/AttendanceList.jsx";
 import { getISTDate, getISTTime } from "./utils/formatIST.js";
 import { calculateGrossHours } from "./utils/calculateGrossHours.jsx";
+import Payment from "./pages/Payment.jsx";
+import ClassModal from "./academic/ClassModal.jsx";
+import SubjectModal from "./academic/SubjectModal.jsx";
+import AssignSubjectModal from "./academic/AssignSubject.jsx";
+import AssignTeacherModal from "./academic/AssignTeacher.jsx";
+import ScheduleModal from "./academic/Schedule.jsx";
+import AcademicPage from "./pages/AcademicPage.jsx";
+
 export {
   Dashboard,
   Sidebar,
@@ -57,5 +65,12 @@ export {
   Timings,
   getISTDate,
   getISTTime,
-  calculateGrossHours
+  calculateGrossHours,
+  Payment,
+  AcademicPage,
+  ClassModal,
+  SubjectModal,
+  AssignSubjectModal,
+  AssignTeacherModal,
+  ScheduleModal
 };
