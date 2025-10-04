@@ -10,7 +10,10 @@ export const findUserByIdWithoutSensitive = async (id) => {
   return await User.findById(id).select("-refreshToken -password");
 };
 export const findUserById = (userId) => {
-  return User.findById(userId);
+  return User.findById(userId).populate({
+    path: "organization",
+    select: "name email status phoneNumber"
+  });
 };
 
 export const searchUsers = (queryData) => {
