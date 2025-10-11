@@ -7,7 +7,25 @@ const TimelineModal = ({ id, setTimelineModal }) => {
     eventDate: "",
     event: ""
   });
-
+  const inputs = [
+    {
+      name: "title",
+      type: "text",
+      placeholder: "Timeline Title eg: Enrollment",
+      required: true
+    },
+    {
+      name: "event",
+      type: "text",
+      placeholder: "Timeline Event : eg - Enrolled on",
+      required: true
+    },
+    {
+      name: "eventDate",
+      type: "date",
+      required: true
+    }
+  ];
   const onHandleChange = (e) => {
     const { name, value } = e.target;
     setTimelineData((prev) => ({
@@ -58,39 +76,25 @@ const TimelineModal = ({ id, setTimelineModal }) => {
 
       <div>
         <form
-          action=""
           onSubmit={handleAddTimeline}
-          className="w-full flex flex-col gap-1"
+          className="w-full flex flex-col gap-3 bg-white p-4 rounded-lg shadow-sm border border-gray-200"
         >
-          <input
-            type="text"
-            name="title"
-            onChange={(e) => onHandleChange(e)}
-            value={timelineData.title}
-            className="border-gray-200 border p-2 rounded-sm w-full text-xs font-[sans-serif] outline-none"
-            required
-            placeholder="Timeline Title eg: Enrollment"
-          />
-          <input
-            type="text"
-            name="event"
-            onChange={(e) => onHandleChange(e)}
-            value={timelineData.event}
-            className="border-gray-200 border p-2 rounded-sm w-full text-xs font-[sans-serif] outline-none"
-            required
-            placeholder="Timeline Event : eg - Enrolled on"
-          />
-          <input
-            type="date"
-            name="eventDate"
-            onChange={(e) => onHandleChange(e)}
-            value={timelineData.eventDate}
-            required
-            className="border-gray-200 border p-2 rounded-sm w-full text-xs font-[sans-serif] outline-none"
-          />
+          {inputs.map(({ name, type, placeholder, required }) => (
+            <input
+              key={name}
+              name={name}
+              type={type}
+              onChange={onHandleChange}
+              value={timelineData[name]}
+              placeholder={placeholder}
+              required={required}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm font-sans text-gray-800 outline-none focus:ring-2 focus:ring-[#2C80FF] focus:border-[#2C80FF] transition"
+            />
+          ))}
+
           <button
             type="submit"
-            className=" hover:border-none hover:bg-[#2C80FF] hover:text-white p-1 rounded-sm border border-gray-200 cursor-pointer font-[sans-serif] text-sm tracking-wide text-[#2C80FF]"
+            className="w-full bg-white cursor-pointer border border-[#2C80FF] text-[#2C80FF] hover:bg-[#2C80FF] hover:text-white transition font-sans text-sm py-2 rounded-md tracking-wide"
           >
             Add Timeline
           </button>
