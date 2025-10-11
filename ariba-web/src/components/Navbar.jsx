@@ -31,7 +31,7 @@ const Navbar = ({ activeMenu }) => {
             {activeMenu}
           </span>
           <span className="hidden md:inline h-4 w-[1px] bg-[#2C80FF]"></span>
-          <span className="hidden md:inline text-gray-600 text-sm">
+          <span className="hidden md:inline  text-[#4B5563] tracking-wider uppercase text-xs">
             {user?.organization?.name || " Default organization ARIBA"}
           </span>
         </p>

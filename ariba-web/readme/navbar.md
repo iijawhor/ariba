@@ -124,3 +124,42 @@ function App() {
 
 - **Notification System:**
   Replace the static notification icon with dynamic data reflecting actual notifications.
+
+---
+
+### **Updated Parts Documentation**
+
+1. **Left Section – Organization Name Styling**
+
+   ```diff
+
+   ```
+
+- <span className="hidden md:inline  text-[#4B5563] tracking-wider uppercase text-xs">
+- {user?.organization?.name || " Default organization ARIBA"}
+- </span>
+
+* <span className="hidden md:inline text-gray-600 text-sm">
+* {user?.organization?.name || " Default organization ARIBA"}
+* </span>
+   ```
+   **Update:**  
+   - Changed text color from `#4B5563` to `text-gray-600`.
+   - Changed font size from `text-xs` with `tracking-wider uppercase` to `text-sm`.
+   - Removed `uppercase` and `tracking-wider` classes for simpler styling.
+
+2. **No Other Code Changes**
+
+   - Rest of the component remains unchanged.
+
+---
+
+### **Suggested Git Commit Message**
+
+```
+style(navbar): update organization name styling in Navbar component
+
+- Updated organization name text color to gray-600
+- Changed font size from xs to sm
+- Removed uppercase and tracking classes for simpler look
+```
