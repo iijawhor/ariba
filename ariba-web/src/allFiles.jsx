@@ -9,8 +9,7 @@ import StudentDetails from "./components/Student/StudentDetails.jsx";
 import MessageBox from "./components/MessageBox.jsx";
 import Anouncements from "./components/Anouncements.jsx";
 import TimelineModal from "./components/TimelineModal.jsx";
-import CreateUser from "./components/CreateUser.jsx";
-import TeacherDetails from "./components/Teacher/teacherDetails.jsx";
+import TeacherDetails from "./components/Teacher/TeacherDetails.jsx";
 import TeacherPage from "./pages/TeacherPage.jsx";
 import TeacherList from "./components/Teacher/TeacherList.jsx";
 import AttendancePage from "./pages/AttendancePage.jsx";
@@ -35,6 +34,7 @@ import AssignTeacherModal from "./academic/AssignTeacher.jsx";
 import ScheduleModal from "./academic/Schedule.jsx";
 import AcademicPage from "./pages/AcademicPage.jsx";
 import SettingsPage from "./pages/Settings.jsx";
+import UserModal from "./components/UserModal.jsx";
 export {
   Dashboard,
   Sidebar,
@@ -47,7 +47,6 @@ export {
   Anouncements,
   MessageBox,
   TimelineModal,
-  CreateUser,
   TeacherPage,
   TeacherDetails,
   TeacherList,
@@ -73,5 +72,6 @@ export {
   AssignSubjectModal,
   AssignTeacherModal,
   ScheduleModal,
-  SettingsPage
+  SettingsPage,
+  UserModal
 };
