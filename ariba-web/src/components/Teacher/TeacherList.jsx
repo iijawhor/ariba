@@ -1,50 +1,18 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getOrganizationUsers, getUser } from "../../store/slices/userSlice.js";
-import { CreateUser } from "../../allFiles.jsx";
-const TeacherList = ({ creatUserModal, setCreateUserModal }) => {
+import { useSelector } from "react-redux";
+import { UserModal } from "../../allFiles.jsx";
+import { useGetUsers } from "../../hooks/useGetUsers.js";
+
+const TeacherList = ({ userModal, setUserModal, mode, setMode }) => {
   const user = useSelector((state) => state.user.loggedInUser?.user);
-  const teachers = useSelector(
-    (state) => state.user.usersByOrganization?.users || []
-  );
-  const organization = user?.organization;
-  const dispatch = useDispatch();
-  const [isActive, setIsActive] = useState(0);
-  const header = [
-    { name: "photo", id: 1 },
-    { name: "name", id: 2 },
-    { name: "id", id: 3 }
-  ];
+  const organization = user?.organization?._id;
+  const { users, searchQuery, setSearchQuery, isActive, handleSelectUser } =
+    useGetUsers(organization, "teacher");
+
+  const header = ["photo", "name", "id"];
   const flexRatios = ["flex-[1_1_0%]", "flex-[3_1_0%]", "flex-[1_1_0%]"];
-  const [searchQuery, setSearchQuery] = useState("");
-  const filteredUser = teachers?.filter((teacher) => {
-    const query = searchQuery?.toLowerCase();
-    return (
-      teacher.firstName?.toLowerCase().includes(query) ||
-      teacher.lastName?.toLowerCase().includes(query)
-    );
-  });
-  const displayteacher = searchQuery ? filteredUser : teachers;
-  const getOrganizationUserApi = `${
-    import.meta.env.VITE_API_BASE_URL
-  }/user/get-organization-users/?organizationId=`;
-
-  useEffect(() => {
-    dispatch(
-      getOrganizationUsers({
-        getOrganizationUserApi,
-        organization,
-        userRole: "teacher"
-      })
-    );
-  }, []);
-
-  // get user by id
-  const getUserApi = `${import.meta.env.VITE_API_BASE_URL}/user/get-user-by-id`;
-
-  const handleGetUser = (rowIndex, id) => {
-    setIsActive(rowIndex);
-    dispatch(getUser({ getUserApi, id }));
+  const hanleAddModal = () => {
+    setMode("add");
+    setUserModal((prev) => !prev);
   };
 
   return (
@@ -53,33 +21,38 @@ const TeacherList = ({ creatUserModal, setCreateUserModal }) => {
       <div className="flex flex-col md:flex-row md:items-center md:gap-5 gap-2">
         <div className="flex items-center gap-2">
           <h1 className="font-sans text-gray-800 font-semibold text-lg md:text-lg tracking-wide">
-            Teachers
+            All Teachers
           </h1>
           <button
-            onClick={() => setCreateUserModal((prev) => !prev)}
-            className="cursor-pointer"
+            onClick={hanleAddModal}
+            className="flex items-center cursor-pointer gap-1 border border-[#2C80FF] px-2 py- rounded-full bg-[#2C80FF] text-white hover:bg-blue-600 transition"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 48 48"
-              width="20"
-              height="20"
+              className="w-5 h-5 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              <circle cx="24" cy="24" r="22" fill="#2563eb" />
               <path
-                d="M24 14v20M14 24h20"
-                stroke="#ffffff"
-                strokeWidth="3.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                fill="none"
+                strokeWidth="2"
+                d="M12 4v16m8-8H4"
               />
             </svg>
           </button>
         </div>
 
-        {/* Search Bar */}
-        <label className="flex items-center gap-2 bg-[#E7EAFE] rounded-md p-1 flex-1">
+        <UserModal
+          isOpen={userModal}
+          mode={mode}
+          onClose={() => setUserModal(false)}
+          userData={null}
+        />
+
+        {/* Search Input */}
+        <label className="flex items-center gap-2 pl-1 pr-1 bg-[#E7EAFE] rounded-full flex-1">
           <svg
             className="h-5 w-5 text-[#2C80FF] opacity-60"
             xmlns="http://www.w3.org/2000/svg"
@@ -98,34 +71,34 @@ const TeacherList = ({ creatUserModal, setCreateUserModal }) => {
           </svg>
           <input
             type="search"
-            className="font-sans text-[#2C80FF] placeholder:text-gray-400 text-sm md:text-base w-full outline-none bg-transparent"
-            required
-            onChange={(e) => setSearchQuery(e.target.value)}
+            className="font-sans text-[#2C80FF] p-0.5 placeholder:text-gray-400 text-sm md:text-base w-full outline-none bg-transparent"
             placeholder="Search teacher"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </label>
       </div>
 
       {/* Table Header */}
-      <div className="flex w-full  bg-gray-50 rounded-md p-1">
-        {header.map((item, index) => (
+      <div className="flex w-full bg-gray-50 rounded-md p-1">
+        {header.map((name, index) => (
           <p
-            key={item.id}
+            key={index}
             className={`${flexRatios[index]} text-gray-400 flex-1 text-center text-[10px] md:text-sx font-medium uppercase tracking-wide`}
           >
-            {item.name}
+            {name}
           </p>
         ))}
       </div>
 
-      {/* Teacher Rows */}
+      {/* Teacher List */}
       <div className="flex flex-col gap-1 overflow-y-auto h-full">
-        {displayteacher.map((teacher, rowIndex) => (
-          <div key={rowIndex}>
+        {users.map((teacher, index) => (
+          <div key={index}>
             <button
-              onClick={() => handleGetUser(rowIndex, teacher._id)}
+              onClick={() => handleSelectUser(index, teacher._id)}
               className={`flex items-center uppercase w-full p-1 hover:cursor-pointer rounded-md transition-all duration-150 ${
-                rowIndex === isActive
+                index === isActive
                   ? "bg-[#2C80FF] text-white shadow"
                   : "hover:bg-gray-100 text-gray-700"
               }`}
@@ -134,9 +107,12 @@ const TeacherList = ({ creatUserModal, setCreateUserModal }) => {
               <div className="flex items-center flex-1 md:flex-[1]">
                 <img
                   alt="avatar"
-                  src="https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?semt=ais_hybrid&w=740&q=80"
+                  src={
+                    teacher.photo ||
+                    "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?semt=ais_hybrid&w=740&q=80"
+                  }
                   className={`h-8 w-8 rounded-full border-2 ${
-                    rowIndex === isActive ? "border-white" : "border-[#2C80FF]"
+                    index === isActive ? "border-white" : "border-[#2C80FF]"
                   }`}
                 />
               </div>
@@ -144,7 +120,7 @@ const TeacherList = ({ creatUserModal, setCreateUserModal }) => {
               {/* Name */}
               <span
                 className={`flex-[3] text-left md:text-center font-semibold text-sm md:text-xs tracking-wide ${
-                  rowIndex === isActive ? "text-white" : "text-gray-700"
+                  index === isActive ? "text-white" : "text-gray-700"
                 }`}
               >
                 {teacher.firstName} {teacher.lastName}
@@ -153,15 +129,14 @@ const TeacherList = ({ creatUserModal, setCreateUserModal }) => {
               {/* ID */}
               <span
                 className={`flex-1 text-right font-semibold text-sm md:text-xs tracking-wide ${
-                  rowIndex === isActive ? "text-white" : "text-gray-700"
+                  index === isActive ? "text-white" : "text-gray-700"
                 }`}
               >
                 {teacher.ids || "ariba1"}
               </span>
             </button>
 
-            {/* Divider */}
-            {rowIndex !== displayteacher.length - 1 && (
+            {index !== users.length - 1 && (
               <hr className="border-gray-200 mt-0.5" />
             )}
           </div>
