@@ -137,3 +137,66 @@ dispatch(
 - `withCredentials: true` is enabled for cookie-based authentication.
 - Some headers (`Authorization`) are commented out; uncomment when backend requires token validation.
 - Handles missing API response data gracefully with fallback error messages.
+
+---
+
+# **User Slice – Updated Parts Documentation**
+
+### **Changes Made**
+
+- Removed `updateUser` thunk and related state (`updatedUser`) to simplify slice.
+- Removed redundant `message` state.
+- Updated `getOrganizationUsers` thunk to include `Authorization` header.
+- Updated `getUser` thunk to remove `Authorization` header for simplicity.
+- Updated `createUser` thunk to rename `formData` to `userData`.
+- Removed `updateUser` handling from `extraReducers`.
+
+---
+
+### **Updated Async Thunks**
+
+#### **getOrganizationUsers**
+
+- **Purpose:** Fetch users for a specific organization.
+- **Arguments:** `getOrganizationUserApi`, `organization`, `userRole`, `token`
+- **Notes:** Now includes `Authorization` header.
+
+#### **getUser**
+
+- **Purpose:** Fetch details of a specific user by ID.
+- **Arguments:** `getUserApi`, `id`, `token`
+- **Notes:** `Authorization` header removed; `withCredentials: true` is used.
+
+#### **createUser**
+
+- **Purpose:** Create a new user.
+- **Arguments:** `createUserApi`, `userData`, `accessToken`
+- **Notes:** Renamed `formData` to `userData` for clarity.
+
+#### **Removed**
+
+- `updateUser` thunk and its state handling removed.
+
+---
+
+### **Updated State**
+
+```javascript
+const initialState = {
+  loggedInUser: null,
+  error: null,
+  loading: false,
+  currentUser: {},
+  usersByOrganization: [],
+  userDetails: {},
+  newTimeline: {},
+  createdUser: {}
+};
+```
+
+---
+
+### **ExtraReducers**
+
+- Handles only: `loginHandler`, `getOrganizationUsers`, `getUser`, `createUser`, `addTimeline`.
+- `updateUser` handling removed.

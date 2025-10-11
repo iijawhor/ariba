@@ -5,10 +5,12 @@ const initialState = {
   error: null,
   loading: false,
   currentUser: {},
+  message: "",
   usersByOrganization: [],
   userDetails: {},
   newTimeline: {},
-  createdUser: {}
+  createdUser: {},
+  updatedUser: {}
 };
 export const loginHandler = createAsyncThunk(
   "auth/login",
@@ -27,34 +29,33 @@ export const loginHandler = createAsyncThunk(
   }
 );
 export const getOrganizationUsers = createAsyncThunk(
-  "auth/organizationUsers",
+  "user/organizationUsers",
   async (
     { getOrganizationUserApi, organization, userRole, token },
     thunkAPI
   ) => {
     try {
       const response = await axios.get(getOrganizationUserApi, {
-        params: { organization, userRole },
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        params: { organizationId: organization, userRole }
+        // headers: {
+        //   Authorization: `Bearer ${token}`
+        // }
       });
 
       return response.data;
     } catch (error) {
-      console.log(error);
       return thunkAPI.rejectWithValue(error.response?.data || "Login failed");
     }
   }
 );
 export const getUser = createAsyncThunk(
-  "auth/getUser",
-  async ({ getUserApi, id, token }, thunkAPI) => {
+  "user/getUser",
+  async ({ getUserApi, id, accessToken }, thunkAPI) => {
     try {
       const response = await axios.get(`${getUserApi}/${id}`, {
-        // headers: {
-        //   Authorization: `Bearer ${token}`
-        // },
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        },
         withCredentials: true
       });
 
@@ -67,13 +68,33 @@ export const getUser = createAsyncThunk(
   }
 );
 export const createUser = createAsyncThunk(
-  "auth/createUser",
-  async ({ createUserApi, userData, accessToken }, thunkAPI) => {
+  "user/createUser",
+  async ({ createUserApi, formData, accessToken }, thunkAPI) => {
     try {
-      const response = await axios.post(`${createUserApi}`, userData, {
+      const response = await axios.post(`${createUserApi}`, formData, {
         withCredentials: true,
         headers: { Authorization: `Bearer ${accessToken}` }
       });
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Failed to create new user!"
+      );
+    }
+  }
+);
+export const updateUser = createAsyncThunk(
+  "auth/updateUser",
+  async ({ updateUserApi, formData, accessToken, userId }, thunkAPI) => {
+    try {
+      const response = await axios.patch(
+        `${updateUserApi}/${userId}`,
+        formData,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${accessToken}` }
+        }
+      );
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -160,13 +181,27 @@ const userSlice = createSlice({
         state.createdUser = action.payload;
         state.error = null;
         state.loading = false;
+        state.message = action.payload?.message || "User created successfully!";
       })
       .addCase(createUser.rejected, (state, action) => {
         state.createdUser = null;
         state.error = action.payload;
         state.loading = false;
       });
-
+    builder
+      .addCase(updateUser.pending, (state, action) => {
+        (state.loading = true), (state.error = false);
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.updatedUser = action.payload;
+        state.error = null;
+        state.loading = false;
+      })
+      .addCase(updateUser.rejected, (state, action) => {
+        state.updatedUser = null;
+        state.error = action.payload;
+        state.loading = false;
+      });
     builder
       .addCase(addTimeline.pending, (state, action) => {
         (state.loading = true), (state.error = false);
