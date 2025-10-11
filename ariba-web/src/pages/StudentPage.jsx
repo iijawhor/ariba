@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Anouncements,
   MessageBox,
@@ -7,20 +7,24 @@ import {
 } from "../allFiles";
 
 const StudentPage = () => {
-  const [creatUserModal, setCreateUserModal] = useState(false);
-
+  const [mode, setMode] = useState("");
+  const [userModal, setUserModal] = useState(false);
   return (
     <div className="flex h-full gap-2 overflow-hidden">
       <div className="flex-1 overflow-auto">
         <StudentList
-          setCreateUserModal={setCreateUserModal}
-          creatUserModal={creatUserModal}
+          userModal={userModal}
+          setUserModal={setUserModal}
+          mode={mode}
+          setMode={setMode}
         />
       </div>
       <div className="flex-2 overflow-auto">
         <StudentDetails
-          setCreateUserModal={setCreateUserModal}
-          creatUserModal={creatUserModal}
+          userModal={userModal}
+          setUserModal={setUserModal}
+          mode={mode}
+          setMode={setMode}
         />
       </div>
       <div className="flex-1 hidden md:inline border border-green-600 flex flex-col overflow-auto">

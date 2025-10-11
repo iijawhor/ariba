@@ -1,88 +1,61 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getOrganizationUsers, getUser } from "../../store/slices/userSlice.js";
-import { CreateUser } from "../../allFiles.jsx";
-const StudentList = ({ creatUserModal, setCreateUserModal }) => {
+import { useSelector } from "react-redux";
+import { UserModal } from "../../allFiles.jsx";
+import { useGetUsers } from "../../hooks/useGetUsers.js";
+
+const StudentList = ({ userModal, setUserModal, mode, setMode }) => {
   const user = useSelector((state) => state.user.loggedInUser?.user);
-  const students = useSelector(
-    (state) => state.user.usersByOrganization?.users || []
-  );
-  const organization = user?.organization;
-  const dispatch = useDispatch();
-  const [isActive, setIsActive] = useState(0);
-  const header = [
-    { name: "photo", id: 1 },
-    { name: "name", id: 2 },
-    { name: "id", id: 3 }
-  ];
+  const organization = user?.organization?._id;
+
+  const { users, searchQuery, setSearchQuery, isActive, handleSelectUser } =
+    useGetUsers(organization, "student");
+
+  const header = ["photo", "name", "id"];
   const flexRatios = ["flex-[1_1_0%]", "flex-[3_1_0%]", "flex-[1_1_0%]"];
-  const [searchQuery, setSearchQuery] = useState("");
-  const filteredUser = students?.filter((student) => {
-    const query = searchQuery?.toLowerCase();
-    return (
-      student.firstName?.toLowerCase().includes(query) ||
-      student.lastName?.toLowerCase().includes(query)
-    );
-  });
-  const displayStudent = searchQuery ? filteredUser : students;
-  const getOrganizationUserApi = `${
-    import.meta.env.VITE_API_BASE_URL
-  }/user/get-organization-users/?organizationId=`;
-
-  useEffect(() => {
-    dispatch(
-      getOrganizationUsers({
-        getOrganizationUserApi,
-        organization,
-        userRole: "student"
-      })
-    );
-  }, []);
-
-  // get user by id
-  const getUserApi = `${import.meta.env.VITE_API_BASE_URL}/user/get-user-by-id`;
-
-  const handleGetUser = (rowIndex, id) => {
-    setIsActive(rowIndex);
-    dispatch(getUser({ getUserApi, id }));
+  const hanleAddModal = () => {
+    setMode("add");
+    setUserModal((prev) => !prev);
   };
 
   return (
-    <div className=" relative bg-white w-full h-full flex flex-col gap-2 rounded-lg">
-      <div className="p-2 flex md:gap-5 gap-1 md:flex-row flex-col ">
-        <div className=" flex gap-1">
-          <h1 className="font-[sans-serif] flex-1 text-[#313234] font-semibold text-sm tracking-wide">
-            Students
-          </h1>{" "}
+    <div className="relative bg-white w-full h-full flex flex-col gap-3 rounded-lg shadow-sm p-3">
+      {/* Header + Search + Add Button */}
+      <div className="flex flex-col md:flex-row md:items-center md:gap-5 gap-2">
+        <div className="flex items-center gap-2">
+          <h1 className="font-sans text-gray-800 font-semibold text-lg tracking-wide">
+            All Students
+          </h1>
           <button
-            onClick={() => setCreateUserModal((prev) => !prev)}
-            className="cursor-pointer h-fit"
+            onClick={hanleAddModal}
+            className="flex items-center cursor-pointer gap-1 border border-[#2C80FF] px-3 py-1 rounded-full bg-[#2C80FF] text-white hover:bg-blue-600 transition"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 48 48"
-              width="16"
-              height="16"
-              role="img"
-              aria-label="Add"
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              <title>Add</title>
-              <circle cx="24" cy="24" r="22" fill="#2563eb" />
               <path
-                d="M24 14v20M14 24h20"
-                stroke="#ffffff"
-                strokeWidth="3.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                fill="none"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
               />
             </svg>
-          </button>{" "}
+          </button>
         </div>
 
-        <label className="border-none w-full flex-1 flex items-center gap-1 text-sm text-center pl-1 rounded-sm bg-[#E7EAFE]">
+        <UserModal
+          isOpen={userModal}
+          mode={mode}
+          onClose={() => setUserModal(false)}
+          userData={null}
+        />
+
+        {/* Search Input */}
+        <label className="flex items-center gap-2 pl-1 pr-1 bg-[#E7EAFE] rounded-full flex-1">
           <svg
-            className="h-[1em] opacity-50 text-[#2C80FF]"
+            className="h-5 w-5 text-[#2C80FF] opacity-60"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
           >
@@ -99,69 +72,76 @@ const StudentList = ({ creatUserModal, setCreateUserModal }) => {
           </svg>
           <input
             type="search"
-            className="font-[sans-serif] text-[#2C80FF] text-xs w-full outline-none"
-            required
-            onChange={(e) => setSearchQuery(e.target.value)}
+            className="font-sans text-[#2C80FF] p-0.5 placeholder:text-gray-400 text-sm md:text-base w-full outline-none bg-transparent"
             placeholder="Search student"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </label>
       </div>
 
-      <div className="flex flex-col gap-2  h-full">
-        {/* Header row */}
-        <div className="flex w-full gap-1">
-          {header.map((item, index) => (
-            <p
-              key={item.id}
-              className={`${flexRatios[index]} text-start pl-1 pr-1 font-inter uppercase text-[10px] text-gray-400`}
+      {/* Table Header */}
+      <div className="flex w-full bg-gray-50 rounded-md p-1">
+        {header.map((name, index) => (
+          <p
+            key={index}
+            className={`${flexRatios[index]} text-gray-400 flex-1 text-center text-[10px] md:text-sx font-medium uppercase tracking-wide`}
+          >
+            {name}
+          </p>
+        ))}
+      </div>
+
+      {/* Student List */}
+      <div className="flex flex-col  gap-1 overflow-y-auto h-full">
+        {users.map((student, index) => (
+          <div key={index}>
+            <button
+              onClick={() => handleSelectUser(index, student._id)}
+              className={`flex items-center uppercase w-full p-1 hover:cursor-pointer rounded-md transition-all duration-150 ${
+                index === isActive
+                  ? "bg-[#2C80FF] text-white shadow"
+                  : "hover:bg-gray-100 text-gray-700"
+              }`}
             >
-              {item.name}
-            </p>
-          ))}
-        </div>
+              {/* Avatar */}
+              <div className="flex items-center flex-1 md:flex-[1]">
+                <img
+                  alt="avatar"
+                  src={
+                    student.photo ||
+                    "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg"
+                  }
+                  className={`h-8 w-8 rounded-full border-2 ${
+                    index === isActive ? "border-white" : "border-[#2C80FF]"
+                  }`}
+                />
+              </div>
 
-        {/* Student rows */}
-        <div className=" h-full flex flex-col">
-          {displayStudent.map((student, rowIndex) => (
-            <div key={rowIndex}>
-              <button
-                onClick={() => handleGetUser(rowIndex, student._id)}
-                className={`${
-                  rowIndex === isActive ? "bg-[#2C80FF] text-white" : ""
-                } flex cursor-pointer justify-between w-full p-1 items-center`}
+              {/* Name */}
+              <span
+                className={`flex-[3] text-left md:text-center font-semibold text-sm md:text-xs tracking-wide ${
+                  index === isActive ? "text-white" : "text-gray-700"
+                }`}
               >
-                <span className="flex-1 md:inline hidden">
-                  <img
-                    alt="img"
-                    className={`${
-                      rowIndex === isActive ? "border-none" : ""
-                    } h-8 rounded-full w-8 border-2 border-[#2C80FF]`}
-                    src="https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?semt=ais_hybrid&w=740&q=80"
-                  ></img>
-                </span>
-                <span
-                  className={`${
-                    rowIndex === isActive ? "bg-[#2C80FF] text-white" : ""
-                  }  md:p-2 p-1 md:text-[10px] text-[8px] flex justify-between flex-3 w-full uppercase font-semibold font-[sans-serif] tracking-wider text-gray-700`}
-                >
-                  {student.firstName + " " + student.lastName}
-                </span>
-                <span
-                  className={` ${
-                    rowIndex === isActive ? "bg-[#2C80FF] text-white" : ""
-                  } md:p-2 md:text-[10px] text-[8px] flex-1 justify-between text-right w-fit w-full uppercase font-semibold font-[sans-serif] tracking-wider text-gray-700`}
-                >
-                  {student.ids || "ariba1"}
-                </span>
-              </button>
+                {student.firstName} {student.lastName}
+              </span>
 
-              {/* ✅ Only show <hr> if not the last row */}
-              {rowIndex !== students.length - 1 && (
-                <hr className="border-gray-300" />
-              )}
-            </div>
-          ))}
-        </div>
+              {/* ID */}
+              <span
+                className={`flex-1 text-right font-semibold text-sm md:text-xs tracking-wide ${
+                  index === isActive ? "text-white" : "text-gray-700"
+                }`}
+              >
+                {student.ids || "—"}
+              </span>
+            </button>
+
+            {index !== users.length - 1 && (
+              <hr className="border-gray-200 mt-0.5" />
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );

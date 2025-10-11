@@ -1,163 +1,129 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { TimelineModal, CreateUser } from "../../allFiles";
+import { TimelineModal, UserModal } from "../../allFiles";
 
-const StudentDetails = ({ creatUserModal, setCreateUserModal }) => {
+const StudentDetails = ({ userModal, setUserModal, mode, setMode }) => {
   const [timelineModal, setTimelineModal] = useState(false);
   const userDetails = useSelector((state) => state.user.userDetails);
   const userData = userDetails?.data;
 
+  const detailFields = [
+    { label: "First Name", value: userData?.firstName },
+    { label: "Last Name", value: userData?.lastName },
+    { label: "Phone Number", value: userData?.phoneNumber },
+    { label: "Email", value: userData?.email },
+    { label: "Department", value: userData?.department },
+    { label: "Gender", value: userData?.gender },
+    { label: "Date of Birth", value: userData?.dateOfBirth },
+    { label: "Date of Joining", value: userData?.dateOfjoining },
+    { label: "Address", value: userData?.address },
+    { label: "User Id", value: userData?.userId || "ARIBA 000" }
+  ];
+  const hanleUpdateModal = () => {
+    setMode("update");
+    setUserModal(true);
+  };
   return (
-    <div className="relative bg-white rounded-md  h-full flex flex-col">
-      <div className="w-full flex gap-3 items-center">
-        <h1 className="bg-gray-100 capitalize p-2 md:text-sm text-[10px] font-semibold text-gray-700 font-[sans-serif] tracking-wide">
+    <div className="relative h-full bg-gray-50 flex flex-col gap-4 p-3 rounded-lg">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
+        <h1 className="bg-white p-2 rounded-md shadow text-lg font-semibold text-gray-800 tracking-wide">
           Student Details
         </h1>
-        <button className="cursor-pointer h-fit">
+        <button
+          onClick={hanleUpdateModal}
+          className="flex items-center cursor-pointer gap-1 border border-[#2C80FF] px-3 py-1 rounded-full bg-[#2C80FF] text-white hover:bg-blue-600 transition"
+        >
           <svg
-            className="text-[#2C80FF]"
             xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
+            className="w-5 h-5"
             fill="none"
+            viewBox="0 0 24 24"
             stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
           >
-            <rect x="3" y="3" width="18" height="18" rx="3" ry="3" />
-            <path d="M9 15l6.5-6.5a1.5 1.5 0 0 1 2 2L11 17l-3 1z" />
-            <path d="M14 7l3 3" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15.232 5.232l3.536 3.536M16.5 3.5a2.121 2.121 0 013 3L7 19H4v-3L16.5 3.5z"
+            />
           </svg>
         </button>
       </div>
-      {creatUserModal && (
-        <div className="absolute z-10 left-5 border-gray-300 h-fit border top-10 bg-white p-3 rounded-sm shadow-sm w-fit">
-          <CreateUser
-            createUser="Student"
-            setCreateUserModal={setCreateUserModal}
-          />
-        </div>
-      )}
-      {/* basic details */}
-      <div className="">
-        <h1 className="bg-gray-100 capitalize p-2 md:text-sm text-[10px] font-semibold text-gray-700 font-[sans-serif] tracking-wide">
+
+      {/* User Modal */}
+      <UserModal
+        isOpen={userModal}
+        onClose={() => setUserModal(false)}
+        title="Update User"
+        mode={mode}
+        userData={userData}
+      />
+
+      {/* Basic Details Grid */}
+      <div className="bg-white p-4 rounded-lg shadow flex flex-col gap-3">
+        <h2 className="bg-gray-100 p-2 rounded text-base font-semibold text-gray-700 tracking-wide">
           Basic Details
-        </h1>
-
-        <div className="p-2 flex flex-col md:text-sm text-[10px] text-gray-500 font-[sans-serif] md:text-xs text-sm font-semibold tracking-wide gap-3">
-          <div className="flex gap-10  tracking-wider">
-            <p>
-              First Name :{" "}
-              <span className="text-[#313234]">
-                {" "}
-                {userDetails ? userData?.firstName : ""}
-              </span>{" "}
-            </p>
-            <p>
-              Last Name :{" "}
-              <span className="text-[#313234]">
-                {userDetails ? userData?.lastName : ""}{" "}
-              </span>{" "}
-            </p>
-          </div>
-          <div className="flex md:flex-row flex-col w-full md:justify-between  tracking-wider">
-            <p className="text-[#313234]">
-              <span className="text-gray-500">Phone Number : </span>
-              {userData?.phoneNumber || "Not Added"}
-            </p>
-            <p className="text-[#313234]">
-              <span className="text-gray-500">Email : </span>
-              {userData?.email || "Not Added"}
-            </p>
-          </div>
-
-          <p className="text-[#313234] capitalize">
-            <span className="text-gray-500">Department : </span>
-            {userData?.department || "Not Added"}
-          </p>
-
-          <div className="flex gap-10  tracking-wider">
-            <p className="text-[#313234] capitalize">
-              <span className="text-gray-500 capitalize">Gender : </span>
-              {userData?.gender || "Not Added"}
-            </p>
-            <p className="text-[#313234]">
-              <span className="text-gray-500">Date Of Birth : </span>
-              {userData?.dateOfBirth || "Not Added"}
-            </p>
-          </div>
-          <p className="text-[#313234]">
-            <span className="text-gray-500">Address : </span>
-            {userData?.address || "Not Added"}
-          </p>
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-gray-700">
+          {detailFields.map((field, idx) => (
+            <div key={idx} className="flex flex-col">
+              <span className="font-medium text-gray-500">{field.label}</span>
+              <span className="font-semibold text-gray-800">
+                {field.value || "Not Added"}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
-      {/* about */}
-      <div className="">
-        <h1 className="bg-gray-100 capitalize p-2 md:text-sm text-[10px] font-semibold text-gray-700 font-[sans-serif] tracking-wide">
-          About {userData ? userData?.userRole : ""}
-        </h1>
-        <div className="p-2 flex flex-col md:text-sm text-[10px] text-gray-500 font-[sans-serif] md:text-xs text-sm font-semibold tracking-wide gap-3">
-          <p className="text-[#313234]">
-            <span className="text-xs"> {userData?.about || "Not Added"}</span>
-          </p>
-        </div>
+
+      {/* About Section */}
+      <div className="bg-white p-4 rounded-lg shadow flex flex-col gap-2">
+        <h2 className="bg-gray-100 p-2 rounded text-base font-semibold text-gray-700 tracking-wide">
+          About {userData?.userRole || ""}
+        </h2>
+        <p className="text-gray-700">{userData?.about || "Not Added"}</p>
       </div>
-      {/* student timeline */}
-      <div className="w-full relative h-70 p-1 ">
+
+      {/* Timeline Section */}
+      <div className="bg-white p-4 rounded-lg shadow flex flex-col gap-3 max-h-[250px]  overflow-y-auto">
+        <div className="flex justify-between items-center">
+          <h2 className="text-gray-800 text-base font-semibold tracking-wide">
+            Student Timeline
+          </h2>
+          <button
+            onClick={() => setTimelineModal(true)}
+            className="bg-blue-500 px-3 py-1 cursor-pointer rounded-full text-white hover:bg-blue-600 transition"
+          >
+            Add Event
+          </button>
+        </div>
+
         {timelineModal && (
-          <div className="absolute z-10 shadow-sm p-3 w-80 bg-white rounded-md top-1 left-30">
+          <div className="absolute z-10 shadow-sm p-2 w-80 bg-white rounded-md bottom-10 right-5">
             <TimelineModal
               id={userData?._id}
               setTimelineModal={setTimelineModal}
             />
           </div>
         )}
-        <div className="flex items-center bg-gray-100 w-full">
-          <h1 className=" p-2 capitalize text-sm font-semibold text-gray-700 font-[sans-serif] tracking-wide">
-            {userData ? userData?.userRole : ""} Timeline
-          </h1>
-          <button
-            onClick={() => setTimelineModal((prev) => !prev)}
-            className="cursor-pointer h-fit"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 48 48"
-              width="20"
-              height="20"
-              role="img"
-              aria-label="Add"
-            >
-              <title>Add</title>
-              <circle cx="24" cy="24" r="22" fill="#2563eb" />
-              <path
-                d="M24 14v20M14 24h20"
-                stroke="#ffffff"
-                strokeWidth="3.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-              />
-            </svg>
-          </button>
-        </div>
 
-        <div className="p-3 relative flex flex-col  h-60 overflow-scroll scroll-smooth w-full  text-gray-500 font-[sans-serif] text-sm font-semibold tracking-wide gap-3">
-          <ul className="timeline timeline-vertical">
-            {userData?.timeline.map((timeline) => (
-              <li>
-                <div className="timeline-start text-xs text-[#2C80FF] text-gray-700">
+        <ul className="flex flex-col gap-3 mt-2">
+          {userData?.timeline?.length ? (
+            userData.timeline.map((timeline, index) => (
+              <li
+                key={index}
+                className="flex flex-col gap-1 bg-gray-50 p-3 rounded-md shadow-sm"
+              >
+                <span className="text-xs text-blue-500 font-semibold">
                   {timeline.eventDate}
-                </div>
-                <div className="timeline-middle">
+                </span>
+                <div className="flex items-center gap-2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                     fill="currentColor"
-                    className="h-5 w-5  text-[#2C80FF]"
+                    className="h-5 w-5 text-blue-500"
                   >
                     <path
                       fillRule="evenodd"
@@ -165,15 +131,16 @@ const StudentDetails = ({ creatUserModal, setCreateUserModal }) => {
                       clipRule="evenodd"
                     />
                   </svg>
+                  <span className="bg-blue-100 text-blue-600 text-xs md:text-sm p-1 rounded">
+                    {timeline.event}
+                  </span>
                 </div>
-                <div className="timeline-end bg-[#E7EAFE] text-[#2C80FF] border-none text-xs timeline-box">
-                  {timeline.event}
-                </div>
-                <hr className=" border w-20 h-20 bg-[#2C80FF]" />
               </li>
-            ))}
-          </ul>
-        </div>
+            ))
+          ) : (
+            <p className="text-gray-400 text-sm">No timeline events added.</p>
+          )}
+        </ul>
       </div>
     </div>
   );
