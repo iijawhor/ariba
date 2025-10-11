@@ -181,3 +181,159 @@ POST /create-user
 3. Controller calls service to validate and create the user.
 4. Service interacts with repository/DAO to store the user.
 5. Controller responds with success or error message.
+
+Ah! Now I understand clearly — you want a **concise documentation highlighting all the changes in the updated version compared to the old code**, not a full method-by-method doc. Here's a proper **GitHub-style update summary** focusing only on the updated parts:
+
+---
+
+# 📝 User Service – Updated Version Highlights
+
+This document summarizes **only the changes** made in the updated user service compared to the old version.
+
+---
+
+## **1. createUser**
+
+**Changes:**
+
+```diff
+- religion,
++ dateOfBirth
+```
+
+- Removed `religion` from required field validation.
+- Field order cleaned for readability.
+- Organization fetching remains static (`kasbagolahighmadrasha@gmail.com`).
+- All other logic unchanged.
+
+---
+
+## **2. updateUser**
+
+**Changes:**
+
+```diff
+- const allowedOptions = [
+-   "firstName", "lastName", "about", "address",
+-   "phoneNumber", "dateOfjoining", "dateOfBirth", "gender", "religion"
+- ];
+- const filteredUpdates = Object.fromEntries(
+-   Object.entries(updatedValue).filter(([key]) => allowedOptions.includes(key))
+- );
+- if (Object.keys(filteredUpdates).length === 0) {
+-   throw new ApiError("No valid fields provided to update.", 400);
+- }
++ const allowedOptions = [
++   "firstName", "lastName", "about", "dateOfBirth",
++   "address", "phoneNumber", "gender", "religion"
++ ];
++ const invalidKeys = Object.keys(updatedValue).filter(
++   (key) => !allowedOptions.includes(key)
++ );
++ if (invalidKeys.length > 0) {
++   throw new ApiError(`These fields are not allowed: ${invalidKeys.join(", ")}`, 400);
++ }
+```
+
+- Removed `dateOfjoining` from allowed fields.
+- Invalid fields now **throw an explicit error** instead of silently filtering.
+- Added clearer validation for empty updates and user not found.
+
+---
+
+## **3. addTimeline**
+
+**Change:**
+
+```diff
++ console.log("Timeline service ....", id, title, event, date);
+```
+
+- Added a debug log for timeline inputs.
+
+---
+
+## **4. Minor Validation & Error Handling**
+
+- Standardized empty value checks (`if (!updatedValue)` and required fields).
+- Improved error messages in `updateUser` and `createUser`.
+- Code readability and maintainability improved; removed unused/old fields like `dateOfjoining`.
+
+---
+
+✅ **Summary:**
+
+- **updateUser:** stricter validation, explicit error for invalid keys.
+- **createUser:** lighter required fields check (removed `religion` from mandatory).
+- **addTimeline:** debug logging added.
+- **Overall:** cleaner code, better error reporting, and improved maintainability
+
+---
+
+# 📝 Auth & User Controller – Updated Highlights
+
+### **1. getUsersByOrganization**
+
+**Change:**
+
+```diff
+- const { organizationId, userRole } = req.query;
++ const { organization, userRole } = req.query;
+
+- const users = await UserService.getOrganizationUsers({
+-   organizationId,
+-   userRole
+- });
++ const users = await UserService.getOrganizationUsers({
++   organizationId: organization,
++   userRole
++ });
+```
+
+- Updated query parameter from `organizationId` to `organization` for better naming consistency.
+- Passed as `organizationId` internally to service method.
+
+---
+
+### **2. Other Changes**
+
+- No other functional changes detected in the new version.
+- All other controller methods (`signupUser`, `signinUser`, `logoutUser`, `createUser`, `searchUser`, `getCurrentUser`, `refreshAccessToken`, `getUserDetailsById`, `addTimeline`, `updateUser`) remain **unchanged** in logic and structure.
+
+---
+
+✅ **Summary:**
+
+- **Only change:** `getUsersByOrganization` query parameter updated from `organizationId` → `organization`.
+- No other updates or refactors in the controller code.
+
+---
+
+# 📝 User Repositories – Updated Highlights
+
+### **addTimeline**
+
+**Change:**
+
+```diff
+- return await User.findByIdAndUpdate(
+-   _id,
+-   { $push: { timeline: [{ title, eventDate, event }] } },
+-   { new: true }
+- );
++ console.log("REPOS......", _id, title, event, eventDate);
++ return await User.findByIdAndUpdate(
++   _id,
++   { $push: { timeline: [{ title, eventDate, event }] } },
++   { new: true }
++ );
+```
+
+- Added a debug log to inspect timeline inputs when adding a timeline entry.
+
+---
+
+✅ **Summary:**
+
+- **Only update:** `addTimeline` now logs `_id`, `title`, `event`, and `eventDate` for debugging purposes.
+- No other methods or logic were modified
