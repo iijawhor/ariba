@@ -48,8 +48,6 @@ export const findOrganizationUsers = async (organizationId, userRole) => {
   }).select("-password -__v -timeline -religion -education -dateOfjoining");
 };
 export const addTimeline = async (_id, title, event, eventDate) => {
-  console.log("REPOS......", _id, title, event, eventDate);
-
   return await User.findByIdAndUpdate(
     _id,
     { $push: { timeline: [{ title, eventDate, event }] } },

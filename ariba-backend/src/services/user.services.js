@@ -90,6 +90,7 @@ export const createUser = async (userData) => {
     timeline,
     department,
     address,
+    religion,
     dateOfBirth
   } = userData;
   if (
@@ -120,6 +121,7 @@ export const createUser = async (userData) => {
     phoneNumber,
     timeline,
     department,
+    religion,
     dateOfBirth,
     address,
     organization: organization._id
@@ -219,8 +221,6 @@ export const getOrganizationUsers = async ({ organizationId, userRole }) => {
   return users;
 };
 export const addTimeline = async (id, title, event, date) => {
-  console.log("Timeline service ....", id, title, event, date);
-
   if (!id) throw new ApiError("Id undefined", 404);
   if (!title) throw new ApiError("Please enter timeline data", 400);
 
@@ -230,35 +230,37 @@ export const addTimeline = async (id, title, event, date) => {
   return timline;
 };
 export const updateUser = async (_id, updatedValue) => {
-  const existingUser = await UserRepositories.findUserById(_id);
-  if (!existingUser) {
-    throw new ApiError("User is not found!", 400);
-  }
-
-  if (!updatedValue) {
+  if (!updatedValue || Object.keys(updatedValue).length === 0) {
     throw new ApiError("Enter some value to update", 400);
   }
+
+  const existingUser = await UserRepositories.findUserById(_id);
+  if (!existingUser) {
+    throw new ApiError("User not found!", 404);
+  }
+
   const allowedOptions = [
     "firstName",
     "lastName",
     "about",
-    "dateOfBirth",
     "address",
     "phoneNumber",
+    "dateOfjoining",
+    "dateOfBirth",
     "gender",
     "religion"
   ];
 
-  const invalidKeys = Object.keys(updatedValue).filter(
-    (key) => !allowedOptions.includes(key)
+  // ✅ Only pick allowed fields (ignore the rest)
+  const filteredUpdates = Object.fromEntries(
+    Object.entries(updatedValue).filter(([key]) => allowedOptions.includes(key))
   );
 
-  if (invalidKeys.length > 0) {
-    throw new ApiError(
-      `These fields are not allowed: ${invalidKeys.join(", ")}`,
-      400
-    );
+  // ✅ Prevent empty update
+  if (Object.keys(filteredUpdates).length === 0) {
+    throw new ApiError("No valid fields provided to update.", 400);
   }
-  const updatedUser = await UserRepositories.updateUser(_id, updatedValue);
+
+  const updatedUser = await UserRepositories.updateUser(_id, filteredUpdates);
   return updatedUser;
 };

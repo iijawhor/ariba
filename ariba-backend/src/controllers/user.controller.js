@@ -41,6 +41,7 @@ export const signinUser = async (req, res) => {
     };
 
     return res
+
       .status(200)
       .cookie("accessToken", accessToken, options)
       .cookie("refreshToken", refreshToken, options)
@@ -188,11 +189,11 @@ export const getUserDetailsById = async (req, res) => {
   }
 };
 export const getUsersByOrganization = async (req, res) => {
-  const { organization, userRole } = req.query;
+  const { organizationId, userRole } = req.query;
 
   try {
     const users = await UserService.getOrganizationUsers({
-      organizationId: organization,
+      organizationId,
       userRole
     });
     if (!users) {
