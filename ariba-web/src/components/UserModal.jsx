@@ -1,14 +1,10 @@
 import { useState, useEffect } from "react";
 import { useSaveUser } from "../hooks/useSaveUser.js";
 import { useSelector } from "react-redux";
-import { ToastContainer, toast } from "react-toastify";
 
 const UserModal = ({ isOpen, onClose, userData, mode }) => {
   const { saveUser } = useSaveUser();
   const isEdit = mode === "update";
-  const error = useSelector((state) => state.user.error);
-  const success = useSelector((state) => state.user.message);
-  const createdUser = useSelector((state) => state.user.createdUser);
 
   const [formData, setFormData] = useState({
     firstName: "",
