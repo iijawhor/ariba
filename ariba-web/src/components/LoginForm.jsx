@@ -27,7 +27,10 @@ export const LoginForm = () => {
       .unwrap()
       .then((result) => {
         if (result) {
-          toast.success("Logged in successfully");
+          toast.success(
+            `Welcome back ${result?.user?.firstName}` ||
+              "Logged In successfully"
+          );
           navigate("/");
         } else {
           navigate("/signin");
