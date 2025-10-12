@@ -25,3 +25,16 @@ export const getAttendanceByUserController = async (req, res) => {
       .json({ message: "Failed to get the user attendance" });
   }
 };
+
+// attendance page started here
+
+export const getUserByRole = async (req, res) => {
+  try {
+    const users = await UserService.getUsersByRole(req);
+    return res
+      .status(200)
+      .json({ message: "Users fetched successfully", users });
+  } catch (error) {
+    return res.status(400).json({ message: "Failed to fetch users by role" });
+  }
+};

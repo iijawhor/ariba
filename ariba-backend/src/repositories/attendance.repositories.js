@@ -1,4 +1,5 @@
 import { Attendance } from "../models/attendance.model.js";
+import { User } from "../models/user.model.js";
 export const getAttendanceById = async (id) => {
   return Attendance.findById(id);
 };
@@ -15,4 +16,11 @@ export const createAttendanceLogout = async (data) => {
     { loggedOutAt: data.loggedOutAt, status: data.status }, // update object
     { new: true } // return updated doc
   );
+};
+
+export const getUserByRole = async (req) => {
+  const { userRole } = req.params;
+  const { organization } = req.user;
+
+  return User.find({ userRole, organization });
 };

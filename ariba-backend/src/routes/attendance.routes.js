@@ -6,17 +6,27 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { Router } from "express";
 import {
   getAttendanceByUserController,
+  getUserByRole,
   markAttendance
 } from "../controllers/attendance.controller.js";
 
 const router = Router();
 router.post("/create-login/:id", verifyJWT, sanitizeRequests, markAttendance);
-router.patch("/create-logout/:id", verifyJWT, sanitizeRequests, markAttendance);
+router.patch(
+  "/create-logout/:id",
+  verifyJWT,
+  verifyTenant,
+  sanitizeRequests,
+  markAttendance
+);
 router.get(
   "/get-attendance/:id",
   verifyJWT,
   sanitizeRequests,
   getAttendanceByUserController
 );
+
+// attendance page
+router.get("/by-role/:userRole", verifyJWT, sanitizeRequests, getUserByRole);
 
 export default router;
