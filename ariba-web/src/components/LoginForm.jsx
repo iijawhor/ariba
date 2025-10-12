@@ -6,8 +6,6 @@ import { toast } from "react-toastify";
 
 export const LoginForm = () => {
   const loginError = useSelector((state) => state.user.error);
-  console.log(loginError?.message);
-
   const [loginCredentials, setLoginCredentials] = useState({
     email: "",
     password: ""
