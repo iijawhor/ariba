@@ -1,14 +1,17 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loginHandler } from "../store/slices/userSlice";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export const LoginForm = () => {
+  const loginError = useSelector((state) => state.user.error);
+  console.log(loginError?.message);
+
   const [loginCredentials, setLoginCredentials] = useState({
     email: "",
     password: ""
   });
-  const [error, setError] = useState("");
 
   const dispatch = useDispatch();
   const handleChange = (e) => {
@@ -26,13 +29,14 @@ export const LoginForm = () => {
       .unwrap()
       .then((result) => {
         if (result) {
+          toast.success("Logged in successfully");
           navigate("/");
         } else {
           navigate("/signin");
         }
       })
       .catch((err) => {
-        setError(err);
+        toast.error(loginError?.message || "Something went wrong!");
       });
   };
 
@@ -107,7 +111,7 @@ export const LoginForm = () => {
       {/* Login Button */}
       <button
         onClick={handleLogin}
-        className="w-full py-2 mt-2 rounded-full bg-gradient-to-r from-blue-600 to-blue-400 text-white font-semibold hover:from-blue-700 hover:to-blue-500 transition"
+        className="w-full py-2 cursor-pointer mt-2 rounded-full bg-gradient-to-r from-blue-600 to-blue-400 text-white font-semibold hover:from-blue-700 hover:to-blue-500 transition"
       >
         Login
       </button>
