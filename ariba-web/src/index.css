@@ -13,3 +13,23 @@ input:-webkit-autofill:active {
   -webkit-text-fill-color: #1e3a8a !important; /* Blue-900 text */
   transition: background-color 5000s ease-in-out 0s;
 }
+/* src/components/InfoCard.css */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #ffffff; /* Track color */
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #2c80ff; /* Thumb color */
+  border-radius: 10px;
+  border: 2px solid #ffffff; /* Creates padding around thumb */
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #2c80ff #ffffff; /* Firefox */
+}
