@@ -101,6 +101,17 @@ const userSchema = new Schema(
   },
   { timestamps: true }
 );
+userSchema.index(
+  {
+    firstName: 1,
+    lastName: 1,
+    userRole: 1,
+    phoneNumber: 1,
+    email: 1,
+    status: 1
+  },
+  { unique: true }
+);
 userSchema.set("toJSON", { getters: true });
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
