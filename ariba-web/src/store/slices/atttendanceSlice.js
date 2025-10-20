@@ -101,20 +101,27 @@ export const getUsersByRole = createAsyncThunk(
     }
   }
 );
-export const getAttendanceByUserRole = createAsyncThunk(
-  "attendance/getAttendanceByUserRole",
+export const getAttendance = createAsyncThunk(
+  "attendance/gettAttendanceUrl",
   async (
-    { gettAttendanceByUserRoleUrl, userRole, fromDate, toDate, accessToken },
+    { getAttendanceUrl, userRole, fromDate, toDate, accessToken },
+
     thunkAPI
   ) => {
+    console.log(
+      "SLICE>>>>>>>>.........",
+      getAttendanceUrl,
+      fromDate,
+      toDate,
+      accessToken,
+      userRole
+    );
+
     try {
-      const response = await axios.get(
-        `${gettAttendanceByUserRoleUrl}/${userRole}`,
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-          params: { fromDate, toDate }
-        }
-      );
+      const response = await axios.get(`${getAttendanceUrl}/${userRole}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        params: { fromDate, toDate }
+      });
       return response.data;
     } catch (error) {
       console.log("Error in getAttendanceByUserRole Slice...", error);
@@ -122,7 +129,7 @@ export const getAttendanceByUserRole = createAsyncThunk(
       const message =
         error.response?.data?.message ||
         error.message ||
-        `Failed to fetch attendance for ${userRole}`;
+        `Failed to fetch attendance for ${userRole} ${fromDate} ${toDate}`;
       return thunkAPI.rejectWithValue(message);
     }
   }
@@ -144,7 +151,6 @@ export const getPresentUsersByRole = createAsyncThunk(
       );
       return response.data;
     } catch (error) {
-      console.log("Error in getPresentUsers Slice...", error);
       const msg =
         error?.response?.data?.message ||
         error?.message ||
@@ -162,7 +168,8 @@ const attendanceSlice = createSlice({
     error: null,
     attendanceByUser: null,
     users: null,
-    presentUsers: null
+    presentUsers: null,
+    message: null
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -215,23 +222,24 @@ const attendanceSlice = createSlice({
       })
       .addCase(getUsersByRole.fulfilled, (state, action) => {
         state.loading = false;
-        state.users = action.payload;
+        state.users = action.payload.users;
+        state.message = action.payload.message;
       })
       .addCase(getUsersByRole.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
-    // get Attendance by userRole
+    // get Attendance by filter
     builder
-      .addCase(getAttendanceByUserRole.pending, (state) => {
+      .addCase(getAttendance.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(getAttendanceByUserRole.fulfilled, (state, action) => {
+      .addCase(getAttendance.fulfilled, (state, action) => {
         state.loading = false;
         state.attendanceRecord = action.payload;
       })
-      .addCase(getAttendanceByUserRole.rejected, (state, action) => {
+      .addCase(getAttendance.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

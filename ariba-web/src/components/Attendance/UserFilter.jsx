@@ -1,5 +1,3 @@
-import React from "react";
-
 const UserFilter = ({ filterValue, setFilterValue }) => {
   return (
     <div className="relative flex-1 max-w-xs md:max-w-[150px]">
@@ -12,9 +10,9 @@ const UserFilter = ({ filterValue, setFilterValue }) => {
         onChange={(e) =>
           setFilterValue((prev) => ({ ...prev, user: e.target.value }))
         }
-        className="w-full bg-[#2C80FF] text-white text-xs font-sans rounded-lg p-2 pr-8 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
+        className="w-full bg-[#2C80FF] capitalize text-white text-xs font-sans rounded-lg p-2 pr-8 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
       >
-        {["teachers", "students", "admin"].map((option) => (
+        {["teacher", "student", "admin"].map((option) => (
           <option
             key={option}
             value={option}

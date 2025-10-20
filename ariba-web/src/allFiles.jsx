@@ -27,14 +27,16 @@ import AttendanceList from "./components/MySpace/AttendanceList.jsx";
 import { getISTDate, getISTTime } from "./utils/formatIST.js";
 import { calculateGrossHours } from "./utils/calculateGrossHours.jsx";
 import Payment from "./pages/Payment.jsx";
-import ClassModal from "./academic/ClassModal.jsx";
-import SubjectModal from "./academic/SubjectModal.jsx";
-import AssignSubjectModal from "./academic/AssignSubject.jsx";
-import AssignTeacherModal from "./academic/AssignTeacher.jsx";
-import ScheduleModal from "./academic/Schedule.jsx";
 import AcademicPage from "./pages/AcademicPage.jsx";
 import SettingsPage from "./pages/Settings.jsx";
 import UserModal from "./components/UserModal.jsx";
+import InfoCard from "./components/academic/InfoCard.jsx";
+import ModalWrapper from "./components/modals/ModalWrapper.jsx";
+import ClassModal from "./components/modals/ClassModal.jsx";
+import SubjectModal from "./components/modals/SubjectModal.jsx";
+import AssignSubjectModal from "./components/modals/AssignSubjectModal.jsx";
+import AssignTeacherModal from "./components/modals/AssignTeacherModal.jsx";
+import RoutineModal from "./components/modals/RoutineModal.jsx";
 export {
   Dashboard,
   Sidebar,
@@ -67,11 +69,13 @@ export {
   calculateGrossHours,
   Payment,
   AcademicPage,
+  SettingsPage,
+  UserModal,
+  InfoCard,
+  ModalWrapper,
   ClassModal,
   SubjectModal,
   AssignSubjectModal,
   AssignTeacherModal,
-  ScheduleModal,
-  SettingsPage,
-  UserModal
+  RoutineModal
 };

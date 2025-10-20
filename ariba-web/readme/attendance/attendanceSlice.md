@@ -393,3 +393,93 @@ dispatch(
 | Get present users by role | `/present/:role`    | GET    | ✅   | `fromDate`, `toDate` |
 
 This module provides a clean, secure, and efficient way to handle role-based user and attendance data in your Redux store.
+
+## **Attendance Slice (Updated)**
+
+**File:** `attendanceSlice.js`
+
+**Description (Updated Part):**
+The `attendanceSlice` now includes a new async thunk `getAttendance` for fetching filtered attendance by user role and date range. Additionally, the slice now stores a `message` field when fetching users by role. These updates improve dynamic data fetching for the attendance page and provide better feedback from API calls.
+
+---
+
+### **Updated Features**
+
+1. **New Async Thunk: `getAttendance`**
+
+   - Fetches attendance for a specific `userRole` within a `fromDate`–`toDate` range.
+   - Accepts the following parameters:
+
+     ```javascript
+     {
+       getAttendanceUrl, // API endpoint base URL
+         userRole, // role of users to fetch attendance for
+         fromDate, // start date for filter
+         toDate, // end date for filter
+         accessToken; // JWT token for authorization
+     }
+     ```
+
+   - Returns filtered attendance data from the backend.
+   - Handles API errors gracefully and rejects with meaningful messages.
+
+   ```javascript
+   export const getAttendance = createAsyncThunk(
+     "attendance/gettAttendanceUrl",
+     async (
+       { getAttendanceUrl, userRole, fromDate, toDate, accessToken },
+       thunkAPI
+     ) => {
+       try {
+         const response = await axios.get(`${getAttendanceUrl}/${userRole}`, {
+           headers: { Authorization: `Bearer ${accessToken}` },
+           params: { fromDate, toDate }
+         });
+         return response.data;
+       } catch (error) {
+         const message =
+           error.response?.data?.message ||
+           error.message ||
+           `Failed to fetch attendance for ${userRole} ${fromDate} ${toDate}`;
+         return thunkAPI.rejectWithValue(message);
+       }
+     }
+   );
+   ```
+
+2. **Updated `getUsersByRole` Extra Reducer**
+
+   - Now saves both the `users` array and a backend `message` returned from the API.
+
+   ```javascript
+   .addCase(getUsersByRole.fulfilled, (state, action) => {
+     state.loading = false;
+     state.users = action.payload.users;
+     state.message = action.payload.message;
+   });
+   ```
+
+3. **Extra Reducers for `getAttendance`**
+
+   - Handles pending, fulfilled, and rejected states for the new thunk.
+   - Updates `attendanceRecord` on successful fetch.
+   - Captures `error` on rejection.
+
+4. **State Additions**
+
+   - Added `message: null` to `initialState` for storing informational messages from API responses.
+
+---
+
+### **Suggested Git Commit**
+
+```
+feat: add getAttendance thunk and update attendanceSlice
+
+- Added getAttendance async thunk to fetch attendance filtered by user role and date range
+- Updated getUsersByRole extra reducer to store API message alongside users
+- Added message field to slice state for backend informational messages
+- Handles pending, fulfilled, and rejected states for new thunk
+- Improves dynamic attendance fetching and state management for frontend
+
+```

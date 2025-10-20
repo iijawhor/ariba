@@ -1,6 +1,4 @@
-import React from "react";
-
-const FilterDates = ({ filterValue, setFilterValue }) => {
+const FilterDates = ({ filterValue, setFilterValue, handleGetAttendance }) => {
   return (
     <div className="w-full max-w-xs md:max-w-sm">
       <div className="flex flex-col md:flex-row gap-2 items-center bg-white rounded-md shadow-sm p-2">
@@ -32,12 +30,21 @@ const FilterDates = ({ filterValue, setFilterValue }) => {
             id="toDate"
             type="date"
             value={filterValue?.toDate}
-            onChange={(e) =>
+            onChange={(e) => {
+              const newToDate = e.target.value;
+
+              // Update state
               setFilterValue((prev) => ({
                 ...prev,
-                toDate: e.target.value
-              }))
-            }
+                toDate: newToDate
+              }));
+
+              // Call the function immediately with the selected value
+              handleGetAttendance({
+                ...filterValue, // other filter values
+                toDate: newToDate
+              });
+            }}
             className="w-full text-xs text-gray-900 bg-[#E7F0FF] rounded-sm p-1 focus:ring-2 focus:ring-blue-400 focus:outline-none text-center"
           />
         </div>
