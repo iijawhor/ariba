@@ -9,7 +9,7 @@ const Actions = () => {
   const loggedInUser = useSelector((state) => state.user.loggedInUser);
   const attendance = useSelector((state) => state.attendance.attendanceRecord);
   const attendanceError = useSelector((state) => state.attendance.error);
-  const attendanceId = attendance?.data._id;
+  const attendanceId = attendance?.data?._id;
   const accessToken = loggedInUser?.accessToken;
   const userId = loggedInUser?.user?._id;
   const dispatch = useDispatch();
