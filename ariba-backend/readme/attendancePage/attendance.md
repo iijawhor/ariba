@@ -176,3 +176,280 @@ Request → verifyJWT → sanitizeRequests → getUserByRole (Controller)
            ↓
       Returns filtered users (same tenant only)
 ```
+
+<!-- get attendance and stats -->
+<!-- Attendance Repositories -->
+
+### **Documentation: `getAttendance` Function**
+
+**File:** `attendanceService.js` (example)
+
+**Description:**
+Fetches users by their role and aggregates their attendance records within a specified date range. If no dates are provided, it defaults to the last month up to the current day.
+
+---
+
+#### **Function Signature**
+
+```javascript
+export const getAttendance = async ({ userRole, fromDate, toDate }) => { ... }
+```
+
+---
+
+#### **Parameters**
+
+| Parameter  | Type               | Required | Description                                                                         |
+| ---------- | ------------------ | -------- | ----------------------------------------------------------------------------------- |
+| `userRole` | `string`           | ✅       | Role of the users to fetch (e.g., `"teacher"`, `"student"`).                        |
+| `fromDate` | `string` or `Date` | ❌       | Start date for filtering attendance records. Defaults to one month before `toDate`. |
+| `toDate`   | `string` or `Date` | ❌       | End date for filtering attendance records. Defaults to today.                       |
+
+---
+
+#### **Functionality**
+
+1. **Safe Date Handling:**
+
+   - Converts `fromDate` and `toDate` into JavaScript `Date` objects.
+   - If `fromDate` is missing, sets it to one month before `toDate`.
+   - Extends `toDate` to `23:59:59.999` and `fromDate` to `00:00:00.000` to include full days.
+
+2. **User Filtering:**
+
+   - Uses MongoDB aggregation to fetch all users matching the provided `userRole`.
+
+3. **Attendance Lookup:**
+
+   - Performs a `$lookup` on the `attendances` collection.
+   - Filters attendance records for each user within the `fromDate` and `toDate` range.
+   - Returns only relevant fields: `date`, `status`, `loggedInAt`, `loggedOutAt`.
+
+4. **Projection:**
+
+   - Returns a clean object for each user:
+
+     ```json
+     {
+       "firstName": "string",
+       "lastName": "string",
+       "email": "string",
+       "userRole": "string",
+       "attendanceRecords": [
+         {
+           "date": "Date",
+           "status": "string",
+           "loggedInAt": "Date",
+           "loggedOutAt": "Date"
+         }
+       ]
+     }
+     ```
+
+---
+
+#### **Example Usage**
+
+```javascript
+const attendanceList = await getAttendance({
+  userRole: "teacher",
+  fromDate: "2025-09-01",
+  toDate: "2025-09-30"
+});
+
+console.log(attendanceList);
+```
+
+**Output:**
+
+```json
+[
+  {
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john@example.com",
+    "userRole": "teacher",
+    "attendanceRecords": [
+      {
+        "date": "2025-09-05T00:00:00.000Z",
+        "status": "in",
+        "loggedInAt": "2025-09-05T09:00:00.000Z",
+        "loggedOutAt": "2025-09-05T17:00:00.000Z"
+      }
+    ]
+  }
+]
+```
+
+---
+
+#### **Notes**
+
+- Ensure that the `attendances` collection stores the `user` field as a reference to the `User` `_id`.
+- The function supports optional date filtering; leaving both dates empty fetches attendance from the last month.
+<!-- Attendance Service -->
+
+### **Service: `getAttendance`**
+
+**File:** `attendance.services.js`
+
+**Description:**
+Fetches users along with their attendance records filtered by role, date range, and optionally attendance status. This service acts as a bridge between the controller and the repository, applying query parameters from the request.
+
+---
+
+#### **Function Signature**
+
+```javascript
+export const getAttendance = async (req) => { ... }
+```
+
+---
+
+#### **Parameters**
+
+| Parameter             | Type                         | Required | Description                                                                           |
+| --------------------- | ---------------------------- | -------- | ------------------------------------------------------------------------------------- |
+| `req.params.userRole` | `string`                     | ✅       | The role of users to fetch (e.g., `"teacher"`, `"student"`).                          |
+| `req.query.fromDate`  | `string` (YYYY-MM-DD)        | ❌       | Optional start date for filtering attendance records. Defaults handled in repository. |
+| `req.query.toDate`    | `string` (YYYY-MM-DD)        | ❌       | Optional end date for filtering attendance records. Defaults handled in repository.   |
+| `req.query.status`    | `string` (`"in"` or `"out"`) | ❌       | Optional filter to fetch only records with a specific attendance status.              |
+
+---
+
+#### **Functionality**
+
+1. Logs the request query for debugging:
+
+   ```javascript
+   console.log("In service...", userRole, fromDate, toDate, status);
+   ```
+
+2. Calls the repository function `AttendanceRepositories.getAttendance` with the following parameters:
+
+   - `userRole` → filters users by role.
+   - `fromDate` and `toDate` → filter attendance within a specific date range.
+   - `status` → filter attendance by status if provided.
+
+3. Returns an array of user objects with their attendance records.
+
+---
+
+#### **Example Usage**
+
+```javascript
+GET /api/attendance/teacher?fromDate=2025-09-01&toDate=2025-09-30&status=in
+```
+
+**Controller Call:**
+
+```javascript
+const attendance = await getAttendance(req);
+```
+
+**Example Output:**
+
+```json
+[
+  {
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john@example.com",
+    "userRole": "teacher",
+    "attendanceRecords": [
+      {
+        "date": "2025-09-05T00:00:00.000Z",
+        "status": "in",
+        "loggedInAt": "2025-09-05T09:00:00.000Z",
+        "loggedOutAt": "2025-09-05T17:00:00.000Z"
+      }
+    ]
+  }
+]
+```
+
+---
+
+#### **Notes**
+
+- The service supports optional query filters; if dates or status are missing, defaults are handled in the repository layer.
+- Useful for building attendance reports, analytics, or dashboards filtered by user role and date range.
+
+<!-- attendance controller -->
+
+### **Controller: `getAttendance`**
+
+**File:** `attendance.controller.js`
+
+**Description:**
+Handles HTTP requests to fetch attendance records for users filtered by role, date range, and optional status. Calls the corresponding service and returns a JSON response to the client.
+
+---
+
+#### **Function Signature**
+
+```javascript
+export const getAttendance = async (req, res) => { ... }
+```
+
+---
+
+#### **Parameters**
+
+| Parameter             | Type                         | Required | Description                                                              |
+| --------------------- | ---------------------------- | -------- | ------------------------------------------------------------------------ |
+| `req.params.userRole` | `string`                     | ✅       | Role of the users to fetch (e.g., `"teacher"`, `"student"`).             |
+| `req.query.fromDate`  | `string` (YYYY-MM-DD)        | ❌       | Optional start date for filtering attendance records.                    |
+| `req.query.toDate`    | `string` (YYYY-MM-DD)        | ❌       | Optional end date for filtering attendance records.                      |
+| `req.query.status`    | `string` (`"in"` or `"out"`) | ❌       | Optional filter to fetch only records with a specific attendance status. |
+| `res`                 | `object`                     | ✅       | Express response object used to send JSON response.                      |
+
+---
+
+#### **Functionality**
+
+1. Calls the service layer `AttendanceService.getAttendance(req)` to fetch filtered attendance records.
+2. Logs request params and query for debugging purposes.
+3. Returns a **200 OK** JSON response with:
+
+   ```json
+   {
+     "message": "Attendance fetched successfully",
+     "attendance": [...]
+   }
+   ```
+
+4. Catches errors and returns a **400 Bad Request** with a failure message if something goes wrong.
+
+---
+
+#### **Example Usage (Express Route)**
+
+```javascript
+// Route
+app.get('/api/attendance/:userRole', getAttendance);
+
+// Request
+GET /api/attendance/teacher?fromDate=2025-09-01&toDate=2025-09-30&status=in
+
+// Response
+{
+  "message": "Attendance fetched successfully",
+  "attendance": [
+    {
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john@example.com",
+      "userRole": "teacher",
+      "attendanceRecords": [
+        {
+          "date": "2025-09-05T00:00:00.000Z",
+          "status": "in",
+          "loggedInAt": "2025-09-05T09:00:00.000Z",
+          "loggedOutAt": "2025-09-05T17:00:00.000Z"
+        }
+      ]
+    }
+  ]
+}
+```

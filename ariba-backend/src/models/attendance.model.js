@@ -27,6 +27,9 @@ const attendanceSchema = new Schema(
 );
 
 // Ensure one record per user per day
-attendanceSchema.index({ user: 1, date: 1 }, { unique: true });
+attendanceSchema.index(
+  { user: 1, date: 1, loggedInAt: 1, loggedOutAt: 1 },
+  { unique: true }
+);
 
 export const Attendance = model("Attendance", attendanceSchema);

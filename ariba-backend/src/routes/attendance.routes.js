@@ -5,6 +5,7 @@ import { validateRole } from "../middlewares/verifyRole.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { Router } from "express";
 import {
+  getAttendance,
   getAttendanceByUserController,
   getUserByRole,
   markAttendance
@@ -28,5 +29,11 @@ router.get(
 
 // attendance page
 router.get("/by-role/:userRole", verifyJWT, sanitizeRequests, getUserByRole);
+router.get(
+  "/filter-attendance/:userRole",
+  verifyJWT,
+  sanitizeRequests,
+  getAttendance
+);
 
 export default router;

@@ -46,3 +46,14 @@ export const getAttendanceByUserService = async (req) => {
 export const getUsersByRole = async (req) => {
   return await AttendanceRepositories.getUserByRole(req);
 };
+export const getAttendance = async (req) => {
+  const { userRole } = req.params;
+  const { fromDate, toDate, status } = req.query;
+
+  return await AttendanceRepositories.getAttendance({
+    userRole,
+    fromDate,
+    toDate,
+    status
+  });
+};

@@ -1,4 +1,7 @@
+import { Attendance } from "../models/attendance.model.js";
 import * as UserService from "../services/attendance.service.js";
+import * as AttendanceService from "../services/attendance.service.js";
+
 export const markAttendance = async (req, res) => {
   try {
     const attendanceRecord = await UserService.markAttendance(req);
@@ -36,5 +39,17 @@ export const getUserByRole = async (req, res) => {
       .json({ message: "Users fetched successfully", users });
   } catch (error) {
     return res.status(400).json({ message: "Failed to fetch users by role" });
+  }
+};
+export const getAttendance = async (req, res) => {
+  try {
+    const attendance = await AttendanceService.getAttendance(req);
+    console.log("attendace....in controller........", req.params, req.query);
+    return res
+      .status(200)
+      .json({ message: "Attendance fetched successfully", attendance });
+  } catch (error) {
+    console.log("Err.........", error);
+    return res.status(400).json({ message: "Failed to fetch attendance" });
   }
 };
