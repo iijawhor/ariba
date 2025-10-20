@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useSaveUser } from "../hooks/useSaveUser.js";
-import { useSelector } from "react-redux";
 
 const UserModal = ({ isOpen, onClose, userData, mode }) => {
   const { saveUser } = useSaveUser();
@@ -177,7 +176,7 @@ const UserModal = ({ isOpen, onClose, userData, mode }) => {
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-3">
       <div className="bg-white w-full max-w-2xl rounded-2xl shadow-xl p-6 relative max-h-[90vh] overflow-y-auto border-t-4 border-[#2C80FF]">
         {/* Header */}
-        <ToastContainer />
+
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-gray-800">
             {isEdit ? "Update User" : "Add New User"}
