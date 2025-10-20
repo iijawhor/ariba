@@ -6,6 +6,7 @@ const initialState = {
   loading: false,
   currentUser: {},
   message: "",
+  accessToken: null,
   usersByOrganization: [],
   userDetails: {},
   newTimeline: {},
@@ -119,7 +120,52 @@ export const addTimeline = createAsyncThunk(
     }
   }
 );
+export const getCurrentUser = createAsyncThunk(
+  "user/getCurrentUser",
+  async ({ getCurrentUserApi, id, accessToken }, thunkAPI) => {
+    try {
+      const response = await axios.get(`${getCurrentUserApi}/${id}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        },
+        withCredentials: true
+      });
 
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Failed to get user!"
+      );
+    }
+  }
+);
+// Async thunk to generate a new access token using the refresh token
+export const generateRefreshAccessToken = createAsyncThunk(
+  "user/generateRefreshAccessToken",
+  async (generateRefreshAccessTokenApi, thunkAPI) => {
+    console.log("api....", generateRefreshAccessTokenApi);
+
+    try {
+      const response = await axios.post(
+        generateRefreshAccessTokenApi,
+
+        {
+          withCredentials: true // 🔑 this sends the cookie
+        }
+      );
+
+      // Return the new access token
+      return response.data; // { accessToken: "..." }
+    } catch (error) {
+      // Return a meaningful error message
+      console.log("err.. in ref....", error);
+
+      const message =
+        error.response?.data?.message || "Failed to generate access token!";
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 const userSlice = createSlice({
   name: "user",
   initialState,
@@ -136,6 +182,21 @@ const userSlice = createSlice({
         state.loading = false;
       })
       .addCase(loginHandler.rejected, (state, action) => {
+        state.error = action.payload || "Internal Server Error";
+        state.loading = false;
+        state.loggedInUser = null;
+      });
+    builder
+      .addCase(getCurrentUser.pending, (state, action) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getCurrentUser.fulfilled, (state, action) => {
+        state.loggedInUser = action.payload;
+        state.error = null;
+        state.loading = false;
+      })
+      .addCase(getCurrentUser.rejected, (state, action) => {
         state.error = action.payload || "Internal Server Error";
         state.loading = false;
         state.loggedInUser = null;
@@ -213,6 +274,19 @@ const userSlice = createSlice({
       })
       .addCase(addTimeline.rejected, (state, action) => {
         state.newTimeline = null;
+        state.error = action.payload;
+        state.loading = false;
+      });
+    builder
+      .addCase(generateRefreshAccessToken.pending, (state, action) => {
+        (state.loading = true), (state.error = false);
+      })
+      .addCase(generateRefreshAccessToken.fulfilled, (state, action) => {
+        state.accessToken = action.payload;
+        state.error = null;
+        state.loading = false;
+      })
+      .addCase(generateRefreshAccessToken.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
       });
