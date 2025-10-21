@@ -54,24 +54,20 @@ export const createRoutine = async (req) => {
     }
   }
   const routineExist = await Routine.findOne({
-    grade, // same grade
+    grade, // same grade/class
     subjectName, // same subject
     day, // same day
-    $or: [
-      {
-        // existing start is before new end AND existing end is after new start
-        startTime: { $lt: endTime },
-        endTime: { $gt: startTime }
-      }
-    ]
+    startTime: { $lt: endTime }, // existing start < new end
+    endTime: { $gt: startTime } // existing end > new start
   });
 
   if (routineExist) {
     throw new ApiError(
-      "A routine already exists for this subject during this time",
+      "A routine already exists for this subject in this class during this time",
       400
     );
   }
+
   const teacherConflict = await Routine.findOne({
     day, // same day
     teachers: { $in: teachers }, // any teacher in the array is already assigned
