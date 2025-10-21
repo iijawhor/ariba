@@ -1,4 +1,5 @@
 import { Grade } from "../models/academic/class.model.js";
+import Routine from "../models/academic/routine.model.js";
 import Subject from "../models/academic/subject.model.js";
 import * as AcademicRepositories from "../repositories/academic.repositories.js";
 import ApiError from "../utils/ApiError.js";
@@ -29,4 +30,76 @@ export const createSubject = async (req) => {
     throw new ApiError("Subject already exist", 400);
   }
   return await AcademicRepositories.createSubejct({ subjectName, subjectCode });
+};
+
+export const createRoutine = async (req) => {
+  const { grade, subjectName, teachers, day, date, startTime, endTime } =
+    req.body;
+  const requiredFields = [
+    "grade",
+    "subjectName",
+    "teachers",
+    "day",
+    "date",
+    "startTime",
+    "endTime"
+  ];
+
+  for (let field of requiredFields) {
+    if (
+      !req.body[field] ||
+      (field === "teachers" && req.body[field].length === 0)
+    ) {
+      throw new ApiError(`Field ${field} is required`, 400);
+    }
+  }
+  const routineExist = await Routine.findOne({
+    grade, // same grade
+    subjectName, // same subject
+    day, // same day
+    $or: [
+      {
+        // existing start is before new end AND existing end is after new start
+        startTime: { $lt: endTime },
+        endTime: { $gt: startTime }
+      }
+    ]
+  });
+
+  if (routineExist) {
+    throw new ApiError(
+      "A routine already exists for this subject during this time",
+      400
+    );
+  }
+  const teacherConflict = await Routine.findOne({
+    day, // same day
+    teachers: { $in: teachers }, // any teacher in the array is already assigned
+    startTime: { $lt: endTime }, // existing start < new end
+    endTime: { $gt: startTime } // existing end > new start
+  });
+
+  if (teacherConflict) {
+    // Identify which teachers are conflicting (optional)
+    const conflictedTeachers = teacherConflict.teachers.filter((t) =>
+      teachers.includes(t.toString())
+    );
+
+    throw new ApiError(
+      `Schedule conflict: the following teacher(s) are already booked: ${conflictedTeachers.join(
+        ", "
+      )}`,
+      400
+    );
+  }
+
+  return await AcademicRepositories.createRoutine({
+    grade,
+    subjectName,
+    teachers,
+    day,
+    date,
+    startTime,
+    endTime
+  });
 };

@@ -6,6 +6,7 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 import {
   createClass,
+  createRoutine,
   createSubject
 } from "../controllers/academic.controller.js";
 import { Router } from "express";
@@ -33,5 +34,13 @@ router.post(
   validateRole(["teacher", "admin"]),
   sanitizeRequests,
   createSubject
+);
+router.post(
+  "/create-routine",
+  verifyJWT,
+  // verifyTenant,
+  validateRole(["teacher", "admin"]),
+  sanitizeRequests,
+  createRoutine
 );
 export default router;

@@ -19,3 +19,15 @@ export const createSubject = async (req, res) => {
     return res.status(400).json({ message: "Failed to create subject" });
   }
 };
+
+export const createRoutine = async (req, res) => {
+  try {
+    const newRoutine = await AcademicServices.createRoutine(req);
+    return res
+      .status(200)
+      .json({ message: "Routine created successfully", newRoutine });
+  } catch (error) {
+
+    return res.status(200).json({ message: "Failed to create routine" });
+  }
+};
