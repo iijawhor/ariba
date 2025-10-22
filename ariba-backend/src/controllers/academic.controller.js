@@ -27,7 +27,6 @@ export const createRoutine = async (req, res) => {
       .status(200)
       .json({ message: "Routine created successfully", newRoutine });
   } catch (error) {
-
     return res.status(200).json({ message: "Failed to create routine" });
   }
 };
