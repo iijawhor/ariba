@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { createGrade } from "../store/slices/academicSlice.js";
+import { createGrade, createSubject } from "../store/slices/academicSlice.js";
 import { toast } from "react-toastify";
 
 const createGradeUrl = `${
@@ -29,5 +29,19 @@ export const useAcademic = () => {
     }
   };
 
-  return { handleCreateGradeHook };
+  const handleCreateSubjectHook = async ({ e, formData }) => {
+    e.preventDefault();
+    try {
+      await dispatch(
+        createSubject({ createSubjectUrl, formData, accessToken })
+      ).unwrap();
+      toast.success("Subject created successfully");
+    } catch (error) {
+      const message =
+        err?.response?.data?.message || err?.message || "Something went wrong!";
+      toast.error(message);
+    }
+  };
+
+  return { handleCreateGradeHook, handleCreateSubjectHook };
 };
