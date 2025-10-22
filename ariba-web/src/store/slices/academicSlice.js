@@ -36,9 +36,33 @@ export const createSubject = createAsyncThunk(
   }
 );
 
+export const createRoutine = createAsyncThunk(
+  "academic/createRoutine",
+  async ({ createRoutineUrl, formData, accessToken }) => {
+    try {
+      const response = await axios.post(createRoutineUrl, formData, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      });
+      return response;
+    } catch (error) {
+      const msg =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to create subject!";
+      return thunkAPI.rejectWithValue(msg);
+    }
+  }
+);
+
 const attendanceSlice = createSlice({
   name: "attendance",
-  initialState: { grade: null, loading: null, error: null, subject: null },
+  initialState: {
+    grade: null,
+    loading: null,
+    error: null,
+    subject: null,
+    routine: null
+  },
   reducers: {},
   extraReducers: (builder) => {
     builder
@@ -66,6 +90,21 @@ const attendanceSlice = createSlice({
         state.subject = action.payload;
       })
       .addCase(createSubject.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    builder
+
+      .addCase(createRoutine.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createRoutine.fulfilled, (state, action) => {
+        state.loading = false;
+        state.routine = action.payload;
+      })
+      .addCase(createRoutine.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -1,5 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
-import { createGrade, createSubject } from "../store/slices/academicSlice.js";
+import {
+  createGrade,
+  createRoutine,
+  createSubject
+} from "../store/slices/academicSlice.js";
 import { toast } from "react-toastify";
 
 const createGradeUrl = `${
@@ -8,6 +12,10 @@ const createGradeUrl = `${
 const createSubjectUrl = `${
   import.meta.env.VITE_API_BASE_URL
 }/academic/create-subject`;
+
+const createRoutineUrl = `${
+  import.meta.env.VITE_API_BASE_URL
+}/academic/create-routine`;
 
 export const useAcademic = () => {
   const user = useSelector((state) => state.user.loggedInUser);
@@ -43,5 +51,23 @@ export const useAcademic = () => {
     }
   };
 
-  return { handleCreateGradeHook, handleCreateSubjectHook };
+  const handleCreateRoutineHook = async ({ e, formData }) => {
+    e.preventDefault();
+    try {
+      await dispatch(
+        createRoutine({ createRoutineUrl, formData, accessToken })
+      ).unwrap();
+      toast.success("Routine scheduled successfully");
+    } catch (error) {
+      const message =
+        err?.response?.data?.message || err?.message || "Something went wrong!";
+      toast.error(message);
+    }
+  };
+
+  return {
+    handleCreateGradeHook,
+    handleCreateSubjectHook,
+    handleCreateRoutineHook
+  };
 };
