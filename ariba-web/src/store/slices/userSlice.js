@@ -32,15 +32,15 @@ export const loginHandler = createAsyncThunk(
 export const getOrganizationUsers = createAsyncThunk(
   "user/organizationUsers",
   async (
-    { getOrganizationUserApi, organization, userRole, token },
+    { getOrganizationUserApi, organization, userRole, accessToken },
     thunkAPI
   ) => {
     try {
       const response = await axios.get(getOrganizationUserApi, {
-        params: { organizationId: organization, userRole }
-        // headers: {
-        //   Authorization: `Bearer ${token}`
-        // }
+        params: { organizationId: organization, userRole },
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
       });
 
       return response.data;

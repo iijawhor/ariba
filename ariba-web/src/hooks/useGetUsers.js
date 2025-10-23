@@ -4,11 +4,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { getOrganizationUsers, getUser } from "../store/slices/userSlice.js";
 
 export const useGetUsers = (organization, userRole) => {
-  const dispatch = useDispatch();
   const users = useSelector(
     (state) => state.user.usersByOrganization?.users || []
   );
-
+  const user = useSelector((state) => state.user.loggedInUser);
+  const dispatch = useDispatch();
+  const accessToken = user?.accessToken;
   const [isActive, setIsActive] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -25,7 +26,8 @@ export const useGetUsers = (organization, userRole) => {
       getOrganizationUsers({
         getOrganizationUserApi,
         organization,
-        userRole
+        userRole,
+        accessToken
       })
     );
   }, [organization, userRole, dispatch]);
