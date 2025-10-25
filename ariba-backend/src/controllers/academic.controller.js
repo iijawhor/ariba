@@ -30,3 +30,15 @@ export const createRoutine = async (req, res) => {
     return res.status(200).json({ message: "Failed to create routine" });
   }
 };
+export const getTeachers = async (req, res) => {
+  try {
+    const teachers = await AcademicServices.getTeachers(req);
+    return res
+      .status(200)
+      .json({ message: "Teacher fetched successfully", teachers });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ message: error?.response?.message || "Failed to get teachers!" });
+  }
+};

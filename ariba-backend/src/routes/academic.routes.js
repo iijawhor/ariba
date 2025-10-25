@@ -7,7 +7,8 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 import {
   createClass,
   createRoutine,
-  createSubject
+  createSubject,
+  getTeachers
 } from "../controllers/academic.controller.js";
 import { Router } from "express";
 
@@ -21,7 +22,7 @@ const subjectLimiter = rateLimit({
 router.post(
   "/create-grade",
   verifyJWT,
-  // verifyTenant,
+  verifyTenant,
   validateRole(["teacher", "admin"]),
   sanitizeRequests,
   subjectLimiter,
@@ -30,7 +31,7 @@ router.post(
 router.post(
   "/create-subject",
   verifyJWT,
-  // verifyTenant,
+  verifyTenant,
   validateRole(["teacher", "admin"]),
   sanitizeRequests,
   createSubject
@@ -38,9 +39,17 @@ router.post(
 router.post(
   "/create-routine",
   verifyJWT,
-  // verifyTenant,
+  verifyTenant,
   validateRole(["teacher", "admin"]),
   sanitizeRequests,
   createRoutine
+);
+router.get(
+  "/get-teachers/:userRole",
+  verifyJWT,
+  verifyTenant,
+  validateRole(["teacher", "admin"]),
+  sanitizeRequests,
+  getTeachers
 );
 export default router;

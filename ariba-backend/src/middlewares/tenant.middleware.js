@@ -1,9 +1,11 @@
 export const verifyTenant = (req, res, next) => {
-  //  get the organization/tenant id
-  const organizationId = req.user.organizationId;
+  const organizationId = req.user?.organization;
   if (!organizationId) {
     return res.status(400).json({ message: "Unauthorized tenant" });
   }
+
+  // Optionally attach to request for convenience
   req.organizationId = organizationId;
+
   next();
 };

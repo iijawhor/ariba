@@ -1,11 +1,16 @@
-import { Grade } from "../models/academic/class.model.js";
+import { Grade } from "../models/academic/grade.model.js";
 import Routine from "../models/academic/routine.model.js";
-import Subject from "../models/academic/subject.model.js";
+import { Subject } from "../models/academic/subject.model.js";
 import * as AcademicRepositories from "../repositories/academic.repositories.js";
 import ApiError from "../utils/ApiError.js";
 export const createClass = async (req) => {
-  const { className, section, capacity } = req.body;
+  const organization = req.organizationId;
+  console.log("organization in create class", organization);
 
+  const { className, section, capacity } = req.body;
+  if (!organization) {
+    throw new ApiError("Not a valid organization");
+  }
   if (!className) {
     throw new ApiError("Please enter required fields!", 404);
   }
@@ -17,11 +22,18 @@ export const createClass = async (req) => {
   return await AcademicRepositories.createClass({
     className,
     section,
-    capacity
+    capacity,
+    organization
   });
 };
 export const createSubject = async (req) => {
+  const organization = req.organizationId;
+  console.log("organization in create subject", organization);
+
   const { subjectName, subjectCode } = req.body;
+  if (!organization) {
+    throw new ApiError("Not a valid organization");
+  }
   if (!subjectName) {
     throw new ApiError("Please Provide subject name", 400);
   }
@@ -29,10 +41,19 @@ export const createSubject = async (req) => {
   if (subjectExist) {
     throw new ApiError("Subject already exist", 400);
   }
-  return await AcademicRepositories.createSubejct({ subjectName, subjectCode });
+  return await AcademicRepositories.createSubejct({
+    subjectName,
+    subjectCode,
+    organization
+  });
 };
 
 export const createRoutine = async (req) => {
+  const organization = req.organizationId;
+  console.log("organization in create routine", organization);
+  if (!organization) {
+    throw new ApiError("Not a valid organization");
+  }
   const { grade, subjectName, teachers, day, date, startTime, endTime } =
     req.body;
   const requiredFields = [
@@ -96,6 +117,19 @@ export const createRoutine = async (req) => {
     day,
     date,
     startTime,
-    endTime
+    endTime,
+    organization
   });
+};
+
+export const getTeachers = async (req, res) => {
+  const organization = req.organizationId;
+  const { userRole } = req.params;
+  if (!organization) {
+    throw new ApiError("Not a valid organization", 400);
+  }
+  if (!userRole) {
+    throw new ApiError("Not a valid user role", 400);
+  }
+  return await AcademicRepositories.getTeachers({ userRole, organization });
 };
