@@ -45,8 +45,11 @@ export const createRoutine = async ({
 };
 
 export const getTeachers = async ({ userRole, organization }) => {
-  console.log("Teachers role ...........", organization, userRole);
-  const orgId = new mongoose.Types.ObjectId(organization._id || organization);
-
   return await User.find({ organization, userRole });
+};
+export const getGrades = async ({ organization }) => {
+  return await Grade.find({ organization });
+};
+export const getSubjects = async ({ organization }) => {
+  return await Subject.find({ organization });
 };

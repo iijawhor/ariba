@@ -252,3 +252,156 @@ Controller → Service → Repository → Database
 - Add validation for duplicate subjects.
 - Show loader or disable button during API call.
 - Unit tests for service and controller.
+  Perfect 👍 — here’s the matching **README section** for your `/get-subjects` endpoint, written to mirror your `/get-grades` documentation for consistency 👇
+
+---
+
+## 📘 **GET /api/v1/academic/get-subjects**
+
+### 🔹 **Description**
+
+This endpoint retrieves all subjects associated with a specific organization (tenant).
+Access is restricted to **authenticated** users with roles **teacher** or **admin**.
+
+---
+
+### 🧭 **Endpoint**
+
+```
+GET /api/v1/academic/get-subjects
+```
+
+---
+
+### 🔐 **Middlewares**
+
+| Middleware                           | Purpose                                                                                                               |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| `verifyJWT`                          | Validates the user's JSON Web Token (authentication).                                                                 |
+| `verifyTenant`                       | Ensures the user belongs to a valid organization (tenant) and injects organization info into the request.             |
+| `validateRole(["teacher", "admin"])` | Grants access only to teachers and admins. Prevents unauthorized roles (like students) from accessing this route.     |
+| `sanitizeRequests`                   | Cleans incoming data (query params, headers) to prevent injection or malicious payloads. _(Optional but recommended)_ |
+
+---
+
+### ⚙️ **Controller**
+
+```js
+export const getSubjects = async (req, res) => {
+  try {
+    const subjects = await AcademicServices.getSubjects(req);
+    return res
+      .status(200)
+      .json({ message: "Subjects fetched successfully", subjects });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ message: error?.response?.message || "Failed to get subjects!" });
+  }
+};
+```
+
+#### 🧩 Explanation:
+
+- The controller calls `AcademicServices.getSubjects(req)`.
+- `verifyTenant` middleware provides the `organization` from the authenticated user.
+- The response returns all subjects tied to that organization.
+
+---
+
+### 🧠 **Service Layer**
+
+```js
+export const getSubjects = async ({ organization }) => {
+  return await Subject.find({ organization });
+};
+```
+
+#### 💡 Purpose:
+
+- Fetches subjects stored in the database under the given organization.
+- Ensures tenant isolation, so subjects from one organization aren’t visible to another.
+
+---
+
+### 🗃️ **Data Flow**
+
+1. **Client** sends:
+
+   ```
+   GET /api/v1/academic/get-subjects
+   ```
+
+   with a valid `Authorization: Bearer <token>`.
+
+2. **Server** runs middlewares:
+
+   - `verifyJWT` → Authenticate user
+   - `verifyTenant` → Identify organization
+   - `validateRole` → Ensure role = teacher/admin
+
+3. **Service executes:**
+
+   ```js
+   Subject.find({ organization });
+   ```
+
+4. **Response returned:**
+
+   ```json
+   {
+     "message": "Subjects fetched successfully",
+     "subjects": [ ... ]
+   }
+   ```
+
+---
+
+### 🧾 **Example Response**
+
+```json
+{
+  "message": "Subjects fetched successfully",
+  "subjects": [
+    {
+      "_id": "671a1abf27...",
+      "name": "Mathematics",
+      "organization": "670f91e7..."
+    },
+    { "_id": "671a1ac029...", "name": "Science", "organization": "670f91e7..." }
+  ]
+}
+```
+
+---
+
+### 🚫 **Possible Errors**
+
+| Status | Message                   | Cause                                |
+| ------ | ------------------------- | ------------------------------------ |
+| 400    | `Failed to get subjects!` | Invalid or missing organization info |
+| 401    | `Unauthorized`            | JWT token missing or invalid         |
+| 403    | `Forbidden`               | Role not allowed (not teacher/admin) |
+
+---
+
+### ✅ **Best Practices**
+
+- Ensure `organization` is stored in each Subject document for multi-tenant data isolation.
+- If subjects are shared globally (not tenant-based), you can skip the `organization` filter.
+- Keep consistent response structure (`message`, `data`).
+
+---
+
+### 💻 **Sample Route Definition**
+
+```js
+router.get(
+  "/get-subjects",
+  verifyJWT,
+  verifyTenant,
+  validateRole(["teacher", "admin"]),
+  sanitizeRequests,
+  getSubjects
+);
+```

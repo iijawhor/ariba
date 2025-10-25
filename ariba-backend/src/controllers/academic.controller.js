@@ -42,3 +42,27 @@ export const getTeachers = async (req, res) => {
       .json({ message: error?.response?.message || "Failed to get teachers!" });
   }
 };
+export const getGrades = async (req, res) => {
+  try {
+    const grades = await AcademicServices.getGrades(req);
+    return res
+      .status(200)
+      .json({ message: "Grades fetched successfully", grades });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ message: error?.response?.message || "Failed to get grades!" });
+  }
+};
+export const getSubjects = async (req, res) => {
+  try {
+    const subjects = await AcademicServices.getSubjects(req);
+    return res
+      .status(200)
+      .json({ message: "Subjects fetched successfully", subjects });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ message: error?.response?.message || "Failed to get subjects!" });
+  }
+};

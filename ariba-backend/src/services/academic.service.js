@@ -133,3 +133,18 @@ export const getTeachers = async (req, res) => {
   }
   return await AcademicRepositories.getTeachers({ userRole, organization });
 };
+
+export const getGrades = async (req, res) => {
+  const organization = req.organizationId;
+  if (!organization) {
+    throw new ApiError("Not a valid organization", 400);
+  }
+  return await AcademicRepositories.getGrades({ organization });
+};
+export const getSubjects = async (req, res) => {
+  const organization = req.organizationId;
+  if (!organization) {
+    throw new ApiError("Not a valid organization", 400);
+  }
+  return await AcademicRepositories.getSubjects({ organization });
+};

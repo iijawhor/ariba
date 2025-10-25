@@ -226,3 +226,132 @@ router.post(
 - Default capacity is `30` if not provided.
 - Unique validation on `className` ensures no duplicate grades exist.
 - The system is ready for multi-tenant support with optional `verifyTenant` middleware.
+  <!-- GET GRADES -->
+  Here’s a clean and professional **README section** explaining your `/get-grades` endpoint setup — including what each middleware and function does, and how the data flows 👇
+
+---
+
+## 📘 **GET /api/v1/academic/get-grades**
+
+### 🔹 **Description**
+
+This endpoint retrieves all grades associated with a specific organization (tenant).
+Only **authenticated** users with the roles of **teacher** or **admin** are allowed to access this route.
+
+---
+
+### 🧭 **Endpoint**
+
+```
+GET /api/v1/academic/get-grades
+```
+
+---
+
+### 🔐 **Middlewares**
+
+| Middleware                           | Purpose                                                                                                                                      |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `verifyJWT`                          | Validates the user's JSON Web Token to ensure authentication.                                                                                |
+| `verifyTenant`                       | Confirms that the user belongs to a valid organization (tenant) and attaches the organization info (like `req.organization`) to the request. |
+| `validateRole(["teacher", "admin"])` | Restricts access to only teachers and admins. Other roles cannot fetch grades.                                                               |
+| `sanitizeRequests`                   | Cleans incoming request data (query parameters, headers) to prevent injection or malicious input. _(Optional but recommended for safety)_    |
+
+---
+
+### ⚙️ **Controller**
+
+```js
+export const getGrades = async (req, res) => {
+  try {
+    const grades = await AcademicServices.getGrades(req);
+    return res
+      .status(200)
+      .json({ message: "Grades fetched successfully", grades });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ message: error?.response?.message || "Failed to get grades!" });
+  }
+};
+```
+
+#### 🧩 Explanation:
+
+- The controller calls the `AcademicServices.getGrades(req)` service.
+- It extracts the organization info from the request (added by `verifyTenant`).
+- It returns all grades related to that organization.
+
+---
+
+### 🧠 **Service Layer**
+
+```js
+export const getGrades = async ({ organization }) => {
+  return await Grade.find({ organization });
+};
+```
+
+#### 💡 Purpose:
+
+- Interacts directly with the `Grade` model.
+- Queries all grades belonging to the provided `organization`.
+
+---
+
+### 🗃️ **Data Flow**
+
+1. **Client** sends a request:
+   `GET /api/v1/academic/get-grades` with a valid JWT token.
+2. **Server** verifies:
+
+   - JWT → Valid user
+   - Tenant → Organization identified
+   - Role → Must be teacher/admin
+
+3. **Service** runs query:
+   `Grade.find({ organization })`
+4. **Response** sent back:
+
+   ```json
+   {
+     "message": "Grades fetched successfully",
+     "grades": [ ... ]
+   }
+   ```
+
+---
+
+### 🧾 **Example Response**
+
+```json
+{
+  "message": "Grades fetched successfully",
+  "grades": [
+    {
+      "_id": "671a12ab23...",
+      "name": "Grade 6",
+      "organization": "670f91e7..."
+    },
+    { "_id": "671a12ab25...", "name": "Grade 7", "organization": "670f91e7..." }
+  ]
+}
+```
+
+---
+
+### 🚫 **Possible Errors**
+
+| Status | Message                 | Cause                                       |
+| ------ | ----------------------- | ------------------------------------------- |
+| 400    | `Failed to get grades!` | Invalid organization or missing tenant data |
+| 401    | `Unauthorized`          | Missing or invalid JWT token                |
+| 403    | `Forbidden`             | User role not allowed (not admin/teacher)   |
+
+---
+
+### ✅ **Best Practices**
+
+- Always ensure the `verifyTenant` middleware attaches the correct organization ID to `req`.
+- Consider adding `organization` field to the `Grade` schema if you want full tenant isolation.
+- Return consistent JSON structures (with both `message` and `data` keys).

@@ -8,6 +8,8 @@ import {
   createClass,
   createRoutine,
   createSubject,
+  getGrades,
+  getSubjects,
   getTeachers
 } from "../controllers/academic.controller.js";
 import { Router } from "express";
@@ -51,5 +53,21 @@ router.get(
   validateRole(["teacher", "admin"]),
   sanitizeRequests,
   getTeachers
+);
+router.get(
+  "/get-grades",
+  verifyJWT,
+  verifyTenant,
+  validateRole(["teacher", "admin"]),
+  sanitizeRequests,
+  getGrades
+);
+router.get(
+  "/get-subjects",
+  verifyJWT,
+  verifyTenant,
+  validateRole(["teacher", "admin"]),
+  sanitizeRequests,
+  getSubjects
 );
 export default router;
