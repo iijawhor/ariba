@@ -29,6 +29,11 @@ const routineSchema = new mongoose.Schema(
         message: "startTime must be in HH:mm format"
       }
     },
+    organization: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Organization",
+      required: true
+    },
     endTime: {
       type: String,
       required: true,

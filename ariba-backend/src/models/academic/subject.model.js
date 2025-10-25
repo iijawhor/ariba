@@ -34,10 +34,13 @@ const subjectSchema = new Schema(
     subjectCode: {
       type: String,
       required: false
+    },
+    organization: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Organization",
+      required: true
     }
   },
   { timestamps: true }
 );
-
-const Subject = model("Subject", subjectSchema);
-export default Subject;
+export const Subject = model("Subject", subjectSchema);

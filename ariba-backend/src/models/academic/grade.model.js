@@ -28,6 +28,11 @@ const gradeSchema = new Schema(
         ref: "Subject" // references available subjects for this class
       }
     ],
+    organization: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Organization",
+      required: true
+    },
     createdAt: {
       type: Date,
       default: Date.now
