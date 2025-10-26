@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { searchHandler } from "../store/slices/searchSlice";
@@ -10,6 +10,24 @@ const Navbar = ({ activeMenu, sidebar, setActiveMenu }) => {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.loggedInUser?.user);
+  const sidebarRef = useRef(null);
+
+  // Close sidebar if click outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMobileMenuOpen]);
 
   const handleSearch = useCallback(() => {
     if (!searchQuery) {
@@ -34,8 +52,6 @@ const Navbar = ({ activeMenu, sidebar, setActiveMenu }) => {
             <span className="text-[#2C80FF] capitalize font-bold text-lg md:text-xl">
               {activeMenu}
             </span>
-
-            {/* Organization name for desktop */}
             <span className="hidden md:inline h-5 w-[1px] bg-[#2C80FF]"></span>
             <span className="hidden md:inline text-gray-500 text-xs uppercase tracking-wide">
               {user?.organization?.name || "Default Organization ARIBA"}
@@ -112,7 +128,7 @@ const Navbar = ({ activeMenu, sidebar, setActiveMenu }) => {
           </div>
         </div>
 
-        {/* Mobile Search Bar (permanent, below title) */}
+        {/* Mobile Search Bar */}
         <div className="flex justify-center mt-3 md:hidden">
           <div className="flex items-center w-11/12 border border-[#2C80FF] rounded-full bg-[#eef1ff] px-3 py-1 gap-2">
             <input
@@ -144,9 +160,20 @@ const Navbar = ({ activeMenu, sidebar, setActiveMenu }) => {
         </div>
       </nav>
 
-      {/* Sidebar for mobile */}
+      {/* Mobile Sidebar */}
       {isMobileMenuOpen && (
-        <Sidebar sidebar={sidebar} setActiveMenu={setActiveMenu} />
+        <div className="md:hidden fixed inset-0 z-50 flex">
+          {/* Overlay */}
+          <div className="fixed inset-0 bg-black/30"></div>
+
+          {/* Sidebar Panel */}
+          <div
+            ref={sidebarRef}
+            className="relative w-fit h-full bg-[#2C80FF] p-5 overflow-y-auto"
+          >
+            <Sidebar sidebar={sidebar} setActiveMenu={setActiveMenu} />
+          </div>
+        </div>
       )}
     </>
   );
