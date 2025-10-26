@@ -7,7 +7,6 @@ import StudentPage from "./pages/StudentPage.jsx";
 import StudentList from "./components/Student/StudentList.jsx";
 import StudentDetails from "./components/Student/StudentDetails.jsx";
 import MessageBox from "./components/MessageBox.jsx";
-import Anouncements from "./components/Anouncements.jsx";
 import TimelineModal from "./components/TimelineModal.jsx";
 import TeacherDetails from "./components/Teacher/TeacherDetails.jsx";
 import TeacherPage from "./pages/TeacherPage.jsx";
@@ -37,6 +36,7 @@ import SubjectModal from "./components/modals/SubjectModal.jsx";
 import AssignSubjectModal from "./components/modals/AssignSubjectModal.jsx";
 import AssignTeacherModal from "./components/modals/AssignTeacherModal.jsx";
 import RoutineModal from "./components/modals/RoutineModal.jsx";
+import AnnouncementModal from "./components/modals/Anouncements.jsx";
 export {
   Dashboard,
   Sidebar,
@@ -46,7 +46,7 @@ export {
   StudentPage,
   StudentList,
   StudentDetails,
-  Anouncements,
+  AnnouncementModal,
   MessageBox,
   TimelineModal,
   TeacherPage,

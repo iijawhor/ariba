@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {
-  Anouncements,
+  AnnouncementModal,
   MessageBox,
   TeacherDetails,
   TeacherList
@@ -29,7 +29,7 @@ const TeacherPage = () => {
       </div>
       <div className="flex-1 hidden md:inline border border-green-600 flex flex-col overflow-auto">
         <MessageBox />
-        <Anouncements />
+        <AnnouncementModal />
       </div>
     </div>
   );
