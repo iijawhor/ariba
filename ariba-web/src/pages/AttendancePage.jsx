@@ -26,11 +26,7 @@ const AttendancePage = () => {
 
   const user = useSelector((state) => state.user.loggedInUser);
   const users = useSelector((state) => state.attendance.users);
-  console.log("SSSSSSS......", users);
-
   const accessToken = user?.accessToken;
-  console.log(accessToken);
-
   const handleGetAttendance = () => {};
   useEffect(() => {
     if (filterValue.fromDate && filterValue.toDate) {
