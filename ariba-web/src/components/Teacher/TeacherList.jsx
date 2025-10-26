@@ -44,12 +44,15 @@ const TeacherList = ({ userModal, setUserModal, mode, setMode }) => {
           </button>
         </div>
 
-        <UserModal
-          isOpen={userModal}
-          mode={mode}
-          onClose={() => setUserModal(false)}
-          userData={null}
-        />
+        {mode === "add" && userModal && (
+          <UserModal
+            isOpen={userModal}
+            onClose={() => setUserModal(false)}
+            title="Add Teacher"
+            mode="add"
+            userData={null}
+          />
+        )}
 
         {/* Search Input */}
         <label className="flex items-center gap-2 pl-1 pr-1 bg-[#E7EAFE] rounded-full flex-1">
