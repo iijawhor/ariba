@@ -79,3 +79,28 @@ Fetches all attendance records for a specific user and returns them in the respo
   "message": "Failed to get the user attendance"
 }
 ```
+
+1. Controller
+
+Handles HTTP requests and responses.
+
+export const getPresentDayAttendance = async (req, res) => {
+try {
+const response = await AttendanceService.getPresentDayAttendance(req);
+return res
+.status(200)
+.json({ message: "Successfully fetched today's attendance", response });
+} catch (error) {
+return res
+.status(400)
+.json({ message: "Failed to get today's attendance" });
+}
+};
+
+Description:
+
+Receives the request and delegates it to the service layer.
+
+Returns HTTP 200 on success with the attendance record.
+
+Returns HTTP 400 if there is an error.

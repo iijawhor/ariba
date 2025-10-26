@@ -65,3 +65,24 @@ Fetches all attendance records for a given user.
   }
 ]
 ```
+
+2. Service
+
+Handles business logic.
+
+export const getPresentDayAttendance = async (req) => {
+const { today } = req.params;
+const userId = req.user?.\_id;
+return await AttendanceRepositories.getPresentDayAttendance({
+userId,
+today
+});
+};
+
+Description:
+
+Extracts the userId from the authenticated user.
+
+Extracts the today date from the request parameters.
+
+Calls the repository function to fetch the attendance record.

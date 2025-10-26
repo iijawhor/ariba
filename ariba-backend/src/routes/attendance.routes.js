@@ -7,6 +7,7 @@ import { Router } from "express";
 import {
   getAttendance,
   getAttendanceByUserController,
+  getPresentDayAttendance,
   getUserByRole,
   markAttendance
 } from "../controllers/attendance.controller.js";
@@ -34,6 +35,13 @@ router.get(
   verifyJWT,
   sanitizeRequests,
   getAttendance
+);
+router.get(
+  "/my-today/:today",
+  verifyJWT,
+  verifyTenant,
+  sanitizeRequests,
+  getPresentDayAttendance
 );
 
 export default router;

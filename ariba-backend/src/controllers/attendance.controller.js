@@ -44,12 +44,22 @@ export const getUserByRole = async (req, res) => {
 export const getAttendance = async (req, res) => {
   try {
     const attendance = await AttendanceService.getAttendance(req);
-    console.log("attendace....in controller........", req.params, req.query);
     return res
       .status(200)
       .json({ message: "Attendance fetched successfully", attendance });
   } catch (error) {
-    console.log("Err.........", error);
     return res.status(400).json({ message: "Failed to fetch attendance" });
+  }
+};
+export const getPresentDayAttendance = async (req, res) => {
+  try {
+    const response = await AttendanceService.getPresentDayAttendance(req);
+    return res
+      .status(200)
+      .json({ message: "Successfully fetched today's attendance", response });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ message: "Failed to get today's attendance" });
   }
 };

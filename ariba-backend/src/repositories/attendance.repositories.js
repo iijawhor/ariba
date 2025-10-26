@@ -86,3 +86,7 @@ export const getAttendance = async ({ userRole, fromDate, toDate }) => {
     }
   ]);
 };
+
+export const getPresentDayAttendance = async ({ userId, today }) => {
+  return await Attendance.findOne({ user: userId, date: today });
+};

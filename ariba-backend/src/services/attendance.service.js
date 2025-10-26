@@ -57,3 +57,12 @@ export const getAttendance = async (req) => {
     status
   });
 };
+
+export const getPresentDayAttendance = async (req) => {
+  const { today } = req.params;
+  const userId = req.user?._id;
+  return await AttendanceRepositories.getPresentDayAttendance({
+    userId,
+    today
+  });
+};
