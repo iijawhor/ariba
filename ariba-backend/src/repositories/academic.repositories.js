@@ -53,3 +53,81 @@ export const getGrades = async ({ organization }) => {
 export const getSubjects = async ({ organization }) => {
   return await Subject.find({ organization });
 };
+export const getRoutine = async ({ day, date, grade, teacher }) => {
+  const match = {};
+
+  if (day) match.day = day;
+  if (grade) match.grade = new mongoose.Types.ObjectId(grade);
+  if (teacher) match.teachers = { $in: [new mongoose.Types.ObjectId(teacher)] };
+
+  const pipeline = [
+    { $match: match },
+
+    // Lookup grade
+    {
+      $lookup: {
+        from: "grades",
+        localField: "grade",
+        foreignField: "_id",
+        as: "gradeDetails"
+      }
+    },
+    { $unwind: "$gradeDetails" },
+
+    // Lookup subject
+    {
+      $lookup: {
+        from: "subjects",
+        localField: "subjectName",
+        foreignField: "_id",
+        as: "subjectDetails"
+      }
+    },
+    { $unwind: "$subjectDetails" },
+
+    // Lookup teachers
+    {
+      $lookup: {
+        from: "users",
+        localField: "teachers",
+        foreignField: "_id",
+        as: "teacherDetails"
+      }
+    },
+
+    // Project only required fields
+    {
+      $project: {
+        _id: 1,
+        day: 1,
+        date: 1,
+        startTime: 1,
+        endTime: 1,
+        grade: {
+          _id: "$gradeDetails._id",
+          className: "$gradeDetails.className",
+          sections: "$gradeDetails.sections"
+        },
+        subject: {
+          _id: "$subjectDetails._id",
+          subjectName: "$subjectDetails.subjectName",
+          subjectCode: "$subjectDetails.subjectCode"
+        },
+        teachers: {
+          $map: {
+            input: "$teacherDetails",
+            as: "t",
+            in: {
+              teacherID: "$$t._id",
+              firstName: "$$t.firstName",
+              lastName: "$$t.lastName",
+              email: "$$t.email"
+            }
+          }
+        }
+      }
+    }
+  ];
+
+  return await Routine.aggregate(pipeline);
+};

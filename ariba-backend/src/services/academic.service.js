@@ -148,3 +148,17 @@ export const getSubjects = async (req, res) => {
   }
   return await AcademicRepositories.getSubjects({ organization });
 };
+
+export const getRoutine = async (req) => {
+  const { day, grade, teacher, date } = req.query;
+  if (!grade || !day) {
+    throw new ApiError("Please provide required filed to filter routine");
+  }
+  return await AcademicRepositories.getRoutine({
+    date,
+    day,
+    grade,
+    teacher,
+    date
+  });
+};

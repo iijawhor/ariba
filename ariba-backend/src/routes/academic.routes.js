@@ -9,6 +9,7 @@ import {
   createRoutine,
   createSubject,
   getGrades,
+  getRoutine,
   getSubjects,
   getTeachers
 } from "../controllers/academic.controller.js";
@@ -69,5 +70,13 @@ router.get(
   validateRole(["teacher", "admin"]),
   sanitizeRequests,
   getSubjects
+);
+router.get(
+  "/get-routine",
+  verifyJWT,
+  verifyTenant,
+  validateRole(["teacher", "admin"]),
+  sanitizeRequests,
+  getRoutine
 );
 export default router;

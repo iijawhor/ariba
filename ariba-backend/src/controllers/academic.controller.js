@@ -66,3 +66,20 @@ export const getSubjects = async (req, res) => {
       .json({ message: error?.response?.message || "Failed to get subjects!" });
   }
 };
+
+export const getRoutine = async (req, res) => {
+  try {
+    const response = await AcademicServices.getRoutine(req);
+
+    return res.status(200).json({
+      success: true,
+      message: "Routine fetched successfully",
+      data: response
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: "Failed to fetch routine!"
+    });
+  }
+};
