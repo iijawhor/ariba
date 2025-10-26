@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ClassModal,
   SubjectModal,
@@ -9,8 +9,14 @@ import {
 } from "../allFiles";
 import ViewRoutineModal from "../components/modals/ViewRoutineModal.jsx";
 import RoutineFilter from "../academic/RoutineFilter.jsx";
-
+import { useAcademic } from "../hooks/useAcademic.js";
+import { useSelector } from "react-redux";
 const AcademicPage = () => {
+  const allTeachers = useSelector((state) => state.academic.teachers);
+  const allGrades = useSelector((state) => state.academic.grades);
+  const allSubjects = useSelector((state) => state.academic.subjects);
+  const allRoutine = useSelector((state) => state.academic.routine);
+
   const [activeModal, setActiveModal] = useState(null);
   const [routineFilter, setRoutineFilter] = useState({
     date: new Date().toISOString().split("T")[0],
@@ -19,50 +25,9 @@ const AcademicPage = () => {
     day: ""
   });
 
+  const { getTeachersHook, getSubjectsHook, getGradesHook } = useAcademic();
   const closeModal = () => setActiveModal(null);
   const isAnyModalOpen = !!activeModal;
-
-  // Sample dynamic data
-  const classes = ["Class 1", "Class 2", "Class 3"];
-  const subjects = ["Mathematics", "Science", "English"];
-  const teachers = [
-    "Mr. Sharma",
-    "Ms. Rani",
-    "Mr. Ali",
-    "Mr. Sharma",
-    "Ms. Rani",
-    "Mr. Ali"
-  ];
-  const routines = [
-    {
-      class: "Class 1",
-      teacher: "Mr. Sharma",
-      day: "Monday",
-      subject: "Mathematics",
-      time: "9:00 AM - 10:00 AM"
-    },
-    {
-      class: "Class 1",
-      teacher: "Mr. Sharma",
-      day: "Monday",
-      subject: "Science",
-      time: "10:00 AM - 11:00 AM"
-    },
-    {
-      class: "Class 2",
-      teacher: "Ms. Rani",
-      day: "Tuesday",
-      subject: "English",
-      time: "11:00 AM - 12:00 PM"
-    },
-    {
-      class: "Class 3",
-      teacher: "Mr. Ali",
-      day: "Wednesday",
-      subject: "Mathematics",
-      time: "1:00 PM - 2:00 PM"
-    }
-  ];
 
   const buttons = [
     { label: "Create Class / Batch", modal: "class" },
@@ -71,6 +36,12 @@ const AcademicPage = () => {
     { label: "Assign Teacher", modal: "assignTeacher" },
     { label: "Create Routine", modal: "createRoutine" }
   ];
+
+  useEffect(() => {
+    getGradesHook();
+    getSubjectsHook();
+    getTeachersHook();
+  }, []);
 
   return (
     <div className="relative min-h-screen bg-[#F6F8FF] p-6 font-sans overflow-hidden">
@@ -110,15 +81,29 @@ const AcademicPage = () => {
 
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-        <InfoCard title="Classes / Batches" items={classes} />
-        <InfoCard title="Subjects" items={subjects} />
-        <InfoCard title="Teachers" items={teachers} />
+        <InfoCard
+          title="Classes / Batches"
+          items={allGrades.grades}
+          displayKey="className"
+        />
+
+        <InfoCard
+          title="Subjects"
+          items={allSubjects.subjects}
+          displayKey="subjectName"
+        />
+
+        <InfoCard
+          title="Teachers"
+          items={allTeachers.teachers}
+          displayKey="firstName"
+        />
       </div>
 
       {/* Routine Filter with View Routine button inside */}
       <RoutineFilter
-        classes={classes}
-        teachers={teachers}
+        classes={allGrades.grades}
+        teachers={allTeachers.teachers}
         onFilterChange={(filters) => setRoutineFilter(filters)}
         onViewRoutine={() => setActiveModal("viewRoutine")}
       />
@@ -134,7 +119,7 @@ const AcademicPage = () => {
               Total Classes
             </h3>
             <p className="text-3xl font-extrabold text-gray-800 mt-2">
-              {classes.length}
+              {allGrades?.grades?.length}
             </p>
           </div>
           <div className="bg-[#EEF4FF] rounded-xl p-5 text-center hover:shadow-md transition">
@@ -142,7 +127,7 @@ const AcademicPage = () => {
               Total Subjects
             </h3>
             <p className="text-3xl font-extrabold text-gray-800 mt-2">
-              {subjects.length}
+              {allSubjects?.subjects?.length}
             </p>
           </div>
           <div className="bg-[#EEF4FF] rounded-xl p-5 text-center hover:shadow-md transition">
@@ -150,7 +135,7 @@ const AcademicPage = () => {
               Total Teachers
             </h3>
             <p className="text-3xl font-extrabold text-gray-800 mt-2">
-              {teachers.length}
+              {allTeachers?.teachers?.length}
             </p>
           </div>
         </div>
@@ -165,12 +150,19 @@ const AcademicPage = () => {
       {activeModal === "assignTeacher" && (
         <AssignTeacherModal onClose={closeModal} />
       )}
-      {activeModal === "createRoutine" && <RoutineModal onClose={closeModal} />}
+      {activeModal === "createRoutine" && (
+        <RoutineModal
+          onClose={closeModal}
+          teachers={allTeachers.teachers}
+          classes={allGrades.grades}
+          subjects={allSubjects.subjects}
+        />
+      )}
       {activeModal === "viewRoutine" && (
         <ViewRoutineModal
           onClose={closeModal}
           filters={routineFilter}
-          routines={routines}
+          routines={allRoutine?.data || []}
         />
       )}
     </div>

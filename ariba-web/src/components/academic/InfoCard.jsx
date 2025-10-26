@@ -1,12 +1,19 @@
 // src/components/InfoCard.jsx
 import React, { useState } from "react";
 
-const InfoCard = ({ title, items = [], color = "#2C80FF" }) => {
+const InfoCard = ({
+  title,
+  items = [],
+  color = "#2C80FF",
+  displayKey = "firstName"
+}) => {
   const [search, setSearch] = useState("");
 
-  const filteredItems = items.filter((item) =>
-    item.toLowerCase().includes(search.toLowerCase())
-  );
+  // Filter items based on the dynamic displayKey
+  const filteredItems = items.filter((item) => {
+    const value = item?.[displayKey];
+    return value?.toString().toLowerCase().includes(search.toLowerCase());
+  });
 
   return (
     <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-md hover:shadow-xl transition-transform hover:-translate-y-1">
@@ -34,7 +41,7 @@ const InfoCard = ({ title, items = [], color = "#2C80FF" }) => {
               key={index}
               className="flex-shrink-0 bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium shadow-sm hover:bg-blue-100 transition-colors"
             >
-              {item}
+              {item?.[displayKey]} {item?.lastName && item.lastName}
             </span>
           ))}
         </div>
