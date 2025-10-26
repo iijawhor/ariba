@@ -9,6 +9,7 @@ const MySpace = () => {
   const accessToken = loggedInUser?.accessToken;
   const userId = loggedInUser?.user?._id;
   const dispatch = useDispatch();
+  const attendanceError = useSelector((state) => state.attendance.error);
   const gettAttendanceByUserUrl =
     "http://localhost:7000/api/v1/attendance/get-attendance";
 
@@ -57,13 +58,6 @@ const MySpace = () => {
         <div className="overflow-x-auto h-full">
           <div className="min-w-full flex flex-col gap-1">
             {/* Headings */}
-            <div className="flex justify-between bg-gray-100 px-4 py-2 text-xs uppercase text-gray-600 font-medium tracking-wide">
-              {headings.map((heading, index) => (
-                <span key={index} className="whitespace-nowrap">
-                  {heading}
-                </span>
-              ))}
-            </div>
 
             {/* Attendance Items */}
             <div className="flex flex-col divide-y divide-gray-200">
@@ -71,6 +65,7 @@ const MySpace = () => {
                 <AttendanceList
                   key={index}
                   attendance={att}
+                  headings={headings}
                   className="text-gray-700 text-sm"
                 />
               ))}

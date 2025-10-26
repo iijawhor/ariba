@@ -1,10 +1,24 @@
 import { useSelector, useDispatch } from "react-redux";
-import { getUsersByRole } from "../store/slices/atttendanceSlice";
+import { useState, useCallback } from "react";
+import {
+  getPresentDayAttendance,
+  getUsersByRole,
+  markClockIn,
+  markClockOut
+} from "../store/slices/atttendanceSlice.js";
+import { toast } from "react-toastify";
 export const useAttendance = (userRole) => {
   const user = useSelector((state) => state.user.loggedInUser);
+  const presnetDayAttendance = useSelector(
+    (state) => state.attendance.presnetDayAttendance
+  );
   const dispatch = useDispatch();
   const accessToken = user?.accessToken;
-
+  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
+  const loggedInUser = useSelector((state) => state.user.loggedInUser);
+  const attendance = useSelector((state) => state.attendance.attendanceRecord);
+  const attendanceId = attendance?.data?._id;
+  const userId = loggedInUser?.user?._id;
   const getUserByRole = async () => {
     const getUserByRoleUrl = `${
       import.meta.env.VITE_API_BASE_URL
@@ -23,5 +37,82 @@ export const useAttendance = (userRole) => {
     }
   };
 
-  return { getUserByRole };
+  const attendanceUrlLogin =
+    "http://localhost:7000/api/v1/attendance/create-login";
+  const attendanceUrlLogout =
+    "http://localhost:7000/api/v1/attendance/create-logout";
+  const getPresentDayAttendanceUrl =
+    "http://localhost:7000/api/v1/attendance/my-today";
+
+  const handleLoginHook = async () => {
+    if (!presnetDayAttendance) {
+      try {
+        // Wait for Clock In API to complete
+        await dispatch(
+          markClockIn({ attendanceUrlLogin, accessToken, userId })
+        ).unwrap();
+
+        // Now fetch updated attendance
+        getPresentDayAttendanceHook();
+      } catch (error) {
+        toast.error(error?.message || "Failed to log in");
+      }
+    } else {
+      setShowLogoutPopup(true);
+    }
+  };
+
+  const confirmLogoutHook = async () => {
+    if (presnetDayAttendance.status === "in") {
+      setShowLogoutPopup(false);
+
+      try {
+        // Wait for Clock Out API to complete
+        await dispatch(
+          markClockOut({
+            attendanceUrlLogout,
+            accessToken,
+            userId,
+            attendanceId
+          })
+        ).unwrap();
+
+        // Fetch updated attendance to update the button/UI immediately
+        getPresentDayAttendanceHook();
+        toast.success("Logged out successfully");
+      } catch (error) {
+        toast.error(error?.message || "Logout failed");
+      }
+    }
+  };
+
+  const cancelLogoutHook = () => {
+    setShowLogoutPopup(false);
+  };
+
+  const getPresentDayAttendanceHook = useCallback(async () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    try {
+      await dispatch(
+        getPresentDayAttendance({
+          getPresentDayAttendanceUrl,
+          today,
+          accessToken
+        })
+      ).unwrap();
+    } catch (error) {
+      toast.error(error?.message || "Failed to get today's attendance");
+    }
+  }, [accessToken]);
+
+  return {
+    getUserByRole,
+    handleLoginHook,
+    confirmLogoutHook,
+    cancelLogoutHook,
+    showLogoutPopup,
+    getPresentDayAttendanceHook
+  };
 };

@@ -2,13 +2,17 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { Navbar, Sidebar } from "./allFiles";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { useAttendance } from "./hooks/useAttendance.js";
 function App() {
+  const { getPresentDayAttendanceHook } = useAttendance();
   const loggedInUser = useSelector((state) => state.user.loggedInUser);
   const navigate = useNavigate();
   useEffect(() => {
     if (!loggedInUser?.accessToken) {
       navigate("/signin");
+      return;
     }
+    getPresentDayAttendanceHook();
   }, []);
 
   const sidebar = [
@@ -198,7 +202,7 @@ function App() {
       <div className="flex-1 md:ml-56 flex gap-1 flex-col min-h-screen">
         {/* Navbar */}
         <header className="sticky top-0 rounded-full z-10 bg-[#F9FAFF] shadow-sm">
-          <Navbar activeMenu={activeMenu} />
+          <Navbar activeMenu={activeMenu} sidebar={sidebar} />
         </header>
 
         {/* Dashboard / Pages */}

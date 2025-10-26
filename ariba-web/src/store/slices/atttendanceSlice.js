@@ -108,15 +108,6 @@ export const getAttendance = createAsyncThunk(
 
     thunkAPI
   ) => {
-    console.log(
-      "SLICE>>>>>>>>.........",
-      getAttendanceUrl,
-      fromDate,
-      toDate,
-      accessToken,
-      userRole
-    );
-
     try {
       const response = await axios.get(`${getAttendanceUrl}/${userRole}`, {
         headers: { Authorization: `Bearer ${accessToken}` },
@@ -160,6 +151,29 @@ export const getPresentUsersByRole = createAsyncThunk(
   }
 );
 
+export const getPresentDayAttendance = createAsyncThunk(
+  "attedance/getPresentDayAttendance",
+  async ({ getPresentDayAttendanceUrl, today, accessToken }, thunkAPI) => {
+    try {
+      const response = await axios.get(
+        `${getPresentDayAttendanceUrl}/${today}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        }
+      );
+      return response?.data?.response;
+    } catch (error) {
+      const msg =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to fetch present day attendance!";
+      return thunkAPI.rejectWithValue(msg);
+    }
+  }
+);
+
 const attendanceSlice = createSlice({
   name: "attendance",
   initialState: {
@@ -169,7 +183,8 @@ const attendanceSlice = createSlice({
     attendanceByUser: null,
     users: null,
     presentUsers: null,
-    message: null
+    message: null,
+    presnetDayAttendance: null
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -254,6 +269,20 @@ const attendanceSlice = createSlice({
         state.presentUsers = action.payload;
       })
       .addCase(getPresentUsersByRole.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+    // get present day attendance
+    builder
+      .addCase(getPresentDayAttendance.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getPresentDayAttendance.fulfilled, (state, action) => {
+        state.loading = false;
+        state.presnetDayAttendance = action.payload;
+      })
+      .addCase(getPresentDayAttendance.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
