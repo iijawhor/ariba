@@ -1,6 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
+import { AnnouncementModal } from "../allFiles";
 
 const Dashboard = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Handle modal submit
+  const handleAnnouncementSubmit = ({ title, content }) => {
+    console.log("New Announcement:", title, content);
+    // You can integrate API call here to save announcement
+  };
+
   return (
     <main className="flex-1 p-4 md:p-6 overflow-y-auto bg-[#F9FAFF]">
       {/* Page Title */}
@@ -43,11 +52,11 @@ const Dashboard = () => {
       {/* Middle Section: Fee Collection + Announcements */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         {/* Fee Collection Overview */}
-        <div className="bg-white rounded-xl md:rounded-2xl shadow-md p-4 md:p-5 h-64 flex flex-col">
-          <h3 className="text-base md:text-lg font-semibold mb-3 text-gray-700">
+        <div className="bg-white rounded-xl md:rounded-2xl shadow-md p-4 md:p-5 h-64 flex flex-col text-gray-800">
+          <h3 className="text-base md:text-lg font-semibold mb-3 text-gray-800">
             Fee Collection Overview
           </h3>
-          <div className="flex flex-col gap-3 text-xs md:text-sm">
+          <div className="flex flex-col gap-3 text-xs md:text-sm text-gray-800">
             <div className="flex justify-between">
               <span>Total Fees Collected</span>
               <span className="font-bold text-[#2C80FF]">₹6.8L</span>
@@ -74,8 +83,11 @@ const Dashboard = () => {
             <h3 className="text-base md:text-lg font-semibold text-gray-700">
               Announcements
             </h3>
-            <button className="px-2 md:px-3 py-1 text-xs md:text-sm bg-[#2C80FF] text-white rounded-full hover:bg-blue-600 transition">
-              + Add
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="px-2 cursor-pointer md:px-3 py-1 text-xs md:text-sm bg-[#2C80FF] text-white rounded-full hover:bg-blue-600 transition"
+            >
+              + Publish
             </button>
           </div>
           <ul className="space-y-2 md:space-y-3 text-xs md:text-sm text-gray-600 overflow-y-auto pr-2">
@@ -121,6 +133,13 @@ const Dashboard = () => {
           </ul>
         </div>
       </div>
+
+      {/* Announcement Modal */}
+      <AnnouncementModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleAnnouncementSubmit}
+      />
     </main>
   );
 };
