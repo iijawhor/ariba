@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import {
-  AnnouncementModal,
-  MessageBox,
-  StudentDetails,
-  StudentList
-} from "../allFiles";
+import { StudentDetails, StudentList } from "../allFiles";
 
 const StudentPage = () => {
   const [mode, setMode] = useState("");
@@ -52,8 +47,7 @@ const StudentPage = () => {
 
       {/* ===== Right Side (Message + Announcement) ===== */}
       <div className="hidden md:flex flex-1 flex-col h-screen overflow-auto border border-green-600">
-        <MessageBox />
-        <AnnouncementModal />
+        message box will be here
       </div>
     </div>
   );

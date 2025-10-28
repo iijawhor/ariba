@@ -6,7 +6,6 @@ import LoginForm from "./components/LoginForm.jsx";
 import StudentPage from "./pages/StudentPage.jsx";
 import StudentList from "./components/Student/StudentList.jsx";
 import StudentDetails from "./components/Student/StudentDetails.jsx";
-import MessageBox from "./components/MessageBox.jsx";
 import TimelineModal from "./components/TimelineModal.jsx";
 import TeacherDetails from "./components/Teacher/TeacherDetails.jsx";
 import TeacherPage from "./pages/TeacherPage.jsx";
@@ -47,7 +46,6 @@ export {
   StudentList,
   StudentDetails,
   AnnouncementModal,
-  MessageBox,
   TimelineModal,
   TeacherPage,
   TeacherDetails,
