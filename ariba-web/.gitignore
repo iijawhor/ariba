@@ -6,10 +6,10 @@ dist/
 build/
 
 # environment variables
-.env
-.env.local
-.env.development
-.env.production
+# .env
+# .env.local
+# .env.development
+# .env.production
 
 # logs
 *.log
