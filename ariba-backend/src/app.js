@@ -4,9 +4,30 @@ import cors from "cors";
 import multer from "multer";
 const app = express();
 const upload = multer();
+const allowedOrigins = [
+  "http://localhost:5173", // Local Vite dev server
+  "http://localhost:3000", // Alternative local port
+  "http://13.233.13.228", // Production IP
+  process.env.CORS_ORIGIN // From .env if set
+].filter(Boolean);
+// app.use(
+//   cors({
+//     origin: process.env.CORS_ORIGIN,
+//     credentials: true
+//   })
+// );
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: function (origin, callback) {
+      // Allow requests with no origin (Postman, mobile apps, etc.)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true
   })
 );
