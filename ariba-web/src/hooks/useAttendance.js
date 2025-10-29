@@ -37,12 +37,17 @@ export const useAttendance = (userRole) => {
     }
   };
 
-  const attendanceUrlLogin =
-    "http://localhost:7000/api/v1/attendance/create-login";
-  const attendanceUrlLogout =
-    "http://localhost:7000/api/v1/attendance/create-logout";
-  const getPresentDayAttendanceUrl =
-    "http://localhost:7000/api/v1/attendance/my-today";
+  // const attendanceUrlLogin =
+  //   "http://localhost:7000/api/v1/attendance/create-login";
+  const attendanceUrlLogin = `${
+    import.meta.env.VITE_API_BASE_URL
+  }/attendance/create-login`;
+  const attendanceUrlLogout = `${
+    import.meta.env.VITE_API_BASE_URL
+  }/attendance/create-logout`;
+  const getPresentDayAttendanceUrl = `${
+    import.meta.env.VITE_API_BASE_URL
+  }/attendance/my-today`;
 
   const handleLoginHook = async () => {
     if (!presnetDayAttendance) {

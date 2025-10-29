@@ -22,7 +22,7 @@ export const LoginForm = () => {
   const navigate = useNavigate();
   const handleLogin = (e) => {
     e.preventDefault();
-    const loginApi = `http://localhost:7000/api/v1/user/signin`;
+    const loginApi = `${import.meta.env.VITE_API_BASE_URL}/user/signin`;
     dispatch(loginHandler({ loginApi, loginCredentials }))
       .unwrap()
       .then((result) => {

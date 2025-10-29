@@ -10,8 +10,9 @@ const MySpace = () => {
   const userId = loggedInUser?.user?._id;
   const dispatch = useDispatch();
   const attendanceError = useSelector((state) => state.attendance.error);
-  const gettAttendanceByUserUrl =
-    "http://localhost:7000/api/v1/attendance/get-attendance";
+  const gettAttendanceByUserUrl = `${
+    import.meta.env.VITE_API_BASE_URL
+  }/attendance/get-attendance`;
 
   useEffect(() => {
     dispatch(
