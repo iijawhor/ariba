@@ -3,12 +3,14 @@ import { useState } from "react";
 const AnnouncementModal = ({ isOpen, onClose, onSubmit }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [targetUser, setTargetUser] = useState(""); // initially empty so placeholder shows
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ title, content });
+    onSubmit({ title, content, targetUser });
     setTitle("");
     setContent("");
+    setTargetUser(""); // reset back to placeholder
     onClose();
   };
 
@@ -43,6 +45,25 @@ const AnnouncementModal = ({ isOpen, onClose, onSubmit }) => {
             rows={4}
             required
           />
+
+          {/* Select Target User Dropdown */}
+          <select
+            value={targetUser}
+            onChange={(e) => setTargetUser(e.target.value)}
+            className={`border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-[#2C80FF] text-gray-800 ${
+              targetUser === "" ? "text-gray-400" : ""
+            }`}
+            required
+          >
+            <option value="" disabled hidden>
+              Select user type
+            </option>
+            <option value="all">All Users</option>
+            <option value="admin">Admin</option>
+            <option value="teacher">Teacher</option>
+            <option value="student">Student</option>
+          </select>
+
           <button
             type="submit"
             className="bg-[#2C80FF] text-white px-4 cursor-pointer py-2 rounded hover:bg-blue-600 transition"
