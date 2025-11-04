@@ -1,14 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AnnouncementModal } from "../allFiles";
+import { useAnnouncement } from "../hooks/useAnnouncement.js";
+import { useSelector } from "react-redux";
 
 const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { getAnnouncementHook } = useAnnouncement();
+  const announcements = useSelector(
+    (state) => state.announcement.announcements
+  );
+  const loading = useSelector((state) => state.announcement.loading);
+  const [announcement, setAnnouncement] = useState(
+    announcements.announcement || []
+  );
 
-  // Handle modal submit
-  const handleAnnouncementSubmit = ({ title, content }) => {
-    console.log("New Announcement:", title, content);
-    // You can integrate API call here to save announcement
-  };
+  useEffect(() => {
+    getAnnouncementHook();
+  }, []);
+
+  useEffect(() => {
+    setAnnouncement(announcements.announcement || []);
+  }, [announcements]);
 
   return (
     <main className="flex-1 p-4 md:p-6 overflow-y-auto bg-[#F9FAFF]">
@@ -90,13 +102,40 @@ const Dashboard = () => {
               + Publish
             </button>
           </div>
-          <ul className="space-y-2 md:space-y-3 text-xs md:text-sm text-gray-600 overflow-y-auto pr-2">
-            <li>📢 School will remain closed on Oct 10 for holiday</li>
-            <li>📝 New syllabus update for Class 9 & 10</li>
-            <li>🎉 Cultural Fest registrations open till Oct 12</li>
-            <li>⚠️ Submit fee dues before Oct 15</li>
-            <li>📢 Extra announcement to test scrolling</li>
-            <li>📢 Extra announcement 2</li>
+          <ul className="space-y-2 md:space-y-3 text-xs md:text-sm text-gray-700 max-h-64 overflow-y-auto pr-2">
+            {loading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <li
+                  key={i}
+                  className="flex items-center gap-3 bg-gray-100 animate-pulse rounded-xl px-4 py-3"
+                >
+                  <div className="w-2 h-2 rounded-full bg-gray-300"></div>
+                  <div className="flex-1 h-4 bg-gray-300 rounded"></div>
+                </li>
+              ))
+            ) : announcement?.length > 0 ? (
+              announcement.map((item, index) => (
+                <li
+                  key={index}
+                  className="flex items-center gap-3 bg-white shadow-sm border border-blue-100 rounded-xl px-4 py-3 hover:shadow-md hover:bg-blue-50 transition-all duration-200"
+                >
+                  <div className="flex-shrink-0 mt-1 w-2 h-2 rounded-full bg-blue-500"></div>
+                  <div className="flex flex-col">
+                    <p className="text-gray-800 font-semibold">
+                      {item.title}
+                      <span className="mx-1 text-gray-500 font-normal">–</span>
+                      <span className="text-gray-600 font-normal">
+                        {item.content}
+                      </span>
+                    </p>
+                  </div>
+                </li>
+              ))
+            ) : (
+              <li className="text-gray-400 text-center italic">
+                No announcements yet
+              </li>
+            )}
           </ul>
         </div>
       </div>
@@ -136,9 +175,9 @@ const Dashboard = () => {
 
       {/* Announcement Modal */}
       <AnnouncementModal
+        setAnnouncement={setAnnouncement}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSubmit={handleAnnouncementSubmit}
       />
     </main>
   );

@@ -5,7 +5,8 @@ import multer from "multer";
 const app = express();
 const upload = multer();
 const allowedOrigins = [
-  "http://localhost:5173", // Local Vite dev server
+  "http://localhost:5174", // Local Vite dev server
+  // Local Vite dev server
   "http://localhost:3000", // Alternative local port
   "http://13.233.13.228", // Production IP
   process.env.CORS_ORIGIN // From .env if set
@@ -49,9 +50,11 @@ import userRouter from "./routes/user.routes.js";
 import organizationRouter from "./routes/organization.routes.js";
 import attendanceRouter from "./routes/attendance.routes.js";
 import academicRouter from "./routes/academic.routes.js";
+import announcementRouter from "./routes/announcement.routes.js";
 app.use("/api/v1/user/", userRouter);
 app.use("/api/v1/organization/", organizationRouter);
 app.use("/api/v1/attendance/", attendanceRouter);
 app.use("/api/v1/academic/", academicRouter);
+app.use("/api/v1/announcement/", announcementRouter);
 
 export { app };

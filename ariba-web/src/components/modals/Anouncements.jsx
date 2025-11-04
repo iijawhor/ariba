@@ -1,17 +1,69 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { createSocketConnection } from "../../utils/socket.js";
+const AnnouncementModal = ({ isOpen, onClose, setAnnouncement }) => {
+  const [formData, setFormData] = useState({
+    title: "",
+    content: "",
+    targetUser: ""
+  });
 
-const AnnouncementModal = ({ isOpen, onClose, onSubmit }) => {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [targetUser, setTargetUser] = useState(""); // initially empty so placeholder shows
+  const user = useSelector((state) => state.user.loggedInUser);
+
+  const token = user?.accessToken;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const socket = createSocketConnection(token);
+    socket.on("announcementReceived", ({ title, content, targetUser }) => {
+      setAnnouncement((prev) => {
+        // Avoid duplicates (optional)
+        const exists = prev.some(
+          (a) => a.title === title && a.content === content
+        );
+        if (exists) return prev;
+
+        const newAnnouncement = {
+          title,
+          content,
+          targetUser,
+          timestamp: new Date().toISOString()
+        };
+
+        // Newest first
+        return [newAnnouncement, ...prev];
+      });
+    });
+
+    // Save socket instance to a ref so handleSubmit can use it
+    window.currentSocket = socket;
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [isOpen, token]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ title, content, targetUser });
-    setTitle("");
-    setContent("");
-    setTargetUser(""); // reset back to placeholder
-    onClose();
+    const socket = window.currentSocket;
+    if (!socket) return;
+
+    socket.emit("joinAnnouncements", {
+      title: formData.title,
+      content: formData.content,
+      targetUser: formData.targetUser
+    });
+
+    setFormData({ title: "", content: "", targetUser: "" });
+    // onClose();
   };
 
   if (!isOpen) return null;
@@ -22,36 +74,41 @@ const AnnouncementModal = ({ isOpen, onClose, onSubmit }) => {
         <h2 className="text-lg font-semibold mb-4 text-gray-800">
           Publish Announcement
         </h2>
+
         <button
           className="absolute top-2 right-2 cursor-pointer text-gray-500 hover:text-gray-800 text-xl"
           onClick={onClose}
         >
           ✕
         </button>
+
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input
             type="text"
+            name="title"
             placeholder="Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            value={formData.title}
+            onChange={handleChange}
             className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-[#2C80FF] text-gray-800"
             required
           />
+
           <textarea
+            name="content"
             placeholder="Content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
+            value={formData.content}
+            onChange={handleChange}
             className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-[#2C80FF] text-gray-800"
             rows={4}
             required
           />
 
-          {/* Select Target User Dropdown */}
           <select
-            value={targetUser}
-            onChange={(e) => setTargetUser(e.target.value)}
+            name="targetUser"
+            value={formData.targetUser}
+            onChange={handleChange}
             className={`border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-[#2C80FF] text-gray-800 ${
-              targetUser === "" ? "text-gray-400" : ""
+              formData.targetUser === "" ? "text-gray-400" : ""
             }`}
             required
           >

@@ -3,6 +3,7 @@ import { Navbar, Sidebar } from "./allFiles";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useAttendance } from "./hooks/useAttendance.js";
+
 function App() {
   const { getPresentDayAttendanceHook } = useAttendance();
   const loggedInUser = useSelector((state) => state.user.loggedInUser);
