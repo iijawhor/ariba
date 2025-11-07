@@ -8,12 +8,12 @@ import {
 } from "../store/slices/atttendanceSlice.js";
 import { toast } from "react-toastify";
 export const useAttendance = (userRole) => {
+  const accessToken = useSelector((state) => state.user?.accessToken);
   const user = useSelector((state) => state.user.loggedInUser);
   const presnetDayAttendance = useSelector(
     (state) => state.attendance.presnetDayAttendance
   );
   const dispatch = useDispatch();
-  const accessToken = user?.accessToken;
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
   const loggedInUser = useSelector((state) => state.user.loggedInUser);
   const attendance = useSelector((state) => state.attendance.attendanceRecord);
@@ -110,7 +110,7 @@ export const useAttendance = (userRole) => {
     } catch (error) {
       toast.error(error?.message || "Failed to get today's attendance");
     }
-  }, [accessToken]);
+  }, [dispatch, accessToken]);
 
   return {
     getUserByRole,

@@ -37,13 +37,14 @@ export const signinUser = async (req, res) => {
     const options = {
       httpOnly: true,
       secure: false, // OK since you're on HTTP locally
-      sameSite: "none" // Accepts cookies in most cross-origin cases on localhost
+      sameSite: "lax", // Accepts cookies in most cross-origin cases on localhost
+      path: "/"
     };
 
     return res
-      .status(200)
       .cookie("accessToken", accessToken, options)
       .cookie("refreshToken", refreshToken, options)
+      .status(200)
       .json({
         message: "User logged in successfully",
         user,
@@ -110,11 +111,15 @@ export const searchUser = async (req, res) => {
 };
 // fetch the current user
 export const getCurrentUser = async (req, res) => {
-  return res.status(200).json({
-    success: true,
-    message: "Current user fetched successfully",
-    user: req.user
-  });
+  try {
+    return res.status(200).json({
+      success: true,
+      message: "Current user fetched successfully",
+      user: req.user
+    });
+  } catch (error) {
+    return res.status(400).json({ messgae: "Failed to get current user" });
+  }
 };
 export const refreshAccessToken = async (req, res) => {
   try {

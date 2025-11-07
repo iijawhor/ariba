@@ -6,7 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 const MySpace = () => {
   const loggedInUser = useSelector((state) => state.user.loggedInUser);
   const attendance = useSelector((state) => state.attendance.attendanceByUser);
-  const accessToken = loggedInUser?.accessToken;
+  const accessToken = useSelector((state) => state.user.accessToken);
+  const loading = useSelector((state) => state.user.loading);
   const userId = loggedInUser?.user?._id;
   const dispatch = useDispatch();
   const attendanceError = useSelector((state) => state.attendance.error);
@@ -15,9 +16,7 @@ const MySpace = () => {
   }/attendance/get-attendance`;
 
   useEffect(() => {
-    dispatch(
-      gettAttendanceByUser({ gettAttendanceByUserUrl, accessToken, userId })
-    );
+    dispatch(gettAttendanceByUser({ gettAttendanceByUserUrl, accessToken }));
   }, [userId, accessToken]); // include dependencies if they can change
 
   const headings = ["date", "gross hours", "login", "logout", "log"];
@@ -58,18 +57,27 @@ const MySpace = () => {
 
         <div className="overflow-x-auto h-full">
           <div className="min-w-full flex flex-col gap-1">
-            {/* Headings */}
+            {/* Attendance Section */}
+            <div className="flex flex-col divide-y divide-gray-200 w-full">
+              {/* ✅ Header (render once, not per item) */}
+              <div className="hidden md:grid grid-cols-5 gap-2 bg-gray-100 px-4 py-2 text-xs uppercase text-gray-600 font-medium tracking-wide text-center">
+                {headings.map((heading, index) => (
+                  <span key={index} className="truncate">
+                    {heading}
+                  </span>
+                ))}
+              </div>
 
-            {/* Attendance Items */}
-            <div className="flex flex-col divide-y divide-gray-200">
-              {attendance?.attendance?.map((att, index) => (
-                <AttendanceList
-                  key={index}
-                  attendance={att}
-                  headings={headings}
-                  className="text-gray-700 text-sm"
-                />
-              ))}
+              {/* ✅ Attendance Items */}
+              <div className="flex flex-col">
+                {attendance?.attendance?.map((att, index) => (
+                  <AttendanceList
+                    key={index}
+                    attendance={att}
+                    className="text-gray-700 text-sm"
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </div>

@@ -23,10 +23,8 @@ const AttendancePage = () => {
   const getAttendanceUrl = `${
     import.meta.env.VITE_API_BASE_URL
   }/attendance/filter-attendance`;
-
-  const user = useSelector((state) => state.user.loggedInUser);
   const users = useSelector((state) => state.attendance.users);
-  const accessToken = user?.accessToken;
+  const accessToken = useSelector((state) => state.user.accessToken);
   const handleGetAttendance = () => {};
   useEffect(() => {
     if (filterValue.fromDate && filterValue.toDate) {

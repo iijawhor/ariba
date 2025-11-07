@@ -133,6 +133,17 @@ export const getTeachers = async (req, res) => {
   }
   return await AcademicRepositories.getTeachers({ userRole, organization });
 };
+export const getStudents = async (req, res) => {
+  const organization = req.organizationId;
+  const { userRole } = req.params;
+  if (!organization) {
+    throw new ApiError("Not a valid organization", 400);
+  }
+  if (!userRole) {
+    throw new ApiError("Not a valid user role", 400);
+  }
+  return await AcademicRepositories.getStudents({ userRole, organization });
+};
 
 export const getGrades = async (req, res) => {
   const organization = req.organizationId;
@@ -154,6 +165,8 @@ export const getRoutine = async (req) => {
   if (!grade || !day) {
     throw new ApiError("Please provide required filed to filter routine");
   }
+  console.log(day, grade, teacher, date);
+
   return await AcademicRepositories.getRoutine({
     date,
     day,

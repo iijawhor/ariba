@@ -2,8 +2,12 @@ import React, { useEffect, useState } from "react";
 import { AnnouncementModal } from "../allFiles";
 import { useAnnouncement } from "../hooks/useAnnouncement.js";
 import { useSelector } from "react-redux";
-
+import { useAcademic } from "../hooks/useAcademic.js";
 const Dashboard = () => {
+  const token = useSelector((state) => state.user.accessToken);
+  const allTeachers = useSelector((state) => state.academic.teachers);
+  const allStudents = useSelector((state) => state.academic.students);
+  const { getTeachersHook, getStudentsHook } = useAcademic();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { getAnnouncementHook } = useAnnouncement();
   const announcements = useSelector(
@@ -15,13 +19,18 @@ const Dashboard = () => {
   );
 
   useEffect(() => {
+    if (!token) return; // ⛔ don’t call until token exists
     getAnnouncementHook();
-  }, []);
+  }, [token]); // ✅ runs only after token is updated
 
   useEffect(() => {
     setAnnouncement(announcements.announcement || []);
   }, [announcements]);
 
+  useEffect(() => {
+    getTeachersHook();
+    getStudentsHook();
+  }, []);
   return (
     <main className="flex-1 p-4 md:p-6 overflow-y-auto bg-[#F9FAFF]">
       {/* Page Title */}
@@ -36,7 +45,7 @@ const Dashboard = () => {
             Total Students
           </span>
           <h3 className="text-lg md:text-2xl font-bold text-[#2C80FF] mt-1">
-            1,250
+            {allStudents?.students?.length}
           </h3>
         </div>
         <div className="bg-white rounded-xl md:rounded-2xl shadow-md p-4 md:p-5 flex flex-col">
@@ -44,7 +53,7 @@ const Dashboard = () => {
             Total Teachers
           </span>
           <h3 className="text-lg md:text-2xl font-bold text-[#2C80FF] mt-1">
-            75
+            {allTeachers?.teachers?.length}
           </h3>
         </div>
         <div className="bg-white rounded-xl md:rounded-2xl shadow-md p-4 md:p-5 flex flex-col">

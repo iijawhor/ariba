@@ -3,7 +3,9 @@ import ApiError from "../utils/ApiError.js";
 
 export const markAttendance = async (req) => {
   const { status, attendanceId } = req.body;
-  const { id } = req.params;
+  const { _id } = req.user;
+  console.log("ID...........", _id);
+
   if (!["in", "out"].includes(status)) {
     throw new ApiError("Please provide a valid data", 2400);
   }
@@ -23,7 +25,7 @@ export const markAttendance = async (req) => {
       status
     });
   } else if (status === "in") {
-    if (!id) {
+    if (!_id) {
       throw new ApiError("Invalid user ID", 404);
     }
     if (existingAttendance) {
@@ -31,7 +33,7 @@ export const markAttendance = async (req) => {
     }
     return await AttendanceRepositories.createAttendanceLogin({
       status,
-      user: id,
+      user: _id,
       loggedInAt: new Date(),
       loggedOutAt: new Date()
     });
@@ -40,8 +42,8 @@ export const markAttendance = async (req) => {
   throw new ApiError("Invalid status provided", 400);
 };
 export const getAttendanceByUserService = async (req) => {
-  const { id } = req.params;
-  return await AttendanceRepositories.getAttendanceByUserId(id);
+  const { _id } = req.user;
+  return await AttendanceRepositories.getAttendanceByUserId(_id);
 };
 export const getUsersByRole = async (req) => {
   return await AttendanceRepositories.getUserByRole(req);

@@ -7,9 +7,11 @@ const getAnnouncementApiUrl = `${
 }/announcement/get-announcement`;
 
 export const useAnnouncement = () => {
+  const accessToken = useSelector((state) => state.user.accessToken);
+  // console.log("VVVVVVVVV.....", accessToken);
+
   const user = useSelector((state) => state.user.loggedInUser);
   const dispatch = useDispatch();
-  const accessToken = user?.accessToken;
   const getAnnouncementHook = async () => {
     try {
       await dispatch(

@@ -47,6 +47,9 @@ export const createRoutine = async ({
 export const getTeachers = async ({ userRole, organization }) => {
   return await User.find({ organization, userRole });
 };
+export const getStudents = async ({ userRole, organization }) => {
+  return await User.find({ organization, userRole });
+};
 export const getGrades = async ({ organization }) => {
   return await Grade.find({ organization });
 };

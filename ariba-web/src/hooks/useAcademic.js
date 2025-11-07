@@ -4,6 +4,7 @@ import {
   createRoutine,
   createSubject,
   getTeachers,
+  getStudents,
   getGrades,
   getSubjects,
   getRoutine
@@ -22,6 +23,9 @@ const createRoutineUrl = `${
 const getTeachersUrl = `${
   import.meta.env.VITE_API_BASE_URL
 }/academic/get-teachers`;
+const getStudentsUrl = `${
+  import.meta.env.VITE_API_BASE_URL
+}/academic/get-students`;
 const getSubjectsUrl = `${
   import.meta.env.VITE_API_BASE_URL
 }/academic/get-subjects`;
@@ -31,9 +35,8 @@ const getRoutineUrl = `${
 }/academic/get-routine`;
 
 export const useAcademic = () => {
-  const user = useSelector((state) => state.user.loggedInUser);
   const dispatch = useDispatch();
-  const accessToken = user?.accessToken;
+  const accessToken = useSelector((state) => state.user.accessToken);
   const handleCreateGradeHook = async ({ e, formData }) => {
     e.preventDefault();
     try {
@@ -64,7 +67,7 @@ export const useAcademic = () => {
     }
   };
 
-  const handleCreateRoutineHook = async ({ e, formData }) => {
+  const handleCreateRoutineHook = async ({ e, formData }, thunkAPI) => {
     e.preventDefault();
     try {
       await dispatch(
@@ -75,6 +78,7 @@ export const useAcademic = () => {
       const message =
         error?.response?.data?.message ||
         error?.message ||
+        error ||
         "Something went wrong!";
       toast.error(message);
     }
@@ -86,6 +90,25 @@ export const useAcademic = () => {
         getTeachers({
           getTeachersUrl,
           userRole: "teacher",
+          accessToken
+        })
+      ).unwrap();
+    } catch (error) {
+      console.log(error);
+
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Something went wrong!";
+      toast.error(message);
+    }
+  };
+  const getStudentsHook = async () => {
+    try {
+      await dispatch(
+        getStudents({
+          getStudentsUrl,
+          userRole: "student",
           accessToken
         })
       ).unwrap();
@@ -143,6 +166,7 @@ export const useAcademic = () => {
     getTeachersHook,
     getGradesHook,
     getSubjectsHook,
-    getRoutineHook
+    getRoutineHook,
+    getStudentsHook
   };
 };

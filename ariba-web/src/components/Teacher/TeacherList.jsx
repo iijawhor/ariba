@@ -3,11 +3,10 @@ import { UserModal } from "../../allFiles.jsx";
 import { useGetUsers } from "../../hooks/useGetUsers.js";
 
 const TeacherList = ({ userModal, setUserModal, mode, setMode }) => {
-  const user = useSelector((state) => state.user.loggedInUser?.user);
-  const organization = user?.organization?._id;
+  const user = useSelector((state) => state.user.loggedInUser);
+  const organization = user?.organization;
   const { users, searchQuery, setSearchQuery, isActive, handleSelectUser } =
     useGetUsers(organization, "teacher");
-
   const header = ["photo", "name", "id"];
   const flexRatios = ["flex-[1_1_0%]", "flex-[3_1_0%]", "flex-[1_1_0%]"];
   const hanleAddModal = () => {

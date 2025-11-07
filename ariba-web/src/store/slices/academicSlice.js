@@ -38,18 +38,18 @@ export const createSubject = createAsyncThunk(
 
 export const createRoutine = createAsyncThunk(
   "academic/createRoutine",
-  async ({ createRoutineUrl, formData, accessToken }) => {
+  async ({ createRoutineUrl, formData, accessToken }, thunkAPI) => {
     try {
       const response = await axios.post(createRoutineUrl, formData, {
         headers: { Authorization: `Bearer ${accessToken}` }
       });
-      return response;
+      return response.data; // you can return response.data only
     } catch (error) {
       const msg =
         error?.response?.data?.message ||
         error?.message ||
-        "Failed to create subject!";
-      return thunkAPI.rejectWithValue(msg);
+        "Failed to create routine!";
+      return thunkAPI.rejectWithValue(msg); // ✅ now thunkAPI works
     }
   }
 );
@@ -59,6 +59,20 @@ export const getTeachers = createAsyncThunk(
   async ({ getTeachersUrl, userRole, accessToken }) => {
     try {
       const response = await axios.get(`${getTeachersUrl}/${userRole}`, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      });
+
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  }
+);
+export const getStudents = createAsyncThunk(
+  "academic/getStudents",
+  async ({ getStudentsUrl, userRole, accessToken }) => {
+    try {
+      const response = await axios.get(`${getStudentsUrl}/${userRole}`, {
         headers: { Authorization: `Bearer ${accessToken}` }
       });
 
@@ -112,6 +126,8 @@ export const getRoutine = createAsyncThunk(
       });
       return response.data;
     } catch (error) {
+      console.log("err...", error);
+
       const msg =
         error?.response?.data?.message ||
         error?.message ||
@@ -191,6 +207,19 @@ const attendanceSlice = createSlice({
         state.teachers = action.payload;
       })
       .addCase(getTeachers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+    builder
+      .addCase(getStudents.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getStudents.fulfilled, (state, action) => {
+        state.loading = false;
+        state.students = action.payload;
+      })
+      .addCase(getStudents.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

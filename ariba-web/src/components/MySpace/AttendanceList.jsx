@@ -8,15 +8,6 @@ const AttendanceList = ({ attendance, headings }) => {
 
   return (
     <div className="w-full">
-      {/* Headings */}
-      <div className="hidden md:grid grid-cols-5 gap-2 bg-gray-100 px-4 py-2 text-xs uppercase text-gray-600 font-medium tracking-wide text-center">
-        {headings.map((heading, index) => (
-          <span key={index} className="truncate">
-            {heading}
-          </span>
-        ))}
-      </div>
-
       {/* Attendance Row */}
       <div className="flex items-center flex-col md:grid md:grid-cols-5 gap-2 bg-white  shadow-sm p-3 mb-2 hover:bg-blue-50 transition text-center">
         {/* Date */}

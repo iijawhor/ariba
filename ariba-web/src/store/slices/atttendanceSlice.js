@@ -7,12 +7,13 @@ export const markClockIn = createAsyncThunk(
   async ({ attendanceUrlLogin, accessToken, userId }, thunkAPI) => {
     try {
       const response = await axios.post(
-        `${attendanceUrlLogin}/${userId}`,
+        `${attendanceUrlLogin}`,
         { status: "in" },
         {
           headers: {
             Authorization: `Bearer ${accessToken}`
-          }
+          },
+          withCredentials: true
         }
       );
       return response.data;
@@ -30,13 +31,10 @@ export const markClockIn = createAsyncThunk(
 // clock out (logout) → PATCH
 export const markClockOut = createAsyncThunk(
   "attendance/clockOut",
-  async (
-    { attendanceUrlLogout, accessToken, userId, attendanceId },
-    thunkAPI
-  ) => {
+  async ({ attendanceUrlLogout, accessToken, attendanceId }, thunkAPI) => {
     try {
       const response = await axios.patch(
-        `${attendanceUrlLogout}/${userId}`,
+        `${attendanceUrlLogout}`,
         { status: "out", attendanceId },
 
         {
@@ -58,10 +56,10 @@ export const markClockOut = createAsyncThunk(
 );
 export const gettAttendanceByUser = createAsyncThunk(
   "attendance/getAttendanceByUser",
-  async ({ gettAttendanceByUserUrl, accessToken, userId }, thunkAPI) => {
+  async ({ gettAttendanceByUserUrl, accessToken }, thunkAPI) => {
     try {
       const response = await axios.get(
-        `${gettAttendanceByUserUrl}/${userId}`,
+        `${gettAttendanceByUserUrl}`,
 
         {
           headers: {
@@ -91,8 +89,6 @@ export const getUsersByRole = createAsyncThunk(
       });
       return response.data;
     } catch (error) {
-      console.log("Error in getUserByRoleUrl Slice...", error);
-
       const message =
         error.response.data?.message ||
         error?.message ||
@@ -115,7 +111,7 @@ export const getAttendance = createAsyncThunk(
       });
       return response.data;
     } catch (error) {
-      console.log("Error in getAttendanceByUserRole Slice...", error);
+      console.log(error);
 
       const message =
         error.response?.data?.message ||

@@ -25,7 +25,7 @@ const AcademicPage = () => {
     day: ""
   });
 
-  const { getTeachersHook, getSubjectsHook, getGradesHook } = useAcademic();
+  const { getSubjectsHook, getGradesHook, getTeachersHook } = useAcademic();
   const closeModal = () => setActiveModal(null);
   const isAnyModalOpen = !!activeModal;
 

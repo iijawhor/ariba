@@ -20,15 +20,17 @@ export const loginHandler = createAsyncThunk(
       const response = await axios.post(loginApi, loginCredentials, {
         headers: {
           "Content-Type": "application/json"
-        }
+        },
+        withCredentials: true // ✅ allow backend cookies to be set
       });
 
-      return response.data; // will be available in fulfilled action
+      return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || "Login failed");
     }
   }
 );
+
 export const getOrganizationUsers = createAsyncThunk(
   "user/organizationUsers",
   async (
@@ -68,6 +70,7 @@ export const getUser = createAsyncThunk(
     }
   }
 );
+
 export const createUser = createAsyncThunk(
   "user/createUser",
   async ({ createUserApi, formData, accessToken }, thunkAPI) => {
@@ -143,33 +146,50 @@ export const getCurrentUser = createAsyncThunk(
 export const generateRefreshAccessToken = createAsyncThunk(
   "user/generateRefreshAccessToken",
   async (generateRefreshAccessTokenApi, thunkAPI) => {
-    console.log("api....", generateRefreshAccessTokenApi);
-
     try {
       const response = await axios.post(
         generateRefreshAccessTokenApi,
-
+        {}, // no body needed
         {
-          withCredentials: true // 🔑 this sends the cookie
+          withCredentials: true // ✅ now this works properly
         }
       );
 
-      // Return the new access token
-      return response.data; // { accessToken: "..." }
+      return response.data; // e.g. { accessToken, refreshToken }
     } catch (error) {
-      // Return a meaningful error message
-      console.log("err.. in ref....", error);
-
       const message =
         error.response?.data?.message || "Failed to generate access token!";
       return thunkAPI.rejectWithValue(message);
     }
   }
 );
+
+export const refreshUser = createAsyncThunk(
+  "user/refreshUser",
+  async (_, thunkAPI) => {
+    try {
+      const response = await axios.get("/api/auth/refresh", {
+        withCredentials: true // 👈 sends refresh token cookie
+      });
+      // response.data = { accessToken, user }
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || "Refresh failed");
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState,
-  reducers: {},
+  reducers: {
+    setLoggedInUser: (state, action) => {
+      state.loggedInUser = action.payload;
+    },
+    setAccessToken: (state, action) => {
+      state.accessToken = action.payload;
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(loginHandler.pending, (state, action) => {
@@ -282,7 +302,7 @@ const userSlice = createSlice({
         (state.loading = true), (state.error = false);
       })
       .addCase(generateRefreshAccessToken.fulfilled, (state, action) => {
-        state.accessToken = action.payload;
+        state.accessToken = action.payload.accessToken;
         state.error = null;
         state.loading = false;
       })
@@ -290,8 +310,21 @@ const userSlice = createSlice({
         state.error = action.payload;
         state.loading = false;
       });
+    builder
+      .addCase(refreshUser.pending, (state, action) => {
+        (state.loading = true), (state.error = false);
+      })
+      .addCase(refreshUser.fulfilled, (state, action) => {
+        state.currentUser = action.payload;
+        state.error = null;
+        state.loading = false;
+      })
+      .addCase(refreshUser.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      });
   }
 });
 
-export const {} = userSlice.actions;
+export const { setLoggedInUser, setAccessToken } = userSlice.actions;
 export default userSlice.reducer;

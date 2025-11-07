@@ -27,7 +27,7 @@ export const createRoutine = async (req, res) => {
       .status(200)
       .json({ message: "Routine created successfully", newRoutine });
   } catch (error) {
-    return res.status(200).json({ message: "Failed to create routine" });
+    return res.status(400).json({ message: "Failed to create routine" });
   }
 };
 export const getTeachers = async (req, res) => {
@@ -40,6 +40,18 @@ export const getTeachers = async (req, res) => {
     return res
       .status(400)
       .json({ message: error?.response?.message || "Failed to get teachers!" });
+  }
+};
+export const getStudents = async (req, res) => {
+  try {
+    const students = await AcademicServices.getStudents(req);
+    return res
+      .status(200)
+      .json({ message: "Students fetched successfully", students });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ message: error?.response?.message || "Failed to get students!" });
   }
 };
 export const getGrades = async (req, res) => {
@@ -70,7 +82,6 @@ export const getSubjects = async (req, res) => {
 export const getRoutine = async (req, res) => {
   try {
     const response = await AcademicServices.getRoutine(req);
-
     return res.status(200).json({
       success: true,
       message: "Routine fetched successfully",

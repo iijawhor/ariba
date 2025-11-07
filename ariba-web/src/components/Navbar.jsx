@@ -9,7 +9,8 @@ const Navbar = ({ activeMenu, sidebar, setActiveMenu }) => {
   const [error, setError] = useState(null);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user.loggedInUser?.user);
+  const user = useSelector((state) => state.user.loggedInUser);
+
   const sidebarRef = useRef(null);
 
   // Close sidebar if click outside

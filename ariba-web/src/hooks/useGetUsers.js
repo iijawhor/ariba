@@ -7,9 +7,8 @@ export const useGetUsers = (organization, userRole) => {
   const users = useSelector(
     (state) => state.user.usersByOrganization?.users || []
   );
-  const user = useSelector((state) => state.user.loggedInUser);
   const dispatch = useDispatch();
-  const accessToken = user?.accessToken;
+  const accessToken = useSelector((state) => state.user.accessToken);
   const [isActive, setIsActive] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -36,7 +35,7 @@ export const useGetUsers = (organization, userRole) => {
   useEffect(() => {
     if (users.length > 0) {
       setIsActive(0);
-      dispatch(getUser({ getUserApi, id: users[0]._id }));
+      dispatch(getUser({ getUserApi, userRole, id: users[0]._id }));
     }
   }, [users, dispatch]);
 

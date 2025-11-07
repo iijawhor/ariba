@@ -7,10 +7,8 @@ const AnnouncementModal = ({ isOpen, onClose, setAnnouncement }) => {
     content: "",
     targetUser: ""
   });
+  const token = useSelector((state) => state.user.accessToken);
 
-  const user = useSelector((state) => state.user.loggedInUser);
-
-  const token = user?.accessToken;
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({

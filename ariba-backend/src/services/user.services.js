@@ -2,6 +2,8 @@ import * as UserRepositories from "../repositories/user.repositories.js";
 import * as OrganizationRepositories from "../repositories/organization.repositories.js";
 import ApiError from "../utils/ApiError.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+
 import { User } from "../models/user.model.js";
 export const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -149,7 +151,6 @@ export const refreshAccessToken = async (req, res) => {
   try {
     const incomingRefreshToken =
       req.cookies.refreshToken || req.body.refreshToken;
-
     if (!incomingRefreshToken) {
       throw new ApiError("Unauthorized request", 401);
     }
@@ -158,8 +159,8 @@ export const refreshAccessToken = async (req, res) => {
       incomingRefreshToken,
       process.env.REFRESH_TOKEN_SECRET
     );
-
     const user = await User.findById(decodedToken?._id);
+
     if (!user) {
       throw new ApiError("Invalid refresh token", 401);
     }
@@ -170,21 +171,23 @@ export const refreshAccessToken = async (req, res) => {
 
     const options = {
       httpOnly: true,
-      secure: false
+      secure: false,
+      sameSite: "lax"
     };
 
-    const { newRefreshToken, accessToken } =
+    // ✅ fixed destructure
+    const { accessToken, refreshToken: newRefreshToken } =
       await generateAccessAndRefreshToken(user._id);
 
     return res
       .status(200)
       .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", newRefreshToken, options)
+      .cookie("refreshToken", newRefreshToken, options) // ✅ corrected
       .json({
         success: true,
         message: "Access token refreshed",
         accessToken,
-        refreshToken: newRefreshToken
+        refreshToken: newRefreshToken // ✅ corrected
       });
   } catch (error) {
     return res.status(error.statusCode || 500).json({

@@ -13,18 +13,19 @@ import {
 } from "../controllers/attendance.controller.js";
 
 const router = Router();
-router.post("/create-login/:id", verifyJWT, sanitizeRequests, markAttendance);
+router.post("/create-login", verifyJWT, sanitizeRequests, markAttendance);
 router.patch(
-  "/create-logout/:id",
+  "/create-logout",
   verifyJWT,
   verifyTenant,
   sanitizeRequests,
   markAttendance
 );
 router.get(
-  "/get-attendance/:id",
+  "/get-attendance",
   verifyJWT,
   sanitizeRequests,
+  verifyTenant,
   getAttendanceByUserController
 );
 

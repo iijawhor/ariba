@@ -11,7 +11,8 @@ import {
   getGrades,
   getRoutine,
   getSubjects,
-  getTeachers
+  getTeachers,
+  getStudents
 } from "../controllers/academic.controller.js";
 import { Router } from "express";
 
@@ -54,6 +55,14 @@ router.get(
   validateRole(["teacher", "admin"]),
   sanitizeRequests,
   getTeachers
+);
+router.get(
+  "/get-students/:userRole",
+  verifyJWT,
+  verifyTenant,
+  validateRole(["teacher", "admin"]),
+  sanitizeRequests,
+  getStudents
 );
 router.get(
   "/get-grades",
