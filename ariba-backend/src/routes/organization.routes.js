@@ -1,6 +1,8 @@
-import { createTenant } from "../controllers/organization.controller.js";
+import {
+  createTenant,
+  getTenant
+} from "../controllers/organization.controller.js";
 import { sanitizeRequests } from "../middlewares/sanitizeData.js";
-import { verifyTenant } from "../middlewares/tenant.middleware.js";
 import { validateRole } from "../middlewares/verifyRole.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { Router } from "express";
@@ -13,5 +15,11 @@ router.post(
   validateRole(["superAdmin"]),
   sanitizeRequests,
   createTenant
+);
+router.get(
+  "/get-tenant",
+  verifyJWT,
+  validateRole(["superAdmin", "admin", "teacher", "student"]),
+  getTenant
 );
 export default router;

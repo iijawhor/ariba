@@ -21,3 +21,11 @@ export const createTenant = async (data) => {
   });
   return newTenant;
 };
+
+export const findOrganizationDetails = async (req) => {
+  const { organization } = req.user;
+  if (!organization) {
+    throw new ApiError("Organization not found!", 404);
+  }
+  return await OrganizationRepositories.findOrganizationDetails(organization);
+};

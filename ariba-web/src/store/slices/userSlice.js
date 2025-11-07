@@ -11,7 +11,8 @@ const initialState = {
   userDetails: {},
   newTimeline: {},
   createdUser: {},
-  updatedUser: {}
+  updatedUser: {},
+  organization: {}
 };
 export const loginHandler = createAsyncThunk(
   "auth/login",
@@ -48,6 +49,25 @@ export const getOrganizationUsers = createAsyncThunk(
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || "Login failed");
+    }
+  }
+);
+export const getOrganizationDetails = createAsyncThunk(
+  "user/getOrganization",
+  async ({ getOrganizationDetailsApi, accessToken }, thunkAPI) => {
+    try {
+      const response = await axios.get(getOrganizationDetailsApi, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        },
+        withCredentials: true
+      });
+
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Failed to get organization!"
+      );
     }
   }
 );
@@ -320,6 +340,19 @@ const userSlice = createSlice({
         state.loading = false;
       })
       .addCase(refreshUser.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      });
+    builder
+      .addCase(getOrganizationDetails.pending, (state, action) => {
+        (state.loading = true), (state.error = false);
+      })
+      .addCase(getOrganizationDetails.fulfilled, (state, action) => {
+        state.organization = action.payload;
+        state.error = null;
+        state.loading = false;
+      })
+      .addCase(getOrganizationDetails.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
       });

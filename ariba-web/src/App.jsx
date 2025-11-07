@@ -8,16 +8,21 @@ import {
 } from "./store/slices/userSlice.js";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
+import { useGetOrganization } from "./hooks/useGetOrganization.js";
 
 function App() {
   const accessToken = useSelector((state) => state.user.accessToken);
   const { getPresentDayAttendanceHook } = useAttendance(accessToken);
+  const { fetchOrganizationDetails } = useGetOrganization(accessToken);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true); // to delay redirect until refresh check finishes
   const navigate = useNavigate();
   const [activeMenu, setActiveMenu] = useState("dashboard");
 
   const dispatch = useDispatch();
+  useEffect(() => {
+    fetchOrganizationDetails();
+  }, [accessToken]);
   // ✅ Fetch current user if refresh token exists
   useEffect(() => {
     navigate("/");
