@@ -60,3 +60,13 @@ export const updateUser = async (_id, updatedValue) => {
     runValidators: true
   });
 };
+
+export const updateUserRefreshToken = async (userId, token) => {
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { refreshToken: token }, // set undefined to remove token on logout
+    { new: true }
+  );
+
+  return user;
+};

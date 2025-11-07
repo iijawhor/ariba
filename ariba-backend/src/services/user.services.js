@@ -132,7 +132,7 @@ export const createUser = async (userData) => {
 };
 export const logoutUser = async (userId) => {
   // remove refreshToken
-  const user = await updateUserRefreshToken(userId, undefined);
+  const user = await UserRepositories.updateUserRefreshToken(userId, undefined);
   if (!user) {
     throw new Error("User not found");
   }

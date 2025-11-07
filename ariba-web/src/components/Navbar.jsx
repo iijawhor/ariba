@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { searchHandler } from "../store/slices/searchSlice";
+import { useUser } from "../hooks/useUser.js";
 import Sidebar from "./Sidebar";
 
 const Navbar = ({ activeMenu, sidebar, setActiveMenu }) => {
@@ -11,7 +12,7 @@ const Navbar = ({ activeMenu, sidebar, setActiveMenu }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.loggedInUser);
   const tenant = useSelector((state) => state.user.organization);
-
+  const { logoutHook } = useUser();
   const sidebarRef = useRef(null);
 
   // Close sidebar if click outside
@@ -104,7 +105,10 @@ const Navbar = ({ activeMenu, sidebar, setActiveMenu }) => {
                   </Link>
                 </li>
                 <li>
-                  <button className="w-full text-left rounded-lg px-3 py-2 hover:bg-[#EEF4FF] hover:text-[#2C80FF] transition">
+                  <button
+                    onClick={logoutHook}
+                    className="w-full text-left rounded-lg px-3 py-2 hover:bg-[#EEF4FF] hover:text-[#2C80FF] transition"
+                  >
                     Logout
                   </button>
                 </li>

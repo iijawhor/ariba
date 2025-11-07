@@ -90,6 +90,25 @@ export const getUser = createAsyncThunk(
     }
   }
 );
+export const logout = createAsyncThunk(
+  "user/logout",
+  async ({ logoutApiUrl, accessToken }, thunkAPI) => {
+    try {
+      const response = await axios.post(logoutApiUrl, undefined, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        withCredentials: true
+      });
+
+      return;
+    } catch (error) {
+      console.log(error);
+
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Failed to logout!"
+      );
+    }
+  }
+);
 
 export const createUser = createAsyncThunk(
   "user/createUser",
@@ -353,6 +372,21 @@ const userSlice = createSlice({
         state.loading = false;
       })
       .addCase(getOrganizationDetails.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      });
+    builder
+      .addCase(logout.pending, (state, action) => {
+        (state.loading = true), (state.error = false);
+      })
+      .addCase(logout.fulfilled, (state, action) => {
+        state.loggedInUser = null;
+        state.currentUser = null;
+        state.accessToken = null;
+        state.error = null;
+        state.loading = false;
+      })
+      .addCase(logout.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
       });
