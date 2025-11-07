@@ -7,8 +7,8 @@ import { toast } from "react-toastify";
 export const LoginForm = () => {
   const loginError = useSelector((state) => state.user.error);
   const [loginCredentials, setLoginCredentials] = useState({
-    email: "",
-    password: ""
+    email: "tasbeeha@gmail.com",
+    password: "324@Jak!"
   });
 
   const dispatch = useDispatch();
