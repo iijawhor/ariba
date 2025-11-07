@@ -126,6 +126,48 @@ function App() {
       id: 2
     },
     {
+      name: "academic",
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="white"
+          viewBox="0 0 24 24"
+          width="18"
+          height="18"
+        >
+          {" "}
+          <path d="M12 2L1 7l11 5 9-4.09V17h2V7L12 2z" fill="white" />{" "}
+          <path d="M20 14a2 2 0 1 0 2 2 2 2 0 0 0-2-2z" fill="white" />{" "}
+        </svg>
+      ),
+      to: "academic",
+      id: 6
+    },
+    {
+      name: "attendance",
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="white"
+          viewBox="0 0 24 24"
+          width="18"
+          height="18"
+        >
+          {" "}
+          <circle cx="12" cy="8" r="4" fill="white" />{" "}
+          <path d="M4 20c0-4 4-6 8-6s8 2 8 6v1H4v-1z" fill="white" />{" "}
+          <path
+            d="M19 6v4M17 8h4"
+            stroke="white"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />{" "}
+        </svg>
+      ),
+      to: "attendance",
+      id: 5
+    },
+    {
       name: "teachers",
       icon: (
         <svg
@@ -166,48 +208,7 @@ function App() {
       to: "students",
       id: 4
     },
-    {
-      name: "attendance",
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="white"
-          viewBox="0 0 24 24"
-          width="18"
-          height="18"
-        >
-          {" "}
-          <circle cx="12" cy="8" r="4" fill="white" />{" "}
-          <path d="M4 20c0-4 4-6 8-6s8 2 8 6v1H4v-1z" fill="white" />{" "}
-          <path
-            d="M19 6v4M17 8h4"
-            stroke="white"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />{" "}
-        </svg>
-      ),
-      to: "attendance",
-      id: 5
-    },
-    {
-      name: "academic",
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="white"
-          viewBox="0 0 24 24"
-          width="18"
-          height="18"
-        >
-          {" "}
-          <path d="M12 2L1 7l11 5 9-4.09V17h2V7L12 2z" fill="white" />{" "}
-          <path d="M20 14a2 2 0 1 0 2 2 2 2 0 0 0-2-2z" fill="white" />{" "}
-        </svg>
-      ),
-      to: "academic",
-      id: 6
-    },
+
     {
       name: "payment",
       icon: (
