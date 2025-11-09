@@ -3,8 +3,8 @@ import * as OrganizationRepositories from "../repositories/organization.reposito
 import ApiError from "../utils/ApiError.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
 import { User } from "../models/user.model.js";
+import { getCookieOptions } from "../utils/getCoookieOptions.js";
 export const generateAccessAndRefreshToken = async (userId) => {
   try {
     const user = await UserRepositories.findUserById(userId);
@@ -181,8 +181,12 @@ export const refreshAccessToken = async (req, res) => {
 
     return res
       .status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", newRefreshToken, options) // ✅ corrected
+      .cookie("accessToken", accessToken, getCookieOptions(req.headers.origin))
+      .cookie(
+        "refreshToken",
+        newRefreshToken,
+        getCookieOptions(req.headers.origin)
+      ) // ✅ corrected
       .json({
         success: true,
         message: "Access token refreshed",

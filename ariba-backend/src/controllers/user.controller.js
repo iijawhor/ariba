@@ -2,6 +2,7 @@ import * as UserService from "../services/user.services.js";
 import ApiError from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
 import { generateAccessAndRefreshToken } from "../services/user.services.js";
+import { getCookieOptions } from "../utils/getCoookieOptions.js";
 import jwt from "jsonwebtoken";
 export const signupUser = async (req, res) => {
   try {
@@ -42,8 +43,12 @@ export const signinUser = async (req, res) => {
     };
 
     return res
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", refreshToken, options)
+      .cookie("accessToken", accessToken, getCookieOptions(req.headers.origin))
+      .cookie(
+        "refreshToken",
+        refreshToken,
+        getCookieOptions(req.headers.origin)
+      )
       .status(200)
       .json({
         message: "User logged in successfully",
@@ -66,8 +71,8 @@ export const logoutUser = async (req, res, next) => {
 
     return res
       .status(200)
-      .clearCookie("accessToken", options)
-      .clearCookie("refreshToken", options)
+      .clearCookie("accessToken", getCookieOptions(req.headers.origin))
+      .clearCookie("refreshToken", getCookieOptions(req.headers.origin))
       .json({ message: "User logged out" });
   } catch (error) {
     return res.status(400).json({ messgae: "Failed to loggedout" });
@@ -161,8 +166,12 @@ export const refreshAccessToken = async (req, res) => {
 
     return res
       .status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", newRefreshToken, options)
+      .cookie("accessToken", accessToken, getCookieOptions(req.headers.origin))
+      .cookie(
+        "refreshToken",
+        newRefreshToken,
+        getCookieOptions(req.headers.origin)
+      )
       .json({
         success: true,
         message: "Access token refreshed",
