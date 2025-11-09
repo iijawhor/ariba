@@ -25,7 +25,9 @@ function App() {
     const generateRefreshAccessTokenApi = `${
       import.meta.env.VITE_API_BASE_URL
     }/user/refresh-token`;
-
+    if (!accessToken) {
+      navigate("/signin");
+    }
     dispatch(generateRefreshAccessToken(generateRefreshAccessTokenApi));
     const getUserOnRefresh = async () => {
       try {

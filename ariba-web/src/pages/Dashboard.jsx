@@ -28,6 +28,9 @@ const Dashboard = () => {
   }, [announcements]);
 
   useEffect(() => {
+    if (!token) {
+      return;
+    }
     getTeachersHook();
     getStudentsHook();
   }, []);
