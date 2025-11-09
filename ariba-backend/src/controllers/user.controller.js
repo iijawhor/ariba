@@ -126,29 +126,43 @@ export const getCurrentUser = async (req, res) => {
     return res.status(400).json({ messgae: "Failed to get current user" });
   }
 };
+
 export const refreshAccessToken = async (req, res) => {
   try {
+    // 1️⃣ Get refresh token from cookie
     const incomingRefreshToken =
       req.cookies?.refreshToken || req.body.refreshToken;
+
+    console.log("🔍 Refresh Token Debug:", {
+      origin: req.headers.origin,
+      hasCookie: !!req.cookies?.refreshToken,
+      hasBody: !!req.body.refreshToken,
+      cookies: Object.keys(req.cookies || {})
+    });
+
     if (!incomingRefreshToken) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized request"
+        message: "Unauthorized request - No refresh token"
       });
     }
 
+    // 2️⃣ Verify token
     const decodedToken = jwt.verify(
       incomingRefreshToken,
       process.env.REFRESH_TOKEN_SECRET
     );
 
+    // 3️⃣ Find user
     const user = await User.findById(decodedToken?._id);
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: "Invalid refresh token"
+        message: "Invalid refresh token - User not found"
       });
     }
+
+    // 4️⃣ Verify token matches stored token
     if (incomingRefreshToken !== user?.refreshToken) {
       return res.status(401).json({
         success: false,
@@ -156,35 +170,39 @@ export const refreshAccessToken = async (req, res) => {
       });
     }
 
-    const options = {
-      httpOnly: true,
-      secure: false
-    };
-
-    const { newRefreshToken, accessToken } =
+    // 5️⃣ Generate new tokens
+    const { accessToken, refreshToken: newRefreshToken } =
       await generateAccessAndRefreshToken(user._id);
 
-    return res
-      .status(200)
-      .cookie("accessToken", accessToken, getCookieOptions(req.headers.origin))
-      .cookie(
-        "refreshToken",
-        newRefreshToken,
-        getCookieOptions(req.headers.origin)
-      )
-      .json({
-        success: true,
-        message: "Access token refreshed",
-        accessToken,
-        refreshToken: newRefreshToken
-      });
+    console.log("✅ Tokens generated successfully:", {
+      hasAccessToken: !!accessToken,
+      hasRefreshToken: !!newRefreshToken,
+      getCookieOptions
+    });
+
+    // 7️⃣ Set cookies and return response
+    return (
+      res
+        .status(200)
+        .cookie("refreshToken", newRefreshToken, getCookieOptions)
+        // Optional: Also set accessToken in cookie if you want
+        // .cookie("accessToken", accessToken, cookieOptions)
+        .json({
+          success: true,
+          message: "Access token refreshed",
+          accessToken, // ✅ Frontend reads this from response.data.accessToken
+          refreshToken: newRefreshToken
+        })
+    );
   } catch (error) {
+    console.error("❌ Refresh token error:", error.message);
     return res.status(401).json({
       success: false,
       message: error?.message || "Invalid refresh token"
     });
   }
 };
+
 export const getUserDetailsById = async (req, res) => {
   const userId = req.params;
   try {
