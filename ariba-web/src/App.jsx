@@ -26,21 +26,27 @@ function App() {
   // ✅ Fetch current user if refresh token exists
   useEffect(() => {
     navigate("/");
-    const generateRefreshAccessTokenApi =
-      "http://localhost:7000/api/v1/user/refresh-token";
+    // const generateRefreshAccessTokenApi =
+    //   "http://localhost:7000/api/v1/user/refresh-token";
+    const generateRefreshAccessTokenApi = `${
+      import.meta.env.VITE_API_BASE_URL
+    }/user/refresh-token`;
+
     dispatch(generateRefreshAccessToken(generateRefreshAccessTokenApi));
     const getUserOnRefresh = async () => {
       try {
         // 1️⃣ Ask backend to refresh the access token (cookie auto-sent)
         const refreshRes = await axios.post(
-          "http://localhost:7000/api/v1/user/refresh-token",
+          generateRefreshAccessTokenApi,
           {},
           { withCredentials: true }
         );
 
         // 3️⃣ Use that access token to fetch the user
         const userRes = await axios.get(
-          "http://localhost:7000/api/v1/user/get-current-user",
+          // "http://localhost:7000/api/v1/user/get-current-user",
+          `${import.meta.env.VITE_API_BASE_URL}/user/get-current-user`,
+
           {
             headers: { Authorization: `Bearer ${accessToken}` },
             withCredentials: true

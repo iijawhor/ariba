@@ -36,9 +36,6 @@ export const useAttendance = (userRole) => {
       toast.error(message);
     }
   };
-
-  // const attendanceUrlLogin =
-  //   "http://localhost:7000/api/v1/attendance/create-login";
   const attendanceUrlLogin = `${
     import.meta.env.VITE_API_BASE_URL
   }/attendance/create-login`;

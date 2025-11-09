@@ -34,7 +34,10 @@ const TimelineModal = ({ id, setTimelineModal }) => {
     }));
   };
 
-  const addTimelineApi = `http://localhost:7000/api/v1/user/add-timeline`;
+  // const addTimelineApi = `http://localhost:7000/api/v1/user/add-timeline`;
+  const addTimelineApi = `${
+    import.meta.env.VITE_API_BASE_URL
+  }/user/add-timeline`;
   const dispatch = useDispatch();
   const handleAddTimeline = (e) => {
     e.preventDefault();
