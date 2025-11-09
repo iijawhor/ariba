@@ -2,10 +2,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { Navbar, Sidebar } from "./allFiles";
 import { useEffect, useState } from "react";
 import { useAttendance } from "./hooks/useAttendance.js";
-import {
-  generateRefreshAccessToken,
-  setLoggedInUser
-} from "./store/slices/userSlice.js";
+import { setLoggedInUser, setAccessToken } from "./store/slices/userSlice.js";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useGetOrganization } from "./hooks/useGetOrganization.js";
@@ -44,8 +41,8 @@ function App() {
           throw new Error("No access token in refresh response");
         }
 
-        // 3️⃣ Dispatch to Redux (this will update accessToken state)
-        dispatch(generateRefreshAccessToken(generateRefreshAccessTokenApi));
+        // 3️⃣ Set the token directly in Redux (no additional API call)
+        dispatch(setAccessToken(newAccessToken));
 
         // 4️⃣ Fetch user with NEW token
         const userRes = await axios.get(
@@ -87,9 +84,9 @@ function App() {
   // ✅ Redirect to signin if authentication failed
   useEffect(() => {
     if (!loading && !user) {
-      navigate("/signin");
+      navigate("/signin", { replace: true });
     }
-  }, [loading, user, navigate]);
+  }, [loading, user]);
 
   // ✅ Show loading screen
   if (loading) {
