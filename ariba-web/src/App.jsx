@@ -64,7 +64,7 @@ function App() {
     };
 
     getUserOnRefresh();
-  }, [accessToken]);
+  }, [dispatch, accessToken]);
 
   // ✅ If user is null after check, redirect to signin
   useEffect(() => {
