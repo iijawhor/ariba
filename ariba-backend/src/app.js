@@ -6,32 +6,25 @@ const app = express();
 const upload = multer();
 const allowedOrigins = [
   "http://localhost:5174", // Local Vite dev server
-  // Local Vite dev server
-  "http://localhost:3000", // Alternative local port
-  "http://13.233.13.228", // Production IP
-  process.env.CORS_ORIGIN // From .env if set
+  "https://elegant-banoffee-fc2521.netlify.app", // deployed frontend
+  process.env.CORS_ORIGIN // optional .env value
 ].filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // allow non-browser requests
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true
   })
 );
-// app.use(
-//   cors({
-//     origin: function (origin, callback) {
-//       // Allow requests with no origin (Postman, mobile apps, etc.)
-//       if (!origin) return callback(null, true);
 
-//       if (allowedOrigins.includes(origin)) {
-//         callback(null, true);
-//       } else {
-//         callback(new Error("Not allowed by CORS"));
-//       }
-//     },
-//     credentials: true
-//   })
-// );
 app.use(cookieParser());
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
