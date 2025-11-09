@@ -1,5 +1,5 @@
 import { Outlet, useNavigate } from "react-router-dom";
-import { Navbar, Sidebar } from "./allFiles";
+import { Loading, Navbar, Sidebar } from "./allFiles";
 import { useEffect, useState } from "react";
 import { useAttendance } from "./hooks/useAttendance.js";
 import {
@@ -79,11 +79,7 @@ function App() {
 
   // ✅ Show loading until check completes
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen text-lg font-semibold">
-        Loading...
-      </div>
-    );
+    return <Loading />;
   }
   const sidebar = [
     {

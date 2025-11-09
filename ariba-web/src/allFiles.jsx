@@ -36,6 +36,7 @@ import AssignSubjectModal from "./components/modals/AssignSubjectModal.jsx";
 import AssignTeacherModal from "./components/modals/AssignTeacherModal.jsx";
 import RoutineModal from "./components/modals/RoutineModal.jsx";
 import AnnouncementModal from "./components/modals/Anouncements.jsx";
+import Loading from "./components/Loading.jsx";
 export {
   Dashboard,
   Sidebar,
@@ -75,5 +76,6 @@ export {
   SubjectModal,
   AssignSubjectModal,
   AssignTeacherModal,
-  RoutineModal
+  RoutineModal,
+  Loading
 };
