@@ -25,8 +25,6 @@ function App() {
   }, [accessToken]);
   // ✅ Fetch current user if refresh token exists
   useEffect(() => {
-    // const generateRefreshAccessTokenApi =
-    //   "http://localhost:7000/api/v1/user/refresh-token";
     const generateRefreshAccessTokenApi = `${
       import.meta.env.VITE_API_BASE_URL
     }/user/refresh-token`;
@@ -43,7 +41,7 @@ function App() {
 
         // 3️⃣ Use that access token to fetch the user
         const userRes = await axios.get(
-          "http://localhost:7000/api/v1/user/get-current-user",
+          `${import.meta.env.VITE_API_BASE_URL}/user/get-current-user`,
 
           {
             headers: { Authorization: `Bearer ${accessToken}` },
