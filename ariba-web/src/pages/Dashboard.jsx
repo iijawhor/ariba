@@ -21,7 +21,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (!token) return; // ⛔ don’t call until token exists
     getAnnouncementHook();
-  }, [token]); // ✅ runs only after token is updated
+  }, []);
 
   useEffect(() => {
     setAnnouncement(announcements.announcement || []);
