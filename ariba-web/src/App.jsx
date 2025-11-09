@@ -20,10 +20,7 @@ function App() {
   const [activeMenu, setActiveMenu] = useState("dashboard");
 
   const dispatch = useDispatch();
-  useEffect(() => {
-    fetchOrganizationDetails();
-  }, [accessToken]);
-  // ✅ Fetch current user if refresh token exists
+
   useEffect(() => {
     const generateRefreshAccessTokenApi = `${
       import.meta.env.VITE_API_BASE_URL
@@ -76,11 +73,14 @@ function App() {
       navigate("/signin");
     }
   }, [loading, user, navigate]);
-
+  useEffect(() => {
+    fetchOrganizationDetails();
+  }, []);
   // ✅ Show loading until check completes
   if (loading) {
     return <Loading />;
   }
+
   const sidebar = [
     {
       name: "dashboard",
