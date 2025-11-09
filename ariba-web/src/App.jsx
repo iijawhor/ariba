@@ -25,35 +25,42 @@ function App() {
   }, [accessToken]);
   // ✅ Fetch current user if refresh token exists
   useEffect(() => {
+    const generateRefreshAccessTokenApi = `${
+      import.meta.env.VITE_API_BASE_URL
+    }/user/refresh-token`;
+
+    dispatch(generateRefreshAccessToken(generateRefreshAccessTokenApi));
     const getUserOnRefresh = async () => {
       try {
-        // 1️⃣ Refresh access token (refresh token is sent automatically via cookie)
+        // 1️⃣ Ask backend to refresh the access token (cookie auto-sent)
         const refreshRes = await axios.post(
-          `${import.meta.env.VITE_API_BASE_URL}/user/refresh-token`,
+          generateRefreshAccessTokenApi,
           {},
           { withCredentials: true }
         );
 
-        const newAccessToken = refreshRes.data?.accessToken;
-        if (!newAccessToken) throw new Error("No access token received");
-
-        // 2️⃣ Fetch current user with the new token
+        // 3️⃣ Use that access token to fetch the user
         const userRes = await axios.get(
           `${import.meta.env.VITE_API_BASE_URL}/user/get-current-user`,
+
           {
-            headers: { Authorization: `Bearer ${newAccessToken}` },
+            headers: { Authorization: `Bearer ${accessToken}` },
             withCredentials: true
           }
         );
 
+        // 4️⃣ Save user to local state
         const currentUser = userRes.data;
         dispatch(setLoggedInUser(currentUser.user));
         setUser(currentUser);
 
-        // 3️⃣ Load user-specific data
+        if (!accessToken) {
+          return;
+        }
+
+        // Optional — load any user-specific data
         await getPresentDayAttendanceHook();
       } catch (err) {
-        console.error("Refresh or user fetch failed:", err);
         setUser(null);
       } finally {
         setLoading(false);
@@ -61,29 +68,20 @@ function App() {
     };
 
     getUserOnRefresh();
-  }, []); // 👈 only run once on mount
+  }, [accessToken]);
 
+  // ✅ If user is null after check, redirect to signin
   useEffect(() => {
-    if (loading) return; // don’t redirect while checking auth
-    if (user === null) navigate("/signin");
+    if (!loading && !user) {
+      navigate("/signin");
+    }
   }, [loading, user, navigate]);
 
   // ✅ Show loading until check completes
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-blue-50 to-blue-100">
-        {/* Animated bars (representing data loading or dashboard elements) */}
-        <div className="flex space-x-2 mb-6">
-          <div className="w-5 h-8 bg-blue-500 rounded-sm animate-bounce delay-[0ms]"></div>
-          <div className="w-5 h-8 bg-blue-600 rounded-sm animate-bounce delay-[150ms]"></div>
-          <div className="w-5 h-8 bg-blue-700 rounded-sm animate-bounce delay-[300ms]"></div>
-        </div>
-
-        {/* Text content */}
-        <h2 className="text-xl font-semibold text-blue-800">
-          Loading Admin Dashboard...
-        </h2>
-        <p className="text-blue-600 mt-1">Fetching reports and analytics</p>
+      <div className="flex items-center justify-center h-screen text-lg font-semibold">
+        Loading...
       </div>
     );
   }
