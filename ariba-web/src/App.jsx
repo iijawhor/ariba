@@ -56,6 +56,7 @@ function App() {
 
         // Optional — load any user-specific data
         await getPresentDayAttendanceHook();
+        navigate("/");
       } catch (err) {
         setUser(null);
       } finally {
