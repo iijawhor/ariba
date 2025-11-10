@@ -29,7 +29,7 @@ function App() {
     const getUserOnRefresh = async () => {
       const refreshResponse = await dispatch(
         generateRefreshAccessToken(generateRefreshAccessTokenApi)
-      ).unwrap();
+      );
 
       const accessToken = refreshResponse?.payload?.accessToken;
       try {
