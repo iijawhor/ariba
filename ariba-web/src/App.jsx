@@ -21,7 +21,6 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    navigate("/");
     const generateRefreshAccessTokenApi = `${
       import.meta.env.VITE_API_BASE_URL
     }/user/refresh-token`;
