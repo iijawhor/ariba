@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useGetOrganization } from "./hooks/useGetOrganization.js";
 
 function App() {
-  const accessToken = useSelector((state) => state.user.accessToken);
+  const oldAccessToken = useSelector((state) => state.user.accessToken);
   const { fetchOrganizationDetails } = useGetOrganization(accessToken);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true); // to delay redirect until refresh check finishes
@@ -61,10 +61,10 @@ function App() {
     };
 
     getUserOnRefresh();
-  }, [accessToken]);
+  }, []);
   useEffect(() => {
     fetchOrganizationDetails();
-  }, [accessToken]);
+  }, [oldAccessToken]);
 
   // ✅ If user is null after check, redirect to signin
   useEffect(() => {
