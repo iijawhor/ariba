@@ -12,7 +12,6 @@ import { useGetOrganization } from "./hooks/useGetOrganization.js";
 
 function App() {
   const accessToken = useSelector((state) => state.user.accessToken);
-  const { getPresentDayAttendanceHook } = useAttendance(accessToken);
   const { fetchOrganizationDetails } = useGetOrganization(accessToken);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true); // to delay redirect until refresh check finishes
@@ -22,19 +21,18 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    navigate("/");
     const generateRefreshAccessTokenApi = `${
       import.meta.env.VITE_API_BASE_URL
     }/user/refresh-token`;
-    dispatch(generateRefreshAccessToken(generateRefreshAccessTokenApi));
-    const getUserOnRefresh = async () => {
-      try {
-        // 1️⃣ Ask backend to refresh the access token (cookie auto-sent)
-        const refreshRes = await axios.post(
-          generateRefreshAccessTokenApi,
-          {},
-          { withCredentials: true }
-        );
 
+    const getUserOnRefresh = async () => {
+      const refreshResponse = await dispatch(
+        generateRefreshAccessToken(generateRefreshAccessTokenApi)
+      ).unwrap();
+
+      const accessToken = refreshResponse?.payload?.accessToken;
+      try {
         // 3️⃣ Use that access token to fetch the user
         const userRes = await axios.get(
           `${import.meta.env.VITE_API_BASE_URL}/user/get-current-user`,
@@ -55,8 +53,6 @@ function App() {
         }
 
         // Optional — load any user-specific data
-        await getPresentDayAttendanceHook();
-        navigate("/");
       } catch (err) {
         setUser(null);
       } finally {
@@ -65,7 +61,10 @@ function App() {
     };
 
     getUserOnRefresh();
-  }, [dispatch, accessToken]);
+  }, [accessToken]);
+  useEffect(() => {
+    fetchOrganizationDetails();
+  }, [accessToken]);
 
   // ✅ If user is null after check, redirect to signin
   useEffect(() => {
@@ -73,9 +72,7 @@ function App() {
       navigate("/signin");
     }
   }, [loading, user, navigate]);
-  useEffect(() => {
-    fetchOrganizationDetails();
-  }, []);
+
   // ✅ Show loading until check completes
   if (loading) {
     return <Loading />;

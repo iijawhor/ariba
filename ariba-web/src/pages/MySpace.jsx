@@ -2,21 +2,22 @@ import { useEffect } from "react";
 import { Actions, AttendanceList, AttendanceStats, Timings } from "../allFiles";
 import { gettAttendanceByUser } from "../store/slices/atttendanceSlice.js";
 import { useDispatch, useSelector } from "react-redux";
-
+import { useAttendance } from "../hooks/useAttendance.js";
 const MySpace = () => {
   const loggedInUser = useSelector((state) => state.user.loggedInUser);
   const attendance = useSelector((state) => state.attendance.attendanceByUser);
   const accessToken = useSelector((state) => state.user.accessToken);
-  const loading = useSelector((state) => state.user.loading);
   const userId = loggedInUser?.user?._id;
   const dispatch = useDispatch();
-  const attendanceError = useSelector((state) => state.attendance.error);
+  const { getPresentDayAttendanceHook } = useAttendance(accessToken);
   const gettAttendanceByUserUrl = `${
     import.meta.env.VITE_API_BASE_URL
   }/attendance/get-attendance`;
 
   useEffect(() => {
+    if (!accessToken) return;
     dispatch(gettAttendanceByUser({ gettAttendanceByUserUrl, accessToken }));
+    getPresentDayAttendanceHook();
   }, [userId, accessToken]); // include dependencies if they can change
 
   const headings = ["date", "gross hours", "login", "logout", "log"];
