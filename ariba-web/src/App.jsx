@@ -1,6 +1,6 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { Loading, Navbar, Sidebar } from "./allFiles";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAttendance } from "./hooks/useAttendance.js";
 import {
   generateRefreshAccessToken,
@@ -17,17 +17,26 @@ function App() {
 
   const [loading, setLoading] = useState(true);
   const [activeMenu, setActiveMenu] = useState("dashboard");
+  const hasAttemptedRefresh = useRef(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
     const getUserOnRefresh = async () => {
+      // Prevent multiple refresh attempts
+      if (hasAttemptedRefresh.current) {
+        return;
+      }
+
       // If we already have an access token, just stop loading
       if (accessToken) {
         setLoading(false);
         return;
       }
+
+      // Mark that we're attempting refresh
+      hasAttemptedRefresh.current = true;
 
       const refreshApi = `${
         import.meta.env.VITE_API_BASE_URL
@@ -45,6 +54,7 @@ function App() {
           return;
         }
 
+        // Fetch user data with the new token
         const userRes = await axios.get(
           `${import.meta.env.VITE_API_BASE_URL}/user/get-current-user`,
           {
@@ -54,15 +64,15 @@ function App() {
         );
 
         dispatch(setLoggedInUser(userRes.data.user));
-        setLoading(false); // MOVED: Only set loading false after successful auth
       } catch (err) {
         console.error("Failed to refresh user:", err);
-        setLoading(false); // Set loading false on error
+      } finally {
+        setLoading(false);
       }
     };
 
     getUserOnRefresh();
-  }, [dispatch, accessToken]);
+  }, [dispatch]); // Remove accessToken from dependencies
 
   useEffect(() => {
     if (accessToken) {
