@@ -64,7 +64,7 @@ function App() {
     };
 
     getUserOnRefresh();
-  }, [accessToken, dispatch, navigate]);
+  }, [dispatch, navigate]);
 
   useEffect(() => {
     if (accessToken) {
