@@ -1,6 +1,6 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { Loading, Navbar, Sidebar } from "./allFiles";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useAttendance } from "./hooks/useAttendance.js";
 import {
   generateRefreshAccessToken,
@@ -17,26 +17,16 @@ function App() {
 
   const [loading, setLoading] = useState(true);
   const [activeMenu, setActiveMenu] = useState("dashboard");
-  const hasAttemptedRefresh = useRef(false);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
     const getUserOnRefresh = async () => {
-      // Prevent multiple refresh attempts
-      if (hasAttemptedRefresh.current) {
-        return;
-      }
-
       // If we already have an access token, just stop loading
       if (accessToken) {
         setLoading(false);
         return;
       }
-
-      // Mark that we're attempting refresh
-      hasAttemptedRefresh.current = true;
 
       const refreshApi = `${
         import.meta.env.VITE_API_BASE_URL
@@ -75,10 +65,9 @@ function App() {
   }, [dispatch]); // Remove accessToken from dependencies
 
   useEffect(() => {
-    if (accessToken) {
-      fetchOrganizationDetails();
-    }
-  }, [accessToken, fetchOrganizationDetails]);
+    if (!accessToken) return;
+    fetchOrganizationDetails();
+  }, [accessToken]);
 
   // Redirect to signin only after loading is complete and no auth
   useEffect(() => {
