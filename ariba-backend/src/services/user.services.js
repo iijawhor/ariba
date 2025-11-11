@@ -211,13 +211,9 @@ export const getUserDetailsById = async (userId) => {
   }
   return user[0];
 };
-export const getOrganizationUsers = async ({ organizationId, userRole }) => {
-  if (!organizationId) {
-    throw new ApiError("Please send a valid organization id", 400);
-  }
-
+export const getOrganizationUsers = async ({ organization, userRole }) => {
   const users = await UserRepositories.findOrganizationUsers(
-    organizationId,
+    organization,
     userRole
   );
 
@@ -227,6 +223,7 @@ export const getOrganizationUsers = async ({ organizationId, userRole }) => {
 
   return users;
 };
+
 export const addTimeline = async (id, title, event, date) => {
   if (!id) throw new ApiError("Id undefined", 404);
   if (!title) throw new ApiError("Please enter timeline data", 400);

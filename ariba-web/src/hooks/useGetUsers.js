@@ -20,6 +20,9 @@ export const useGetUsers = (organization, userRole) => {
 
   // Fetch users by role (teacher/student)
   const getOrganizationUsersHook = async () => {
+    if (!accessToken) {
+      return;
+    }
     try {
       await dispatch(
         getOrganizationUsers({

@@ -41,12 +41,13 @@ export const findUserDetailsById = async (userId) => {
   ]);
 };
 
-export const findOrganizationUsers = async (organizationId, userRole) => {
+export const findOrganizationUsers = async (organization, userRole) => {
   return await User.find({
-    organization: new mongoose.Types.ObjectId(organizationId),
+    organization,
     userRole
   }).select("-password -__v -timeline -religion -education -dateOfjoining");
 };
+
 export const addTimeline = async (_id, title, event, eventDate) => {
   return await User.findByIdAndUpdate(
     _id,

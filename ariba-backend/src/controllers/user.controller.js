@@ -220,21 +220,19 @@ export const getUserDetailsById = async (req, res) => {
   }
 };
 export const getUsersByOrganization = async (req, res) => {
-  const { organizationId, userRole } = req.query;
+  const { userRole } = req.query;
+  const organizationId = req.user?.organization?._id; // <--- extract ID
 
   try {
     const users = await UserService.getOrganizationUsers({
-      organizationId,
+      organization: organizationId,
       userRole
     });
-    if (!users) {
-      throw new ApiError("Users not found!", 400);
-    }
 
     return res.status(200).json({
       message: "User fetched successfully",
       success: true,
-      users: users
+      users
     });
   } catch (error) {
     res.status(error.statusCode || 500).json({
@@ -243,6 +241,7 @@ export const getUsersByOrganization = async (req, res) => {
     });
   }
 };
+
 export const addTimeline = async (req, res) => {
   const { title, event, eventDate } = req.body; // timeline object from frontend
   const { id } = req.params;
