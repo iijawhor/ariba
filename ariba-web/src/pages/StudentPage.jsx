@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StudentDetails, StudentList } from "../allFiles";
-
+import { useGetUsers } from "../hooks/useGetUsers.js";
 const StudentPage = () => {
   const [mode, setMode] = useState("");
   const [userModal, setUserModal] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false); // 👈 for mobile sidebar toggle
+  const { getOrganizationUsersHook } = useGetUsers("", "student");
+  useEffect(() => {
+    getOrganizationUsersHook();
+  }, []);
 
   return (
     <div className="relative flex h-full bg-gray-50 overflow-hidden">

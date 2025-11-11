@@ -2,6 +2,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getOrganizationUsers, getUser } from "../store/slices/userSlice.js";
+import { toast } from "react-toastify";
 
 export const useGetUsers = (organization, userRole) => {
   const users = useSelector(
@@ -18,18 +19,20 @@ export const useGetUsers = (organization, userRole) => {
   const getUserApi = `${import.meta.env.VITE_API_BASE_URL}/user/get-user-by-id`;
 
   // Fetch users by role (teacher/student)
-  useEffect(() => {
-    if (!organization || !userRole) return;
-
-    dispatch(
-      getOrganizationUsers({
-        getOrganizationUserApi,
-        organization,
-        userRole,
-        accessToken
-      })
-    );
-  }, [organization, userRole, dispatch]);
+  const getOrganizationUsersHook = async () => {
+    try {
+      await dispatch(
+        getOrganizationUsers({
+          getOrganizationUserApi,
+          organization,
+          userRole,
+          accessToken
+        })
+      ).unwrap();
+    } catch (error) {
+      toast.error("Failed to fetch user");
+    }
+  };
 
   // Fetch first user’s details when users load
   useEffect(() => {
@@ -61,6 +64,7 @@ export const useGetUsers = (organization, userRole) => {
     searchQuery,
     setSearchQuery,
     isActive,
-    handleSelectUser
+    handleSelectUser,
+    getOrganizationUsersHook
   };
 };

@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TeacherDetails, TeacherList } from "../allFiles";
-
+import { useGetUsers } from "../hooks/useGetUsers.js";
 const TeacherPage = () => {
   const [mode, setMode] = useState("");
   const [userModal, setUserModal] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
+  const { getOrganizationUsersHook } = useGetUsers("", "teacher");
+  useEffect(() => {
+    getOrganizationUsersHook();
+  }, []);
 
   return (
     <div className="relative flex h-full bg-gray-50 overflow-hidden">
