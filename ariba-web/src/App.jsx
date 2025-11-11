@@ -21,6 +21,9 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    if (accessToken) {
+      return;
+    }
     const generateRefreshAccessTokenApi = `${
       import.meta.env.VITE_API_BASE_URL
     }/user/refresh-token`;
@@ -67,10 +70,10 @@ function App() {
 
   // ✅ If user is null after check, redirect to signin
   useEffect(() => {
-    if (!loading && !user) {
+    if (!loading && !user && !accessToken) {
       navigate("/signin");
     }
-  }, [loading, user, navigate]);
+  }, [loading, user, accessToken, navigate]);
 
   // ✅ Show loading until check completes
   if (loading) {
