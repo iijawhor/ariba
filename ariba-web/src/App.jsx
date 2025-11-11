@@ -12,9 +12,9 @@ import { useGetOrganization } from "./hooks/useGetOrganization.js";
 
 function App() {
   const accessToken = useSelector((state) => state.user.accessToken);
+  const loggedInUser = useSelector((state) => state.user.loggedInUser); // Get user from Redux
   const { fetchOrganizationDetails } = useGetOrganization(accessToken);
 
-  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeMenu, setActiveMenu] = useState("dashboard");
 
@@ -23,6 +23,7 @@ function App() {
 
   useEffect(() => {
     const getUserOnRefresh = async () => {
+      // If we already have an access token, just stop loading
       if (accessToken) {
         setLoading(false);
         return;
@@ -39,7 +40,7 @@ function App() {
         const token = refreshResponse?.payload?.accessToken;
 
         if (!token) {
-          setUser(null);
+          setLoading(false);
           return;
         }
 
@@ -52,19 +53,15 @@ function App() {
         );
 
         dispatch(setLoggedInUser(userRes.data.user));
-        setUser(userRes.data.user);
-
-        navigate("/"); // Redirect after login
       } catch (err) {
         console.error("Failed to refresh user:", err);
-        setUser(null);
       } finally {
         setLoading(false);
       }
     };
 
     getUserOnRefresh();
-  }, [dispatch, navigate]);
+  }, [dispatch, accessToken]);
 
   useEffect(() => {
     if (accessToken) {
@@ -72,11 +69,12 @@ function App() {
     }
   }, [accessToken, fetchOrganizationDetails]);
 
+  // Redirect to signin only after loading is complete and no auth
   useEffect(() => {
-    if (!loading && !user && !accessToken) {
+    if (!loading && !accessToken && !loggedInUser) {
       navigate("/signin");
     }
-  }, [loading, user, accessToken, navigate]);
+  }, [loading, accessToken, loggedInUser, navigate]);
 
   if (loading) {
     return <Loading />;
@@ -263,7 +261,7 @@ function App() {
 
         <main className="flex-1 rounded-lg overflow-hidden flex flex-col">
           <div className="flex-1 overflow-y-auto">
-            <Outlet context={{ user }} />
+            <Outlet context={{ user: loggedInUser }} />
           </div>
         </main>
       </div>
