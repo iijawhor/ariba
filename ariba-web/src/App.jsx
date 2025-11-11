@@ -12,7 +12,7 @@ import { useGetOrganization } from "./hooks/useGetOrganization.js";
 
 function App() {
   const accessToken = useSelector((state) => state.user.accessToken);
-  const loggedInUser = useSelector((state) => state.user.loggedInUser); // Get user from Redux
+  const loggedInUser = useSelector((state) => state.user.loggedInUser);
   const { fetchOrganizationDetails } = useGetOrganization(accessToken);
 
   const [loading, setLoading] = useState(true);
@@ -40,6 +40,7 @@ function App() {
         const token = refreshResponse?.payload?.accessToken;
 
         if (!token) {
+          // No token means refresh failed - stop loading and let redirect happen
           setLoading(false);
           return;
         }
@@ -53,10 +54,10 @@ function App() {
         );
 
         dispatch(setLoggedInUser(userRes.data.user));
+        setLoading(false); // MOVED: Only set loading false after successful auth
       } catch (err) {
         console.error("Failed to refresh user:", err);
-      } finally {
-        setLoading(false);
+        setLoading(false); // Set loading false on error
       }
     };
 
