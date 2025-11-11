@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+
 const initialState = {
   loggedInUser: null,
   error: null,
@@ -14,6 +15,7 @@ const initialState = {
   updatedUser: {},
   organization: {}
 };
+
 export const loginHandler = createAsyncThunk(
   "auth/login",
   async ({ loginApi, loginCredentials }, thunkAPI) => {
@@ -52,6 +54,7 @@ export const getOrganizationUsers = createAsyncThunk(
     }
   }
 );
+
 export const getOrganizationDetails = createAsyncThunk(
   "user/getOrganization",
   async ({ getOrganizationDetailsApi, accessToken }, thunkAPI) => {
@@ -71,6 +74,7 @@ export const getOrganizationDetails = createAsyncThunk(
     }
   }
 );
+
 export const getUser = createAsyncThunk(
   "user/getUser",
   async ({ getUserApi, id, accessToken }, thunkAPI) => {
@@ -90,6 +94,7 @@ export const getUser = createAsyncThunk(
     }
   }
 );
+
 export const logout = createAsyncThunk(
   "user/logout",
   async ({ logoutApiUrl, accessToken }, thunkAPI) => {
@@ -126,6 +131,7 @@ export const createUser = createAsyncThunk(
     }
   }
 );
+
 export const updateUser = createAsyncThunk(
   "auth/updateUser",
   async ({ updateUserApi, formData, accessToken, userId }, thunkAPI) => {
@@ -146,6 +152,7 @@ export const updateUser = createAsyncThunk(
     }
   }
 );
+
 export const addTimeline = createAsyncThunk(
   "auth/addTimeline",
   async ({ id, addTimelineApi, timeline, token }, thunkAPI) => {
@@ -162,6 +169,7 @@ export const addTimeline = createAsyncThunk(
     }
   }
 );
+
 export const getCurrentUser = createAsyncThunk(
   "user/getCurrentUser",
   async ({ getCurrentUserApi, id, accessToken }, thunkAPI) => {
@@ -181,6 +189,7 @@ export const getCurrentUser = createAsyncThunk(
     }
   }
 );
+
 // Async thunk to generate a new access token using the refresh token
 export const generateRefreshAccessToken = createAsyncThunk(
   "user/generateRefreshAccessToken",
@@ -236,7 +245,9 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(loginHandler.fulfilled, (state, action) => {
-        state.loggedInUser = action.payload;
+        // ✅ FIX: Set both user and accessToken from login response
+        state.loggedInUser = action.payload.user || action.payload;
+        state.accessToken = action.payload.accessToken;
         state.error = null;
         state.loading = false;
       })
@@ -244,7 +255,9 @@ const userSlice = createSlice({
         state.error = action.payload || "Internal Server Error";
         state.loading = false;
         state.loggedInUser = null;
+        state.accessToken = null;
       });
+
     builder
       .addCase(getCurrentUser.pending, (state, action) => {
         state.loading = true;
@@ -308,6 +321,7 @@ const userSlice = createSlice({
         state.error = action.payload;
         state.loading = false;
       });
+
     builder
       .addCase(updateUser.pending, (state, action) => {
         (state.loading = true), (state.error = false);
@@ -322,6 +336,7 @@ const userSlice = createSlice({
         state.error = action.payload;
         state.loading = false;
       });
+
     builder
       .addCase(addTimeline.pending, (state, action) => {
         (state.loading = true), (state.error = false);
@@ -336,6 +351,7 @@ const userSlice = createSlice({
         state.error = action.payload;
         state.loading = false;
       });
+
     builder
       .addCase(generateRefreshAccessToken.pending, (state, action) => {
         (state.loading = true), (state.error = false);
@@ -348,7 +364,9 @@ const userSlice = createSlice({
       .addCase(generateRefreshAccessToken.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
+        state.accessToken = null;
       });
+
     builder
       .addCase(refreshUser.pending, (state, action) => {
         (state.loading = true), (state.error = false);
@@ -362,6 +380,7 @@ const userSlice = createSlice({
         state.error = action.payload;
         state.loading = false;
       });
+
     builder
       .addCase(getOrganizationDetails.pending, (state, action) => {
         (state.loading = true), (state.error = false);
@@ -375,6 +394,7 @@ const userSlice = createSlice({
         state.error = action.payload;
         state.loading = false;
       });
+
     builder
       .addCase(logout.pending, (state, action) => {
         (state.loading = true), (state.error = false);
