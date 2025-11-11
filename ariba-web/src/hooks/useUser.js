@@ -5,6 +5,7 @@ import {
   logout,
   refreshUser
 } from "../store/slices/userSlice.js";
+import { useNavigate } from "react-router-dom";
 
 const getUserOnRefreshApiUrl = `${
   import.meta.env.VITE_API_BASE_URL
@@ -14,6 +15,7 @@ const generateRefreshAccessTokenApi = `${
 }/user/refresh-token`;
 const logoutApiUrl = `${import.meta.env.VITE_API_BASE_URL}/user/logout`;
 export const useUser = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const accessToken = useSelector((state) => state.user.accessToken);
   const getCurrentUserHook = async () => {
@@ -33,6 +35,7 @@ export const useUser = () => {
   const logoutHook = async () => {
     try {
       await dispatch(logout({ logoutApiUrl, accessToken })).unwrap(); // ✅ now awaits the actual Promise
+      navigate("/signin");
       toast.success("Logged out successfully!");
     } catch (error) {
       const message =

@@ -98,7 +98,7 @@ const Navbar = ({ activeMenu, sidebar, setActiveMenu }) => {
               >
                 <li>
                   <Link
-                    to="/profile"
+                    to="/settings"
                     className="rounded-lg px-3 py-2 hover:bg-[#EEF4FF] hover:text-[#2C80FF] transition"
                   >
                     Profile

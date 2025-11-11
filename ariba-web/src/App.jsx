@@ -21,7 +21,6 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    navigate("/");
     const generateRefreshAccessTokenApi = `${
       import.meta.env.VITE_API_BASE_URL
     }/user/refresh-token`;
@@ -47,11 +46,9 @@ function App() {
         const currentUser = userRes.data;
         dispatch(setLoggedInUser(currentUser.user));
         setUser(currentUser);
-
-        if (!accessToken) {
-          return;
+        if (accessToken) {
+          navigate("/");
         }
-
         // Optional — load any user-specific data
       } catch (err) {
         setUser(null);
@@ -61,9 +58,11 @@ function App() {
     };
 
     getUserOnRefresh();
-  }, [accessToken]);
+  }, []);
   useEffect(() => {
-    fetchOrganizationDetails();
+    if (accessToken) {
+      fetchOrganizationDetails();
+    }
   }, [accessToken]);
 
   // ✅ If user is null after check, redirect to signin
