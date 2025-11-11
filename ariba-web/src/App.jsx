@@ -13,47 +13,50 @@ import { useGetOrganization } from "./hooks/useGetOrganization.js";
 function App() {
   const accessToken = useSelector((state) => state.user.accessToken);
   const { fetchOrganizationDetails } = useGetOrganization(accessToken);
+
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // to delay redirect until refresh check finishes
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
   const [activeMenu, setActiveMenu] = useState("dashboard");
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (accessToken) {
-      return;
-    }
-    const generateRefreshAccessTokenApi = `${
-      import.meta.env.VITE_API_BASE_URL
-    }/user/refresh-token`;
-
     const getUserOnRefresh = async () => {
-      const refreshResponse = await dispatch(
-        generateRefreshAccessToken(generateRefreshAccessTokenApi)
-      );
+      if (accessToken) {
+        setLoading(false);
+        return;
+      }
 
-      const accessToken = refreshResponse?.payload?.accessToken;
+      const refreshApi = `${
+        import.meta.env.VITE_API_BASE_URL
+      }/user/refresh-token`;
+
       try {
-        // 3️⃣ Use that access token to fetch the user
+        const refreshResponse = await dispatch(
+          generateRefreshAccessToken(refreshApi)
+        );
+        const token = refreshResponse?.payload?.accessToken;
+
+        if (!token) {
+          setUser(null);
+          return;
+        }
+
         const userRes = await axios.get(
           `${import.meta.env.VITE_API_BASE_URL}/user/get-current-user`,
-
           {
-            headers: { Authorization: `Bearer ${accessToken}` },
+            headers: { Authorization: `Bearer ${token}` },
             withCredentials: true
           }
         );
 
-        // 4️⃣ Save user to local state
-        const currentUser = userRes.data;
-        dispatch(setLoggedInUser(currentUser.user));
-        setUser(currentUser);
-        if (accessToken) {
-          navigate("/");
-        }
-        // Optional — load any user-specific data
+        dispatch(setLoggedInUser(userRes.data.user));
+        setUser(userRes.data.user);
+
+        navigate("/"); // Redirect after login
       } catch (err) {
+        console.error("Failed to refresh user:", err);
         setUser(null);
       } finally {
         setLoading(false);
@@ -61,21 +64,20 @@ function App() {
     };
 
     getUserOnRefresh();
-  }, []);
+  }, [accessToken, dispatch, navigate]);
+
   useEffect(() => {
     if (accessToken) {
       fetchOrganizationDetails();
     }
-  }, [accessToken]);
+  }, [accessToken, fetchOrganizationDetails]);
 
-  // ✅ If user is null after check, redirect to signin
   useEffect(() => {
     if (!loading && !user && !accessToken) {
       navigate("/signin");
     }
   }, [loading, user, accessToken, navigate]);
 
-  // ✅ Show loading until check completes
   if (loading) {
     return <Loading />;
   }
