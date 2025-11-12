@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginHandler } from "../store/slices/userSlice";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
+import { API_BASE_URL } from "../utils/constants.js"; // ✅ Add this import at the top
 export const LoginForm = () => {
   const loginError = useSelector((state) => state.user.error);
   const [loginCredentials, setLoginCredentials] = useState({
@@ -22,7 +22,7 @@ export const LoginForm = () => {
   const navigate = useNavigate();
   const handleLogin = (e) => {
     e.preventDefault();
-    const loginApi = `${import.meta.env.VITE_API_BASE_URL}/user/signin`;
+    const loginApi = `${API_BASE_URL}/user/signin`; // ✅ Use constant instead
     dispatch(loginHandler({ loginApi, loginCredentials }))
       .unwrap()
       .then((result) => {

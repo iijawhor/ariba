@@ -5,7 +5,7 @@ import multer from "multer";
 const app = express();
 const upload = multer();
 const allowedOrigins = [
-  "http://localhost:5174", // Local Vite dev server
+  "http://localhost:5173", // Local Vite dev server
   "https://elegant-banoffee-fc2521.netlify.app", // deployed frontend
   "https://aribe.netlify.app",
   process.env.CORS_ORIGIN // optional .env value
