@@ -14,7 +14,12 @@ const getSecuredRoom = (orgId) => {
 export const initializeSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173",
+      origin: [
+        "http://localhost:5173", // local dev
+        "https://elegant-banoffee-fc2521.netlify.app", // deployed frontend
+        "https://aribe.netlify.app",
+        process.env.CORS_ORIGIN // optional .env value
+      ],
       credentials: true
     }
   });
