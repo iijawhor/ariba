@@ -118,6 +118,8 @@ export const logout = createAsyncThunk(
 export const createUser = createAsyncThunk(
   "user/createUser",
   async ({ createUserApi, formData, accessToken }, thunkAPI) => {
+    console.log("creating........", accessToken, createUserApi, formData);
+
     try {
       const response = await axios.post(`${createUserApi}`, formData, {
         withCredentials: true,

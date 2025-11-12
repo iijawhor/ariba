@@ -6,10 +6,8 @@ const createUserApi = `${import.meta.env.VITE_API_BASE_URL}/user/create-user`;
 const updateUserApi = `${import.meta.env.VITE_API_BASE_URL}/user/update-user`;
 
 export const useSaveUser = () => {
-  const user = useSelector((state) => state.user.loggedInUser);
+  const accessToken = useSelector((state) => state.user.accessToken);
   const dispatch = useDispatch();
-  const accessToken = user?.accessToken;
-
   const saveUser = async ({ e, formData, userId, mode }) => {
     e.preventDefault();
 
