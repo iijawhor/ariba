@@ -1,8 +1,17 @@
+// Sidebar.jsx
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-const Sidebar = ({ sidebar, setActiveMenu }) => {
+const Sidebar = ({ sidebar, setActiveMenu, onMobileClose }) => {
   const [isSidebarNameActive, setIsSidebarNameActive] = useState(true);
+
+  const handleMenuClick = (itemName) => {
+    setActiveMenu(itemName);
+    // Close mobile menu after navigation
+    if (onMobileClose) {
+      onMobileClose();
+    }
+  };
 
   return (
     <div
@@ -21,7 +30,11 @@ const Sidebar = ({ sidebar, setActiveMenu }) => {
     >
       {/* Logo */}
       <div className="flex mb-5 w-full justify-center md:justify-start">
-        <Link to="/" className="flex items-center">
+        <Link
+          to="/"
+          className="flex items-center"
+          onClick={() => handleMenuClick("home")}
+        >
           <img
             className="h-6 w-6 sm:w-6 md:w-20"
             src="../logo/image.png"
@@ -34,7 +47,7 @@ const Sidebar = ({ sidebar, setActiveMenu }) => {
       <ul className="flex gap-4 flex-col text-center md:text-left w-full">
         {sidebar.map((item, index) => (
           <Link
-            onClick={() => setActiveMenu(item.name)}
+            onClick={() => handleMenuClick(item.name)}
             key={index}
             to={item.to}
             className="

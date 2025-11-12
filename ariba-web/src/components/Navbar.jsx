@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { searchHandler } from "../store/slices/searchSlice";
 import { useUser } from "../hooks/useUser.js";
+import { API_BASE_URL } from "../utils/constants"; // ✅ Use constant
 import Sidebar from "./Sidebar";
 
 const Navbar = ({ activeMenu, sidebar, setActiveMenu }) => {
@@ -38,13 +39,18 @@ const Navbar = ({ activeMenu, sidebar, setActiveMenu }) => {
       return;
     }
 
-    const searchApi = `${import.meta.env.VITE_API_BASE_URL}/user/search?query=`;
+    const searchApi = `${API_BASE_URL}/user/search?query=`;
 
     dispatch(searchHandler({ searchApi, searchQuery }))
       .unwrap()
       .then(() => setError(null))
       .catch((err) => setError(err));
   }, [searchQuery, dispatch]);
+
+  // ✅ Function to close mobile menu
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+  };
 
   return (
     <>
@@ -190,12 +196,19 @@ const Navbar = ({ activeMenu, sidebar, setActiveMenu }) => {
       {/* 🔹 Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (
         <div className="md:hidden fixed inset-0 z-50 flex">
-          <div className="fixed inset-0 bg-black/30"></div>
+          <div
+            className="fixed inset-0 bg-black/30"
+            onClick={closeMobileMenu}
+          ></div>
           <div
             ref={sidebarRef}
             className="relative w-fit h-full bg-[#2C80FF] p-5 overflow-y-auto rounded-r-2xl shadow-lg"
           >
-            <Sidebar sidebar={sidebar} setActiveMenu={setActiveMenu} />
+            <Sidebar
+              sidebar={sidebar}
+              setActiveMenu={setActiveMenu}
+              onMobileClose={closeMobileMenu}
+            />
           </div>
         </div>
       )}
